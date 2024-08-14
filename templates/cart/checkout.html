@@ -2,12 +2,12 @@
 {% load static %}
 
 {% block content %}
-    <div class="hero-wrap hero-bread" style="background-image: url({% static 'images/bg_1.jpg' %});">
+    <div class="hero-wrap hero-bread" style="background-image: url({% static 'images/brandLogo.png' %});">
       <div class="container">
         <div class="row no-gutters slider-text align-items-center justify-content-center">
           <div class="col-md-9 ftco-animate text-center">
-          	<p class="breadcrumbs"><span class="mr-2"><a href="{% url 'home' %}">Home</a></span> <span>Checkout</span></p>
-            <h1 class="mb-0 bread">Checkout</h1>
+          	<p class="breadcrumbs" style="color: #000;"><span class="mr-2"><a href="{% url 'home' %}" style="color: #000;">Home</a></span> <span style="color: #000;">Checkout</span></p>
+            <h1 class="mb-0 bread" style="color: #000;">Checkout</h1>
           </div>
         </div>
       </div>
@@ -39,12 +39,7 @@
 		            		<div class="select-wrap">
 		                  <div class="icon"><span class="ion-ios-arrow-down"></span></div>
 		                  <select name="" id="" class="form-control">
-		                  	<option value="">France</option>
-		                    <option value="">Italy</option>
-		                    <option value="">Philippines</option>
-		                    <option value="">South Korea</option>
-		                    <option value="">Hongkong</option>
-		                    <option value="">Japan</option>
+		                  	<option value="">Pakistan</option>
 		                  </select>
 		                </div>
 		            	</div>
@@ -90,11 +85,10 @@
                 <div class="w-100"></div>
                 <div class="col-md-12">
                 	<div class="form-group mt-4">
-										<div class="radio">
-										  <label class="mr-3"><input type="radio" name="optradio"> Create an Account? </label>
-										  <label><input type="radio" name="optradio"> Ship to different address</label>
-										</div>
-									</div>
+						<div class="radio">
+							<label><input type="radio" name="optradio"> Ship to same address</label>
+						</div>
+					</div>
                 </div>
 	            </div>
 	          </form><!-- END -->
@@ -106,7 +100,7 @@
 	          			<h3 class="billing-heading mb-4">Cart Total</h3>
 	          			<p class="d-flex">
 		    						<span>Subtotal</span>
-		    						<span>Rs.20.60</span>
+		    						<span>Rs.{{subtotal}}</span>
 		    					</p>
 		    					<p class="d-flex">
 		    						<span>Delivery</span>

@@ -2,18 +2,18 @@
 {% load static %}
 
 {% block content %}
-<div class="hero-wrap hero-bread" style="background-image: url({% static 'images/bg_1.jpg' %});">
+<div class="hero-wrap hero-bread" style="background-image: url({{product.photo.url}});">
     <div class="container">
         <div class="row no-gutters slider-text align-items-center justify-content-center">
             <div class="col-md-9 ftco-animate text-center">
-                <p class="breadcrumbs">
-                    <span class="mr-2"><a href="{% url 'home' %}">Home</a></span>
-                    <span class="mr-2"><a href="index.html">Product</a></span>
-                    <span>Product Single</span>
-                </p>
-                <h1 class="mb-0 bread">Product Single</h1>
+              <p class="breadcrumbs" style="color: #000;">
+                <span class="mr-2"><a href="{% url 'home' %}" style="color: #000;">Home</a></span>
+                <span class="mr-2"><a href="{% url 'shop:shop' %}" style="color: #000;">Product</a></span>
+                <span style="color: #000;">Product Single</span>
+              </p>
+              <h1 class="mb-0 bread" style="color: #000;">Product Single</h1>
             </div>
-        </div>
+          </div>
     </div>
 </div>
 

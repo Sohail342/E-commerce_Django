@@ -2,13 +2,13 @@
 {% load static %}
 
 {% block content %}
-    <div class="hero-wrap hero-bread" style="background-image: url({% static 'images/shop.jpeg' %});">
+    <div class="hero-wrap hero-bread" style="background-image: url({{category.photo.url}});">
       <div class="container">
         <div class="row no-gutters slider-text align-items-center justify-content-center">
-          <div class="col-md-9 ftco-animate text-center">
-          	<p class="breadcrumbs"><span class="mr-2"><a href="{% url 'home' %}">Home</a></span> <span>Products</span></p>
-            <h1 class="mb-0 bread">Products</h1>
-          </div>
+			<div class="col-md-9 ftco-animate text-center">
+				<p class="breadcrumbs" style="color: #000;"><span class="mr-2"><a href="{% url 'home' %}" style="color: #000;">Home</a></span> <span style="color: #000;">Category</span></p>
+				<h1 class="mb-0 bread" style="color: #000;">{{ category.name }}</h1>
+			</div>
         </div>
       </div>
     </div>
@@ -19,9 +19,7 @@
     			<div class="col-md-10 mb-5 text-center">
     				<ul class="product-category">
     					<li><a href="#" class="active">All</a></li>
-              {% for ctg in category %}
-    					<li><a href="{% url 'shop:category' ctg.name %}">{{ ctg.name }}</a></li>
-              {% endfor %}
+    					<li><a href="#">{{ category.name}}</a></li>
     				</ul>
     			</div>
     		</div>

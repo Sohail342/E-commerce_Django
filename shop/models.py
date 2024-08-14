@@ -4,6 +4,7 @@ from author.models import AuthorProfile
 
 class Category(models.Model):
     name = models.CharField(max_length=30)
+    cat_moto = models.CharField(max_length=30)
     photo = models.ImageField(upload_to='products_category')
     date = models.DateTimeField(auto_now_add=True)
 
