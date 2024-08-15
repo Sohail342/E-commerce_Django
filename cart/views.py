@@ -43,10 +43,11 @@ def checkout(request, user_id):
     if cart:
         cart_items = cart.items.all()
         subtotal = sum(item.total_price() for item in cart_items)
+        total = int(250 + subtotal)          # Fix Delivery charges 250
     else:
         cart_items = []
         subtotal = 0
-    return render(request, 'cart/checkout.html', {'subtotal':subtotal})
+    return render(request, 'cart/checkout.html', {'subtotal':subtotal, 'total':total})
 
 
 @login_required(login_url='account:signin')

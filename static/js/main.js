@@ -66,11 +66,14 @@
 		$('.home-slider').owlCarousel({
 	    loop:true,
 	    autoplay: true,
+		autoplayTimeout: 5000,
 	    margin:0,
 	    animateOut: 'fadeOut',
 	    animateIn: 'fadeIn',
 	    nav:false,
 	    autoplayHoverPause: false,
+		touchDrag: true,  // Ensure touch dragging is enabled
+  		mouseDrag: true,
 	    items: 1,
 	    navText : ["<span class='ion-md-arrow-back'></span>","<span class='ion-chevron-right'></span>"],
 	    responsive:{
@@ -85,6 +88,7 @@
 	      }
 	    }
 		});
+	  
 	
 		$('.carousel-testimony').owlCarousel({
 			center: true,

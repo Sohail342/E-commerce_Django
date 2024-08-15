@@ -5,19 +5,25 @@
 <section id="home-section" class="hero">
   <div class="home-slider owl-carousel">
     {% for category in categories %}
-    <div class="slider-item" style="background-image: url({{ category.photo.url}});">
-      <div class="overlay"></div>
-      <div class="container">
-        <div class="row slider-text justify-content-center align-items-center" data-scrollax-parent="true">
-
-          <div class="col-md-12 ftco-animate text-center">
-            <h1 class="mb-2">{{category.name}}</h1>
-            <h2 class="subheading mb-4">{{category.cat_moto}}</h2>
-            <p><a href="{% url 'shop:category' category.name %}" class="btn btn-primary">View Details</a></p>
+    <div class="glider-contain">
+      <div class="glider">
+        <div class="slider-item" style="background-image: url({{ category.photo.url}});">
+          <div class="overlay"></div>
+          <div class="container">
+            <div class="row slider-text justify-content-center align-items-center" data-scrollax-parent="False">
+              <div class="col-md-12 ftco-animate text-center">
+                <h1 class="mb-2">{{ category.name }}</h1>
+                <h2 class="subheading mb-4">{{ category.cat_moto }}</h2>
+                <p><a href="{% url 'shop:category' category.name %}" class="btn btn-primary">View Details</a></p>
+              </div>
+            </div>
           </div>
-
         </div>
       </div>
+
+      <button class="glider-prev">«</button>
+      <button class="glider-next">»</button>
+      <div class="dots"></div>
     </div>
     {% endfor %}
   </div>
@@ -99,7 +105,7 @@
       <div class="col-md-12 heading-section text-center ftco-animate">
         <span class="subheading">Featured Products</span>
         <h2 class="mb-4">Our Products</h2>
-        <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia</p>
+        <p>Imagination meets reality. Discover magic at YouKiddies</p>
       </div>
     </div>
   </div>
@@ -143,7 +149,9 @@
   </div>
 </section>
 
-<section class="ftco-section img" style="background-image: url({% static 'images/bg_3.jpg' %});">
+<!--Sale of the Day-->
+
+{% comment %} <section class="ftco-section img" style="background-image: url({% static 'images/bg_3.jpg' %});">
   <div class="container">
     <div class="row justify-content-end">
       <div class="col-md-6 heading-section ftco-animate deal-of-the-day ftco-animate">
@@ -161,9 +169,11 @@
       </div>
     </div>
   </div>
-</section>
+</section> {% endcomment %}
 
-<section class="ftco-section testimony-section">
+<!--Satisfied Customer-->
+
+{% comment %} <section class="ftco-section testimony-section">
   <div class="container">
     <div class="row justify-content-center mb-5 pb-3">
       <div class="col-md-7 heading-section ftco-animate text-center">
@@ -193,6 +203,20 @@
       </div>
     </div>
   </div>
-</section>
-
+</section> {% endcomment %}
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    new Glider(document.querySelector('.glider'), {
+      slidesToShow: 1,
+      slidesToScroll: 1,
+      draggable: true,
+      arrows: {
+        prev: '.glider-prev',
+        next: '.glider-next'
+      },
+      dots: '.dots'
+    });
+  });
+  
+</script>
 {% endblock %}
