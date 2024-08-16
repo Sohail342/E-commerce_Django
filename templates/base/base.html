@@ -22,11 +22,11 @@
             <span>Get e-mail updates about our latest shops and special offers</span>
           </div>
           <div class="col-md-6 d-flex align-items-center">
-            <form class="subscribe-form" method=POST>
+            <form class="subscribe-form" method="POST">
               <div class="form-group d-flex">
                 {% csrf_token %}
                 {{ forms.email }}
-                <input type="submit" value="Subscribe" class="submit px-3">
+                <input type="submit" value="Subscribe" class="submit px-3 subscribe-btn">
               </div>
             </form>
           </div>
