@@ -23,14 +23,6 @@ def product_details(request, product_id):
     return render(request, 'shop/product-details.html', context)
 
 
-@login_required(login_url='account:signin')
-def wishlist(request):
-    categories = Category.objects.all()
-    context = {
-        'categories':categories,
-    }
-    
-    return render(request, 'shop/wishlist.html', context)
 
 
 def category(request, category_name):

@@ -8,19 +8,12 @@
     <div class="collapse navbar-collapse" id="ftco-nav">
       <ul class="navbar-nav ml-auto">
         <li class="nav-item active"><a href="{% url 'home' %}" class="nav-link">Home</a></li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="dropdown04" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Shop</a>
-          <ul class="dropdown-menu" aria-labelledby="dropdown04">
-            <li><a class="dropdown-item" href="{% url 'shop:shop' %}">Shop Now</a></li>
-            <li><a class="dropdown-item" href="{% url 'cart:cart' %}">Cart</a></li>
-            <li><a class="dropdown-item" href="{% url 'shop:wishlist' %}">Wishlist</a></li>
-          </ul>
-        </li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'shop:shop' %}" >Shop</a></li>
         <li class="nav-item"><a href="{% url 'about' %}" class="nav-link">About</a></li>
         <li class="nav-item"><a href="{% url 'contact' %}" class="nav-link">Contact</a></li>
         <li class="nav-item cta cta-colored"><a href="{% url 'cart:cart' %}" class="nav-link"><span class="icon-shopping_cart"></span>[{{cart_item_count}}]</a></li>
         {% if request.user.is_authenticated %}
-        <li class="nav-item"><a href="{% url 'account:signout' %}" class="nav-link">Welcome {{ user }}</a></li>
+        <li class="nav-item"><a href="" class="nav-link">Welcome {{ user }}</a></li>
         <li class="nav-item"><a href="{% url 'account:signout' %}" class="nav-link">Signout</a></li>
         {% else %}
         <li class="nav-item"><a href="{% url 'account:signin' %}" class="nav-link">Signin</a></li>
