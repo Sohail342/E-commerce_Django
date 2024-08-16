@@ -14,7 +14,6 @@ def home_page(request):
             forms.save()
     context = {
         'products': products,
-        'forms': forms,
         'categories':categories,
     }
     return render(request, 'home.html', context)
