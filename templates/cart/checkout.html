@@ -6,6 +6,10 @@
 	<div class="container">
 		<div class="row justify-content-center">
 			<div class="col-xl-7 ftco-animate">
+				{% if cart_is_empty %}
+                    <h3>Your cart is empty</h3>
+                    <a href="{% url 'shop:shop' %}" class="btn btn-primary">Continue Shopping</a>
+                {% else %}
 				<form action="{% url 'order:checkout' user.id %}" class="billing-form" method="POST">
 					{% csrf_token %}
 					<h3 class="mb-4 billing-heading">Billing Details</h3>
@@ -137,6 +141,7 @@
 		</div>
 	</div>
 </section> <!-- .section -->
+{% endif %}
 
 <script>
 	$(document).ready(function () {

@@ -33,7 +33,10 @@ def cart_page(request):
     cart, created = Cart.objects.get_or_create(user=request.user)
     cart_items = cart.items.all()
     total = cart.total_price()
-    return render(request, 'cart/cart.html', {'cart_items': cart_items, 'total': total})
+    
+    # Check if the cart is empty
+    cart_is_empty = cart_items.count() == 0
+    return render(request, 'cart/cart.html', {'cart_items': cart_items, 'total': total, 'cart_is_empty':cart_is_empty})
 
 
 

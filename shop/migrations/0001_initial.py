@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('author', '0001_initial'),
+        # ('author', '0001_initial'),
     ]
 
     operations = [
@@ -33,7 +33,6 @@ class Migration(migrations.Migration):
                 ('is_draft', models.BooleanField(default=False)),
                 ('date', models.DateTimeField(auto_now_add=True)),
                 ('inventory', models.IntegerField(default=1)),
-                ('author', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='author.authorprofile')),
                 ('category', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='shop.category')),
             ],
         ),

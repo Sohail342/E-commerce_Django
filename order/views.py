@@ -12,6 +12,10 @@ from django.contrib.auth.models import User
 def checkout(request, user_id):
     user = get_object_or_404(User, id=user_id)
     cart, created = Cart.objects.get_or_create(user=user)
+    cart_items = cart.items.all()
+    
+    # Check if the cart is empty
+    cart_is_empty = cart_items.count() == 0
 
     if request.method == 'POST':
         # Collect data from form
@@ -52,6 +56,14 @@ def checkout(request, user_id):
                     quantity=item.quantity,
                     price=item.product.price,
                 ).save()
+                
+                # Decrease the product inventory
+                product = item.product
+                product.inventory -= item.quantity
+                if product.inventory <= 0:
+                    product.delete()
+                else:
+                    product.save()
             
             # Clear the cart
             cart.items.all().delete()
@@ -71,6 +83,7 @@ def checkout(request, user_id):
     return render(request, 'cart/checkout.html', {
         'subtotal': subtotal,
         'total': total,
+        'cart_is_empty':cart_is_empty
     })
 
 

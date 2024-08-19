@@ -2,51 +2,63 @@
 {% load static %}
 
 {% block content %}
-    <section class="ftco-section ftco-cart">
-			<div class="container">
-				<div class="row">
-    			<div class="col-md-12 ftco-animate">
-    				<div class="cart-list">
-	    				<table class="table">
-						    <thead class="thead-primary">
-						      <tr class="text-center">
-						        <th>&nbsp;</th>
-						        <th>&nbsp;</th>
-						        <th>Product name</th>
-						        <th>Price</th>
-						        <th>Quantity {{count}}</th>
-						        <th>Total</th>
-						      </tr>
-						    </thead>
-						    <tbody>
-								{% for item in cart_items %}
-								<tr class="text-center">
-									<td class="product-remove"><a href="{% url 'cart:clear_cart' item.product.id %}"><span class="ion-ios-close"></span></a></td>
-									<td class="image-prod"><div class="img" style="background-image:url({{ item.product.photo.url }});"></div></td>
-									<td class="product-name">
-										<h3>{{ item.product.name }}</h3>
-										<p>{{ item.product.details }}</p>
-									</td>
-									<td class="price">RS.{{ item.product.price }}</td>
-									<td class="quantity">
-										<div class="input-group mb-3">
-											<input type="text" name="quantity" class="quantity form-control input-number" value="{{ item.quantity }}" min="1" max="100" readonly>
-										</div>
-									</td>
-									<td class="total">RS.{{ item.total_price }}</td>
-								</tr>
-								{% endfor %}
-						    </tbody>
-						  </table>
-					  </div>
-    			</div>
-    		</div><br>
-    		<div class="row justify-content">
-				{% if cart_items %}
-    				<p><a href="{% url 'order:checkout' request.user.id %}" class="btn btn-primary py-3 px-4">Proceed to Checkout</a></p>
+
+<section class="ftco-section ftco-cart">
+
+	<div class="container">
+		<div class="row">
+			<div class="col-md-12 ftco-animate">
+				{% if cart_is_empty %}
+				<h3>Your cart is empty</h3>
+				<a href="{% url 'shop:shop' %}" class="btn btn-primary">Continue Shopping</a>
 				{% else %}
-					<p><a href="{% url 'shop:shop' %}" class="btn btn-primary py-3 px-4">Go to Shop</a></p>
+				<div class="cart-list">
+					<table class="table">
+						<thead class="thead-primary">
+							<tr class="text-center">
+								<th>&nbsp;</th>
+								<th>&nbsp;</th>
+								<th>Product name</th>
+								<th>Price</th>
+								<th>Quantity {{count}}</th>
+								<th>Total</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for item in cart_items %}
+							<tr class="text-center">
+								<td class="product-remove"><a href="{% url 'cart:clear_cart' item.product.id %}"><span
+											class="ion-ios-close"></span></a></td>
+								<td class="image-prod">
+									<div class="img" style="background-image:url({{ item.product.photo.url }});"></div>
+								</td>
+								<td class="product-name">
+									<h3>{{ item.product.name }}</h3>
+									<p>{{ item.product.details }}</p>
+								</td>
+								<td class="price">RS.{{ item.product.price }}</td>
+								<td class="quantity">
+									<div class="input-group mb-3">
+										<input type="text" name="quantity" class="quantity form-control input-number"
+											value="{{ item.quantity }}" min="1" max="100" readonly>
+									</div>
+								</td>
+								<td class="total">RS.{{ item.total_price }}</td>
+							</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
 			</div>
-			{% endif %}
-		</section>
+		</div><br>
+		<div class="row justify-content">
+			{% if cart_items %}
+			<p><a href="{% url 'order:checkout' request.user.id %}" class="btn btn-primary py-3 px-4">Proceed to
+					Checkout</a></p>
+			{% else %}
+			<p><a href="{% url 'shop:shop' %}" class="btn btn-primary py-3 px-4">Go to Shop</a></p>
+		</div>
+		{% endif %}
+</section>
+{% endif %}
 {% endblock %}
