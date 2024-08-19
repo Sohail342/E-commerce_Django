@@ -14,8 +14,7 @@ class Order(models.Model):
     shipping_address = models.TextField(null=True, blank=True)
     payment_method = models.CharField(max_length=30, choices=[
         ('COD', 'Cash on Delivery'),
-        ('Card', 'Credit/Debit Card'),
-        ('PayPal', 'PayPal')
+        ('JazzCash', 'JazzCash'),
     ])
     status = models.CharField(max_length=20, choices=[
         ('Pending', 'Pending'),
