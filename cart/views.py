@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.shortcuts import get_object_or_404, redirect
 from .models import Product, Cart, CartItem
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
+
 
 # Create your views here.
 
@@ -35,19 +35,6 @@ def cart_page(request):
     total = cart.total_price()
     return render(request, 'cart/cart.html', {'cart_items': cart_items, 'total': total})
 
-
-@login_required(login_url='account:signin')
-def checkout(request, user_id):
-    user = get_object_or_404(User, id=user_id) 
-    cart = Cart.objects.filter(user=user).first()
-    if cart:
-        cart_items = cart.items.all()
-        subtotal = sum(item.total_price() for item in cart_items)
-        total = int(250 + subtotal)          # Fix Delivery charges 250
-    else:
-        cart_items = []
-        subtotal = 0
-    return render(request, 'cart/checkout.html', {'subtotal':subtotal, 'total':total})
 
 
 @login_required(login_url='account:signin')

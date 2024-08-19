@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from contact.models import Subscriber
 
+
 def base(request):
     message = ''  
     if request.method == 'POST':
@@ -15,3 +16,5 @@ def base(request):
             message = "Please provide a valid email address."
 
     return render(request, 'base.html', {'message': message})
+
+

@@ -43,7 +43,7 @@
     		</div><br>
     		<div class="row justify-content">
 				{% if cart_items %}
-    				<p><a href="{% url 'cart:checkout' request.user.id %}" class="btn btn-primary py-3 px-4">Proceed to Checkout</a></p>
+    				<p><a href="{% url 'order:checkout' request.user.id %}" class="btn btn-primary py-3 px-4">Proceed to Checkout</a></p>
 				{% else %}
 					<p><a href="{% url 'shop:shop' %}" class="btn btn-primary py-3 px-4">Go to Shop</a></p>
 			</div>

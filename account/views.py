@@ -20,7 +20,7 @@ def signin(request):
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
-            login(user)
+            login(request, user)
             return redirect(reverse("home"))
     else:
         form = AuthenticationForm()
