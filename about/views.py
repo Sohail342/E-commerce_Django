@@ -16,3 +16,10 @@ def reviews_view(request):
     reviews = Review.objects.all()
 
     return render(request, 'about/about.html', {'reviews': reviews})
+
+def Shipping_information(request):
+    return render(request, 'footer_links/shipping.html')
+
+
+def Other_details(request):
+    return render(request, 'footer_links/other_details.html')
