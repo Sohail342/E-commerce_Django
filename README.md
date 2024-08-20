@@ -7,7 +7,7 @@ YouKiddies is an e-commerce platform tailored for small businesses and startups.
 ## Overview
 
 
-[![Watch the video](static/images/home.jpeg)](https://youtu.be/fVSG3OBr9Og)
+[![Watch the video](static/images/Home.JPG)](https://youtu.be/fVSG3OBr9Og)
 
 ## Features
 
@@ -74,11 +74,11 @@ YouKiddies is an e-commerce platform tailored for small businesses and startups.
 ## For Admin
 ### Products
 
-![Products](static/images/prducts.jpeg)
+![Products](static/images/prducts.JPG)
 
 ### Orders
 
-![Orders](static/images/order.jpeg)
+![Orders](static/images/order.JPG)
 
 [**And many mores**](https://4sc-sincere-hawking.circumeo-apps.net/)
 
