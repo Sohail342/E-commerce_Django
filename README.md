@@ -74,7 +74,7 @@ YouKiddies is an e-commerce platform tailored for small businesses and startups.
 ## For Admin
 ### Products
 
-![Products](static/images/prducts.JPG)
+![Products](static/images/products.JPG)
 
 ### Orders
 
