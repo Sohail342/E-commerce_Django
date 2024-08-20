@@ -6,6 +6,7 @@ YouKiddies is an e-commerce platform tailored for small businesses and startups.
 
 ## Overview
 
+**Watch Demo Video**
 
 [![Watch the video](static/images/Home.JPG)](https://youtu.be/fVSG3OBr9Og)
 
@@ -32,7 +33,7 @@ YouKiddies is an e-commerce platform tailored for small businesses and startups.
 - **Backend:** Django (Python)
 - **Frontend:** HTML, CSS, Bootstrap 5
 - **Database:** SQLite (for development)
-- **Payment Gateway:** JazzCash
+- **Payment Gateway:** JazzCash (Currently Working)
 
 ## Installation
 
