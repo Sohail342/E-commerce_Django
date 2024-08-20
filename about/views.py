@@ -10,12 +10,13 @@ def reviews_view(request):
         # Save the review to the database
         Review.objects.create(customer_name=customer_name, rating=rating, review_text=review_text)
 
-        return redirect('about')  # Redirect to the same page after submission
+        return redirect('about:about')
 
     # Get existing reviews
     reviews = Review.objects.all()
 
     return render(request, 'about/about.html', {'reviews': reviews})
+
 
 def Shipping_information(request):
     return render(request, 'footer_links/shipping.html')
