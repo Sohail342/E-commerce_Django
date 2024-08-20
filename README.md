@@ -1,8 +1,8 @@
 # [Live](https://4sc-sincere-hawking.circumeo-apps.net/)
 
-# YouKiddies - E-commerce Website for Small Businesses and Startups
+# Django - E-commerce Website for Small Businesses and Startups
 
-YouKiddies is an e-commerce platform tailored for small businesses and startups. This project was developed to provide a robust and scalable online presence for businesses looking to sell products and manage their inventory dynamically. The platform offers a user-friendly interface, both for customers shopping online and for administrators managing products, categories, and orders.
+This is an e-commerce platform tailored for small businesses and startups. This project was developed to provide a robust and scalable online presence for businesses looking to sell products and manage their inventory dynamically. The platform offers a user-friendly interface, both for customers shopping online and for administrators managing products, categories, and orders.
 
 ## Overview
 
