@@ -51,7 +51,7 @@
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <h3 class="text-center mb-4">Submit Your Review</h3>
-                <form action="{% url 'about' %}" method="POST" class="p-4 shadow-sm bg-light rounded">
+                <form action="{% url 'about:about' %}" method="POST" class="p-4 shadow-sm bg-light rounded">
                     {% csrf_token %}
                     <div class="form-group">
                         <label for="customer_name">Your Name</label>
