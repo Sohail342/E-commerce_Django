@@ -23,8 +23,7 @@ This is an e-commerce platform tailored for small businesses and startups. This 
 - **Checkout Process:** A smooth and intuitive checkout process with options for standard shipping across Pakistan.
 - **Shipping Information:** A clear and straightforward shipping information page with a flat-rate shipping cost.
 
-### 4. Secure Payment Integration (Currently Working)
-- **JazzCash Integration:** The website includes secure payment options, making it easy for customers to complete their purchases.
+### 4. Payment Method
 
 - **Cash On Delivery** Making it easy for customers to complete their purchases.
 
