@@ -1,6 +1,5 @@
 {% extends 'base/base.html' %}
 
-
 {% block content %}
 <div class="container mt-5">
     <h1 class="text-center mb-4">Shipping Information</h1>
@@ -22,20 +21,13 @@
                 <div class="card-body">
                     <h2 class="card-title">Shipping Costs</h2>
                     <p>All orders within Pakistan have a fixed shipping cost.</p>
-                    <table class="table table-bordered">
-                        <thead class="table-primary">
-                            <tr>
-                                <th scope="col">Method</th>
-                                <th scope="col">Cost</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Standard Shipping (Pakistan-wide)</td>
-                                <td>250 PKR</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <!-- Using Bootstrap Cards for each shipping cost item -->
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Standard Shipping</h5>
+                            <p class="card-text">250 PKR (Pakistan-wide Only)</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

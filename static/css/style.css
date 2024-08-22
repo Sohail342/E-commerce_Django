@@ -10012,4 +10012,22 @@ textarea.form-control {
     stroke-dasharray: 89, 200;
     stroke-dashoffset: -136px; } }
 
-    
+/* Custom styles for card layout */
+.card {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.card-body {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+}
+
+.img {
+  width: 100px; 
+  height: 100px;
+  background-size: cover;
+  background-position: center;
+  border-radius: 5px;
+}

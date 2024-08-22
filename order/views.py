@@ -5,8 +5,8 @@ from django.utils import timezone
 from cart.models import Cart
 from django.shortcuts import get_object_or_404
 from order.models import Order, OrderItem
-from shop.models import Product
 from django.contrib.auth.models import User
+from SendEmail.views import send_welcome_email
 
 @login_required(login_url='account:signin')
 def checkout(request, user_id):
@@ -69,7 +69,8 @@ def checkout(request, user_id):
             cart.items.all().delete()
             
             messages.success(request, 'Order placed successfully!')
-            return redirect('order:order_summary', order_id=order.id)  
+            send_welcome_email(emailaddress, 'send_emails/succefully_order.html') 
+            return redirect('order:order_summary', order_id=order.id) 
     else:
         if cart:
             cart_items = cart.items.all()
