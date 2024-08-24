@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.urls import reverse
-from SendEmail.views import send_welcome_email
+from SendEmail.views import send_email
 
 def signup(request):
     if request.method == 'POST':
@@ -11,7 +11,7 @@ def signup(request):
         if form.is_valid():   
             user = form.save()
             login(request, user)
-            send_welcome_email(email, 'send_emails/welcome.html')
+            send_email(email, 'send_emails/welcome.html')
             return redirect(reverse("home"))
     else:
         form =  UserCreationForm()

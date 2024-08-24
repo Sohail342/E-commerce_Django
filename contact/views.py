@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
-
+from SendEmail.views import send_email
 from .forms import ContactForm, SubscriberForm
 
 
@@ -11,6 +11,8 @@ def contact_page(request):
         form = ContactForm(request.POST)
         if form.is_valid():
             form.save()
+            email = request.POST.get('email')
+            send_email(email, 'send_emails/contact.html')
             messages.add_message(request, messages.INFO, 'Submitted.')
             return redirect('contact')
     context = {

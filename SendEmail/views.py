@@ -2,7 +2,7 @@ from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from django.conf import settings
 
-def send_welcome_email(user_email, message_HTML):
+def send_email(user_email, message_HTML):
     subject = 'Welcome to My Project'
     from_email = settings.DEFAULT_FROM_EMAIL
     recipient_list = [user_email]

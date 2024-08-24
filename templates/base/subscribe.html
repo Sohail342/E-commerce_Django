@@ -6,7 +6,7 @@
         <span>Get e-mail updates about our latest shops and special offers</span>
       </div>
       <div class="col-md-6 d-flex align-items-center">
-        <form id="subscribe-form" class="subscribe-form" method="POST">
+        <form id="subscribe-form" class="subscribe-form" method="POST" action="{% url 'home' %}">
           {% csrf_token %}
           <div class="form-group d-flex">
             <input type="email" name="email" class="form-control" placeholder="Enter email address" required>
