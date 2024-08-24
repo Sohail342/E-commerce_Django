@@ -31,6 +31,9 @@
                 </div>
                 <div class="form-group">
                   Don't have an account? Create one <a href="{% url 'account:signup' %}">here</a>.
+                  {% if request.GET.next %}
+                  <input type="hidden" name="next" value="{{request.GET.next}}">
+                  {% endif %}
                   <input type="submit" value="Sign In" class="btn btn-primary py-3 px-5">
                 </div>
 

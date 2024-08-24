@@ -24,7 +24,9 @@ def signin(request):
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-            return redirect(reverse("home"))
+            
+            next_url = request.POST.get('next', reverse("home"))
+            return redirect(next_url)
     else:
         form = AuthenticationForm()
     return render(request, 'account/signin.html', {'form': form})
