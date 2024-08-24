@@ -32,7 +32,6 @@ This is an e-commerce platform tailored for small businesses and startups. This 
 - **Backend:** Django (Python)
 - **Frontend:** HTML, CSS, Bootstrap 5
 - **Database:** SQLite (for development)
-- **Payment Gateway:** JazzCash (Currently Working)
 
 ## Installation
 
@@ -80,7 +79,7 @@ This is an e-commerce platform tailored for small businesses and startups. This 
 
 ![Orders](static/images/order.JPG)
 
-[**And many mores**](https://4sc-sincere-hawking.circumeo-apps.net/)
+[**And many mores**](https://qe4-discerning-poisson.circumeo-apps.net/)
 
 ## Contact
 
