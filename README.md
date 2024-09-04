@@ -38,7 +38,7 @@ This is an e-commerce platform tailored for small businesses and startups. This 
 1. **Clone the repository:**
    ```bash
    git clone https://github.com/Sohail342/E-commerce_Django.git
-   cd youkiddies
+   cd django_ecommerce
    ```
 
 2. **Create a virtual environment and activate it:**
