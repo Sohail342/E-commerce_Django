@@ -43,6 +43,8 @@ INSTALLED_APPS = [
 
     'account',
     'SendEmail',
+    
+    'widget_tweaks',
 ]
 
 MIDDLEWARE = [

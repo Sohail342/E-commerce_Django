@@ -16,4 +16,4 @@ def send_email(user_email, message_HTML):
     try:
         email.send()
     except Exception as e:
-        print("Failed to Send")    # For debug purpose
+        print("Failed to Send")    

@@ -3,19 +3,20 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.urls import reverse
 from SendEmail.views import send_email
+from .forms import UserRegForm
 
 def signup(request):
     if not request.user.is_authenticated:
         if request.method == 'POST':
             email = request.POST.get('email')
-            form = UserCreationForm(request.POST)
+            form = UserRegForm(request.POST)
             if form.is_valid():   
                 user = form.save()
                 login(request, user)
                 send_email(email, 'send_emails/welcome.html')
                 return redirect(reverse("home"))
         else:
-            form =  UserCreationForm()
+            form =  UserRegForm()
         return render(request, 'account/signup.html', {'form': form})
     else:
         return redirect(reverse('home'))

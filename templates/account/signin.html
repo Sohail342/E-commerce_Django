@@ -1,7 +1,7 @@
 {% extends 'base/base.html' %}
 {% include 'base/header.html' %}
 {% load static %}
-
+{% load widget_tweaks %}
 {% block content %}
 
     <section class="ftco-section contact-section bg-light">
@@ -17,14 +17,14 @@
                 
                 <div class="form-group">
                   <label for="username">Username</label>
-                  <input type="text" id="username" name="username" class="form-control" required>
+                  {{form.username |attr:"class:form-control"}}
                   {% if form.username.errors %}
                     <span class="text-danger mt-4 text-sm text-center">{{ form.username.errors }}</span>
                   {% endif %}
                 </div>
                 <div class="form-group">
                   <label for="password">Password</label>
-                  <input type="password" id="password" name="password" class="form-control" required>
+                  {{form.password |attr:"class:form-control"}}
                   {% if form.password.errors %}
                     <span class="text-danger mt-4 text-sm text-center">{{ form.password.errors }}</span>
                   {% endif %}
