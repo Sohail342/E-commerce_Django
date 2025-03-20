@@ -1,0 +1,50 @@
+.service-section {
+    padding: 50px 0;
+    background: #f8f9fa;
+}
+
+.service-item {
+    text-align: center;
+    padding: 20px;
+    transition: all 0.3s ease;
+}
+
+.service-item:hover {
+    transform: translateY(-5px);
+}
+
+.service-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 20px;
+    background: #82ae46;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.service-icon img {
+    width: 40px;
+    height: 40px;
+    filter: brightness(0) invert(1);
+}
+
+.service-item:hover .service-icon {
+    background: #72a139;
+    transform: scale(1.1);
+}
+
+.service-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #000;
+}
+
+.service-text {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 0;
+}

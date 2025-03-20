@@ -13,8 +13,17 @@
         <li class="nav-item"><a href="{% url 'contact' %}" class="nav-link">Contact</a></li>
         <li class="nav-item cta cta-colored"><a href="{% url 'cart:cart' %}" class="nav-link"><span class="icon-shopping_cart"></span>[{{cart_item_count}}]</a></li>
         {% if request.user.is_authenticated %}
-        <li class="nav-item"><a href="" class="nav-link">Welcome {{ request.user.first_name }}</a></li>
-        <li class="nav-item"><a href="{% url 'account:signout' %}" class="nav-link">Signout</a></li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span class="icon-user"></span> {{ request.user.first_name }}
+          </a>
+          <div class="dropdown-menu" aria-labelledby="userDropdown">
+            <a class="dropdown-item" href="{% url 'account:profile' %}"><span class="icon-user-o"></span> Profile</a>
+            <a class="dropdown-item" href="{% url 'account:change_password' %}"><span class="icon-key"></span> Change Password</a>
+            <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="{% url 'account:signout' %}"><span class="icon-sign-out"></span> Sign Out</a>
+          </div>
+        </li>
         {% else %}
         <li class="nav-item"><a href="{% url 'account:signin' %}" class="nav-link">Signin</a></li>
         {% endif %}

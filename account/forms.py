@@ -26,21 +26,29 @@ class UserRegForm(UserCreationForm):
         username = self.cleaned_data.get("username")
         errors = []
         
-        if len(firstName) < 5:
-            errors.append('First name must be greater than 5 characters.')
-            
-        if any (char.isdigit() for char in firstName):
-            errors.append('First name should not contain numeric values.')
+        if not firstName:
+            errors.append('First name is required.')
+        else:
+            if len(firstName) < 5:
+                errors.append('First name must be greater than 5 characters.')
+                
+            if any(char.isdigit() for char in firstName):
+                errors.append('First name should not contain numeric values.')
 
-        if len(username) < 5:
-            errors.append('User name must be greater than 5 characters.')
-            
-        if any(char in '!@#$%^&*()+-=[]{}|;:,.<>?/`~' for char in username):
-            errors.append('User name only contain characters, numbers or underscore( _ ).')
-        if  any(char.isupper() for char in username):
-            errors.append('User name should not contain uppercase letters.')
-        if not any(char.isdigit() for char in username):
-            errors.append('User name must contain at least one numeric value or underscore( _ ).')
+        if not username:
+            errors.append('Username is required.')
+        else:
+            if len(username) < 5:
+                errors.append('User name must be greater than 5 characters.')
+                
+            if any(char in '!@#$%^&*()+-=[]{}|;:,.<>?/`~' for char in username):
+                errors.append('User name only contain characters, numbers or underscore( _ ).')
+            if any(char.isupper() for char in username):
+                errors.append('User name should not contain uppercase letters.')
+            if not any(char.isdigit() for char in username) and '_' not in username:
+                errors.append('User name must contain at least one numeric value or underscore( _ ).')
             
         if errors:
             raise forms.ValidationError(errors)
+        
+        return clean_data

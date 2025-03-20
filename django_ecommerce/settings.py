@@ -138,6 +138,9 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Cart settings
+CART_SESSION_ID = 'cart'
+
 CKEDITOR_JQUERY_URL = 'https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js'  # noqa
 
 CKEDITOR_UPLOAD_PATH = "uploads/"

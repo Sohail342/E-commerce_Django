@@ -1,5 +1,4 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.utils import timezone
 from cart.models import Cart
@@ -7,15 +6,17 @@ from django.shortcuts import get_object_or_404
 from order.models import Order, OrderItem
 from django.contrib.auth.models import User
 from SendEmail.views import send_email
+from cart.views import get_cart
 
-@login_required(login_url='account:signin')
-def checkout(request, user_id):
-    user = get_object_or_404(User, id=user_id)
-    cart, created = Cart.objects.get_or_create(user=user)
-    cart_items = cart.items.all()
+def checkout(request):
+    cart = get_cart(request)
+    if request.user.is_authenticated:
+        cart_items = cart.items.all()
+    else:
+        cart_items = cart
     
     # Check if the cart is empty
-    cart_is_empty = cart_items.count() == 0
+    cart_is_empty = len(cart_items) == 0 if not request.user.is_authenticated else cart_items.count() == 0
 
     if request.method == 'POST':
         # Collect data from form
@@ -30,14 +31,13 @@ def checkout(request, user_id):
         shipping_address = f"{streetaddress} {apartment}, {towncity}, {postcodezip}"
         payment_method = request.POST.get('payment_method')  
 
-        if cart:
-            cart_items = cart.items.all()
+        if request.user.is_authenticated:
             subtotal = sum(item.total_price() for item in cart_items)
             total = 250 + subtotal  # Add delivery charges
             
-            # Create a new order
+            # Create a new order for authenticated user
             order = Order(
-                user=user,
+                user=request.user,
                 cart=cart,
                 total_price=total,
                 shipping_address=shipping_address,
@@ -67,17 +67,55 @@ def checkout(request, user_id):
             
             # Clear the cart
             cart.items.all().delete()
+        else:
+            # Handle guest user order
+            subtotal = cart.get_total_price()
+            total = 250 + subtotal  # Add delivery charges
             
-            messages.success(request, 'Order placed successfully!')
-            send_email(emailaddress, 'send_emails/succefully_order.html') 
-            return redirect('order:order_summary', order_id=order.id) 
+            # Create a new order for guest user
+            order = Order(
+                user=None,  # Guest user
+                total_price=total,
+                shipping_address=shipping_address,
+                payment_method=payment_method,
+                created_at=timezone.now(),
+                updated_at=timezone.now(),
+                is_paid=False 
+            )
+            order.save()
+            
+            # Create order items from session cart
+            for item in cart:
+                product = item['product']
+                quantity = item['quantity']
+                OrderItem(
+                    order=order,
+                    product=product,
+                    quantity=quantity,
+                    price=item['price'],
+                ).save()
+                
+                # Decrease the product inventory
+                product.inventory -= quantity
+                if product.inventory <= 0:
+                    product.delete()
+                else:
+                    product.save()
+            
+            # Clear the session cart
+            cart.clear()
+        
+        messages.success(request, 'Order placed successfully!')
+        send_email(emailaddress, 'send_emails/succefully_order.html') 
+        return redirect('order:order_summary', order_id=order.id) 
     else:
-        if cart:
-            cart_items = cart.items.all()
-            subtotal = sum(item.total_price() for item in cart_items)
+        if not cart_is_empty:
+            if request.user.is_authenticated:
+                subtotal = sum(item.total_price() for item in cart_items)
+            else:
+                subtotal = cart.get_total_price()
             total = 250 + subtotal
         else:
-            cart_items = []
             subtotal = 0
             total = 250
 

@@ -1,60 +1,62 @@
 {% extends 'base/base.html' %}
 {% load static %}
 
-{% block content %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/cart-redesign.css' %}">
+{% endblock %}
 
-<section class="ftco-section ftco-cart">
+{% block content %}
+<section class="cart-section">
     <div class="container">
+        {% if cart_is_empty %}
+        <div class="empty-cart">
+            <h3>Your Shopping Cart is Empty</h3>
+            <a href="{% url 'shop:shop' %}" class="continue-shopping">Continue Shopping</a>
+        </div>
+        {% else %}
         <div class="row">
-            <div class="col-md-12 ftco-animate">
-                {% if cart_is_empty %}
-                <h3>Your cart is empty</h3>
-                <a href="{% url 'shop:shop' %}" class="btn btn-primary">Continue Shopping</a>
-                {% else %}
-                <div class="cart-list">
-                    <!-- Card-based layout for cart items -->
-                    <div class="row">
-                        {% for item in cart_items %}
-                        <div class="col-md-12 mb-4">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="row align-items-center">
-                                        <div class="col-md-3">
-                                            <div class="img" style="background-image:url('{{ item.product.photo.url }}');"></div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <h3 class="card-title">{{ item.product.name }}</h3>
-                                            <p class="card-text">Price: RS.{{ item.product.price }}</p>
-                                            <p class="card-text">Quantity: {{ item.quantity }}</p>
-                                        </div>
-                                        <div class="col-md-3 text-right">
-                                            <p class="card-text">Total: RS.{{ item.total_price }}</p>
-                                            <a href="{% url 'cart:clear_cart' item.product.id %}" class="btn btn-danger">Remove</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        {% endfor %}
+            <div class="col-md-8">
+                {% for item in cart_items %}
+                <div class="cart-item">
+                    <div class="cart-item-image">
+                        <img src="{{ item.product.photo.url }}" alt="{{ item.product.name }}">
                     </div>
+                    <div class="cart-item-details">
+                        <h3 class="cart-item-name">{{ item.product.name }}</h3>
+                        <p class="cart-item-price">PKR {{ item.product.price }}</p>
+                        <div class="cart-item-quantity">
+                            <button class="quantity-btn decrease">-</button>
+                            <input type="number" class="quantity-input" value="{{ item.quantity }}" min="1">
+                            <button class="quantity-btn increase">+</button>
+                        </div>
+                    </div>
+                    <div class="cart-item-total">
+                        PKR {{ item.total_price }}
+                    </div>
+                    <button class="remove-item" onclick="window.location.href='{% url 'cart:clear_cart' item.product.id %}'">
+                        <i class="fas fa-times"></i>
+                    </button>
                 </div>
-                <br>
-                <div class="row justify-content-center">
-                    {% if cart_items %}
-                    <p>
-                        <a href="{% url 'order:checkout' request.user.id %}" class="btn btn-primary py-3 px-4">Proceed to
-                            Checkout</a>
-                    </p>
-                    {% else %}
-                    <p>
-                        <a href="{% url 'shop:shop' %}" class="btn btn-primary py-3 px-4">Go to Shop</a>
-                    </p>
-                    {% endif %}
+                {% endfor %}
+            </div>
+            <div class="col-md-4">
+                <div class="cart-summary">
+                    <div class="cart-total">
+                        <span>Total</span>
+                        <span>PKR {{ cart_total }}</span>
+                    </div>
+                    <a href="{% url 'order:checkout' %}" class="checkout-btn">
+                        Proceed to Checkout
+                        <span class="spinner"></span>
+                    </a>
                 </div>
-                {% endif %}
             </div>
         </div>
+        {% endif %}
     </div>
 </section>
 
+{% block extra_js %}
+<script src="{% static 'js/cart-interactions.js' %}"></script>
+{% endblock %}
 {% endblock %}

@@ -3,7 +3,7 @@ from shop.models import Product
 from shop.models import Category
 
 def home_page(request):
-    products = Product.objects.all()[:8]
+    products = Product.objects.filter(is_draft=False).order_by('-id')[:8]
     categories = Category.objects.all()
     
     context = {

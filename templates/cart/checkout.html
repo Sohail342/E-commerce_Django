@@ -9,21 +9,28 @@
                 {% if cart_is_empty %}
                 <h3>Your cart is empty</h3>
                 <a href="{% url 'shop:shop' %}" class="btn btn-primary">Continue Shopping</a>
+
                 {% else %}
-                <form action="{% url 'order:checkout' user.id %}" class="billing-form" method="POST">
+                <form action="{% url 'order:checkout' %}" class="billing-form needs-validation" method="POST" novalidate>
                     {% csrf_token %}
-                    <h3 class="mb-4 billing-heading">Billing Details</h3>
-                    <div class="row align-items-end">
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-primary text-white">
+                            <h3 class="mb-0 billing-heading">Shipping Information</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="firstname">First Name*</label>
-                                <input type="text" class="form-control" placeholder="" name="firstname" required>
+                                <label for="firstname" class="form-label">First Name*</label>
+                                <input type="text" class="form-control" id="firstname" name="firstname" required>
+                                <div class="invalid-feedback">Please enter your first name.</div>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="lastname">Last Name (Optional)</label>
-                                <input type="text" class="form-control" placeholder="" name="lastname">
+                                <label for="lastname" class="form-label">Last Name (Optional)</label>
+                                <input type="text" class="form-control" id="lastname" name="lastname">
+                                <div class="form-text">Optional field</div>
                             </div>
                         </div>
                         <div class="w-100"></div>
@@ -41,9 +48,10 @@
                         <div class="w-100"></div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="streetaddress">Street Address*</label>
-                                <input type="text" class="form-control" name="streetaddress"
+                                <label for="streetaddress" class="form-label">Street Address*</label>
+                                <input type="text" class="form-control" id="streetaddress" name="streetaddress"
                                     placeholder="House number and street name" required>
+                                <div class="invalid-feedback">Please enter your street address.</div>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -68,14 +76,16 @@
                         <div class="w-100"></div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="phone">Phone*</label>
-                                <input type="text" name="phone" class="form-control" placeholder="" required>
+                                <label for="phone" class="form-label">Phone*</label>
+                                <input type="tel" name="phone" id="phone" class="form-control" pattern="[0-9]{11}" placeholder="03XX-XXXXXXX" required>
+                                <div class="invalid-feedback">Please enter a valid 11-digit phone number.</div>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="emailaddress">Email Address*</label>
-                                <input type="email" name="emailaddress" class="form-control" placeholder="" required>
+                                <label for="emailaddress" class="form-label">Email Address*</label>
+                                <input type="email" name="emailaddress" id="emailaddress" class="form-control" placeholder="you@example.com" required>
+                                <div class="invalid-feedback">Please enter a valid email address.</div>
                             </div>
                         </div>
                         <div class="w-100"></div>
@@ -85,30 +95,58 @@
             <div class="col-xl-5">
                 <div class="row mt-5 pt-3">
                     <div class="col-md-12 d-flex mb-5">
-                        <div class="cart-detail cart-total p-3 p-md-4">
-                            <h3 class="billing-heading mb-4">Cart Total</h3>
-                            <p class="d-flex">
-                                <span>Items Total {{cart_items}}</span>
-                                <span>Rs.{{subtotal}}</span>
-                            </p>
-                            <p class="d-flex">
-                                <span>Delivery</span>
-                                <span>Rs.250</span>
-                            </p>
-                            <p class="d-flex">
-                                <span>Discount</span>
-                                <span>Rs.00</span>
-                            </p>
-                            <hr>
-                            <p class="d-flex total-price">
-                                <span>Total</span>
-                                <span>Rs.{{total}}</span>
-                            </p>
+                        <div class="cart-detail cart-total p-4 rounded shadow bg-light w-100" style="background: linear-gradient(to bottom right, #ffffff, #f8f9fa);">
+                            <h3 class="billing-heading mb-4 text-center fw-bold border-bottom pb-3">Cart Total</h3>
+                            <div class="price-items-container">
+                                <div class="price-item d-flex justify-content-between align-items-center mb-3 py-2 hover-highlight">
+                                    <span class="d-flex align-items-center">
+                                        <i class="fas fa-shopping-cart me-2"></i>
+                                        <span>Items {{ cart_items }}</span>
+                                    </span>
+                                    <span class="fw-semibold price">PKR&nbsp;{{ subtotal }}</span>
+                                </div>
+                                <div class="price-item d-flex justify-content-between align-items-center mb-3 py-2 hover-highlight">
+                                    <span class="d-flex align-items-center">
+                                        <i class="fas fa-box me-2"></i>
+                                        <span>Shipping</span>
+                                    </span>
+                                    <span class="fw-semibold price">PKR&nbsp;0.00</span>
+                                </div>
+                                <div class="price-item d-flex justify-content-between align-items-center mb-3 py-2 hover-highlight">
+                                    <span class="d-flex align-items-center">
+                                        <i class="fas fa-truck me-2"></i>
+                                        <span>Delivery</span>
+                                    </span>
+                                    <span class="fw-semibold text-primary price">PKR&nbsp;250</span>
+                                </div>
+                                <div class="price-item d-flex justify-content-between align-items-center mb-3 py-2 hover-highlight">
+                                    <span class="d-flex align-items-center">
+                                        <i class="fas fa-tag me-2"></i>
+                                        <span>Discount</span>
+                                    </span>
+                                    <span class="fw-semibold text-danger price">PKR&nbsp;0.00</span>
+                                </div>
+                            </div>
+                            <div class="total-section p-3 mt-4 rounded" style="background: rgba(0,0,0,0.03);">
+                                <div class="price-item d-flex justify-content-between align-items-center">
+                                    <span class="fs-4 fw-bold d-flex align-items-center">
+                                        <i class="fas fa-calculator me-2"></i>
+                                        <span>Total</span>
+                                    </span>
+                                    <span class="fs-4 fw-bold text-primary price">PKR&nbsp;{{ total }}</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
+                </div>
+            </div>
+            
                     <div class="col-md-12">
                         <div class="cart-detail p-3 p-md-4">
-                            <h3 class="billing-heading mb-4">Payment Method</h3>
+                            <h3 class="billing-heading mb-4">Select Payment Method</h3>
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle"></i> Currently, we only support Cash on Delivery (COD) payment method.
+                            </div>
                             {% comment %} <div class="form-group">
                                 <div class="col-md-12">
                                     <div class="radio">
@@ -158,3 +196,43 @@
     });
 </script>
 {% endblock %}
+<style>
+.card-header {
+    border-bottom: 0;
+}
+.form-label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+.invalid-feedback {
+    font-size: 0.875rem;
+}
+.alert-info {
+    background-color: #e8f4f8;
+    border-color: #d6e9f0;
+    color: #0c5460;
+}
+.hover-highlight:hover {
+    background-color: rgba(0,0,0,0.02);
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+}
+.price-item {
+    transition: all 0.2s ease;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+.price-items-container {
+    margin-bottom: 1.5rem;
+}
+.price {
+    min-width: 100px;
+    text-align: right;
+}
+.total-section {
+    transition: background-color 0.3s ease;
+}
+.total-section:hover {
+    background: rgba(0,0,0,0.05);
+}
+</style>

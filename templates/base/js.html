@@ -15,3 +15,18 @@
 <script src="{% static 'js/scrollax.min.js' %}"></script>
 <script src="https://cdn.jsdelivr.net/npm/glider-js@1/glider.min.js"></script>
 <script src="{% static 'js/main.js' %}"></script>
+<script>
+  // Initialize animations for products
+  (function($) {
+    'use strict';
+    $(window).on('load', function() {
+      $('.ftco-animate').each(function(i) {
+        $(this).waypoint(function(direction) {
+          if (direction === 'down' && !$(this.element).hasClass('ftco-animated')) {
+            $(this.element).addClass('ftco-animated');
+          }
+        }, { offset: '95%' });
+      });
+    });
+  })(jQuery);
+</script>

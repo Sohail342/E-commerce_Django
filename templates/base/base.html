@@ -3,12 +3,28 @@
   {% load static %}
   <!-- header files -->
   {% include 'base/header.html' %}
+  <link rel="stylesheet" href="{% static 'css/cart-redesign.css' %}">
+  <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+  <link rel="stylesheet" href="{% static 'css/animations.css' %}">
+  <script src="{% static 'js/product-animations.js' %}"></script>
   <!-- header files -->
   <body class="goto-here">
 
 		<!-- header and nav start-->
     {% include 'base/navbar.html' %}
     <!-- END nav -->
+
+    {% if messages %}
+    <div class="container mt-4">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    
 
     {% block content %}
 
@@ -26,6 +42,15 @@
 
   <!-- js files -->
   {% include 'base/js.html' %}
+  <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+  <script>
+    AOS.init({
+      duration: 800,
+      once: true,
+      offset: 100,
+      disable: window.matchMedia('(prefers-reduced-motion: reduce)')
+    });
+  </script>
   <!-- js files -->
 
   </body>

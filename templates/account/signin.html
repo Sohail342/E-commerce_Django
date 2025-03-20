@@ -6,41 +6,66 @@
 
     <section class="ftco-section contact-section bg-light">
       <div class="container">
-        <div class="row block-9">
+        <div class="row justify-content-center">
           <div class="col-md-12 d-flex flex-column flex-md-row">
-            <div class="form-container" style="flex: 1; display: flex; align-items: center;">
-              <form class="bg-white p-5 contact-form" action="{% url 'account:signin' %}" method="post" style="width: 100%;">
+            <div class="form-container" style="flex: 1; display: flex; align-items: center; justify-content: center;">
+              <form class="bg-white p-5 contact-form rounded shadow-sm" action="{% url 'account:signin' %}" method="post" style="width: 100%; max-width: 480px;">
+                <h2 class="text-center mb-4">Welcome Back</h2>
                 {% if form.non_field_errors %}
                   <span class="text-danger mt-4 text-sm text-center">{{ form.non_field_errors.as_ul }}</span>
                 {% endif %}
                 {% csrf_token %}
                 
                 <div class="form-group">
-                  <label for="username">Username</label>
-                  {{form.username |attr:"class:form-control"}}
+                  <label for="username" class="mb-2">Username</label>
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="fas fa-user"></i></span>
+                    </div>
+                    {{form.username |attr:"class:form-control" |attr:"placeholder:Enter your username"}}
+                  </div>
                   {% if form.username.errors %}
-                    <span class="text-danger mt-4 text-sm text-center">{{ form.username.errors }}</span>
+                    <span class="text-danger mt-2 text-sm">{{ form.username.errors }}</span>
                   {% endif %}
                 </div>
                 <div class="form-group">
-                  <label for="password">Password</label>
-                  {{form.password |attr:"class:form-control"}}
+                  <label for="password" class="mb-2">Password</label>
+                  <div class="input-group">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                    </div>
+                    {{form.password |attr:"class:form-control" |attr:"placeholder:Enter your password"}}
+                    <div class="input-group-append">
+                      <button class="btn btn-outline-secondary" type="button" onclick="togglePassword()">
+                        <i class="fas fa-eye" id="toggleIcon"></i>
+                      </button>
+                    </div>
+                  </div>
                   {% if form.password.errors %}
-                    <span class="text-danger mt-4 text-sm text-center">{{ form.password.errors }}</span>
+                    <span class="text-danger mt-2 text-sm">{{ form.password.errors }}</span>
                   {% endif %}
                 </div>
-                <div class="form-group">
-                  Don't have an account? Create one <a href="{% url 'account:signup' %}">here</a>.
-                  {% if request.GET.next %}
-                  <input type="hidden" name="next" value="{{request.GET.next}}">
-                  {% endif %}
-                  <input type="submit" value="Sign In" class="btn btn-primary py-3 px-5">
+                <div class="form-group d-flex justify-content-between align-items-center mb-4">
+                  <div class="custom-control custom-checkbox">
+                    <input type="checkbox" class="custom-control-input" id="rememberMe" name="remember_me">
+                    <label class="custom-control-label" for="rememberMe">Remember me</label>
+                  </div>
+                  <a href="#" class="text-primary">Forgot Password?</a>
+                </div>
+                {% if request.GET.next %}
+                <input type="hidden" name="next" value="{{request.GET.next}}">
+                {% endif %}
+                <button type="submit" class="btn btn-primary py-3 px-5 w-100 mb-4 wow fadeIn">
+                  <i class="fas fa-sign-in-alt mr-2"></i>Sign In
+                </button>
+                <div class="text-center">
+                  <p class="mb-0">Don't have an account? <a href="{% url 'account:signup' %}" class="text-primary">Create one</a></p>
                 </div>
 
               </form>
             </div>
-            <div class="image-container" style="flex: 1; display: flex; align-items: center;">
-              <img src="{% static 'images/brandLogo.svg' %}" alt="Image" class="responsive-img" style="width: 100%; height: 405px; object-fit: cover;">
+            <div class="image-container d-none d-md-flex" style="flex: 1; display: flex; align-items: center; justify-content: center;">
+              <img src="{% static 'images/brandLogo.svg' %}" alt="Brand Logo" class="responsive-img wow fadeIn" style="width: 100%; max-width: 480px; height: auto; object-fit: contain;">
             </div>
           </div>
         </div>

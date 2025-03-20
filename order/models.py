@@ -6,7 +6,7 @@ from cart.models import Cart
 
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
-    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)  # Changed to ForeignKey
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, null=True, blank=True)  # Optional for guest users
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

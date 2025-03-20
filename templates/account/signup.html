@@ -4,6 +4,20 @@
 {% load widget_tweaks %}
 
 {% block content %}
+{% block extra_head %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+<style>
+  .password-strength-container { width: 100%; background-color: #f0f0f0; border-radius: 4px; }
+  .password-strength-bar { height: 5px; width: 0; transition: width 0.3s, background-color 0.3s; border-radius: 4px; }
+  .password-strength-bar.weak { background-color: #ff4444; }
+  .password-strength-bar.medium { background-color: #ffbb33; }
+  .password-strength-bar.strong { background-color: #00C851; }
+  .password-requirements { list-style: none; padding-left: 0; font-size: 0.9em; color: #666; }
+  .password-requirements li { margin: 5px 0; }
+  .password-requirements li.met { color: #00C851; }
+  .password-requirements li.met:before { content: '✓'; margin-right: 5px; }
+</style>
+{% endblock %}
 
     <section class="ftco-section contact-section bg-light">
       <div class="container">
@@ -39,7 +53,25 @@
                 </div>
                 <div class="form-group">
                   <label for="password1">Password</label>
-                  {{form.password1 |attr:"class:form-control"}}
+                  <div class="input-group">
+                    {{form.password1 |attr:"class:form-control" |attr:"oninput:checkPasswordStrength(this.value)"}}
+                    <div class="input-group-append">
+                      <button class="btn btn-outline-secondary" type="button" onclick="togglePassword()">
+                        <i id="toggleIcon" class="fas fa-eye"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="password-strength-container mt-2">
+                    <div class="password-strength-bar" id="password-strength"></div>
+                    <span id="strength-text" class="ml-2"></span>
+                  </div>
+                  <ul class="password-requirements mt-2">
+                    <li id="req-length">At least 8 characters</li>
+                    <li id="req-uppercase">At least one uppercase letter</li>
+                    <li id="req-lowercase">At least one lowercase letter</li>
+                    <li id="req-numbers">At least one number</li>
+                    <li id="req-special">At least one special character</li>
+                  </ul>
                   {% if form.password1.errors %}
                     <span class="text-danger mt-4 text-sm text-center">{{ form.password1.errors }}</span>
                   {% endif %}
@@ -50,6 +82,14 @@
                   {% if form.password2.errors %}
                     <span class="text-danger mt-4 text-sm text-center">{{ form.password2.errors }}</span>
                   {% endif %}
+                </div>
+                <div class="form-group">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="terms" required>
+                    <label class="form-check-label" for="terms">
+                      I agree to the <a href="#" data-toggle="modal" data-target="#termsModal">Terms and Conditions</a>
+                    </label>
+                  </div>
                 </div>
 
                 <div class="form-group">

@@ -1,63 +1,72 @@
-from django.shortcuts import render
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import render, get_object_or_404, redirect
 from .models import Product, Cart, CartItem
-from django.contrib.auth.decorators import login_required
+from .cart_session import SessionCart
+from shop.models import Product
 
+def get_cart(request):
+    if request.user.is_authenticated:
+        cart, created = Cart.objects.get_or_create(user=request.user)
+        return cart
+    else:
+        return SessionCart(request)
 
-# Create your views here.
-
-@login_required(login_url='account:signin')
 def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
-    
     quantity = int(request.GET.get('quantity', 1))
     
-    # Get or create a cart for the current user
-    cart, created = Cart.objects.get_or_create(user=request.user)
-
-    # Get or create a cart item for the specified product
-    cart_item, item_created = CartItem.objects.get_or_create(cart=cart, product=product)
-
-    if not item_created:
-        cart_item.quantity += quantity
+    if request.user.is_authenticated:
+        cart, created = Cart.objects.get_or_create(user=request.user)
+        cart_item, item_created = CartItem.objects.get_or_create(cart=cart, product=product)
+        
+        if not item_created:
+            cart_item.quantity += quantity
+        else:
+            cart_item.quantity = quantity
         cart_item.save()
     else:
-        cart_item.quantity = quantity
-        cart_item.save()
+        cart = SessionCart(request)
+        cart.add(product, quantity)
+    
+    return redirect('cart:cart')
 
-    return redirect('cart:cart')  
-
-
-@login_required(login_url='account:signin')
 def cart_page(request):
-    cart, created = Cart.objects.get_or_create(user=request.user)
-    cart_items = cart.items.all()
-    total = cart.total_price()
+    if request.user.is_authenticated:
+        cart, created = Cart.objects.get_or_create(user=request.user)
+        cart_items = cart.items.all()
+        total = cart.total_price()
+        cart_is_empty = cart_items.count() == 0
+    else:
+        cart = SessionCart(request)
+        cart_items = cart
+        total = cart.get_total_price()
+        cart_is_empty = len(cart) == 0
     
-    # Check if the cart is empty
-    cart_is_empty = cart_items.count() == 0
-    return render(request, 'cart/cart.html', {'cart_items': cart_items, 'total': total, 'cart_is_empty':cart_is_empty})
+    return render(request, 'cart/cart.html', {
+        'cart_items': cart_items,
+        'total': total,
+        'cart_is_empty': cart_is_empty
+    })
 
-
-
-@login_required(login_url='account:signin')
 def clear_cart(request, product_id):
-    cart = get_object_or_404(Cart, user=request.user)
+    product = get_object_or_404(Product, id=product_id)
     
-    # Get the CartItem to remove
-    cart_item = get_object_or_404(CartItem, product=product_id, cart=cart)
+    if request.user.is_authenticated:
+        cart = get_object_or_404(Cart, user=request.user)
+        cart_item = get_object_or_404(CartItem, product=product_id, cart=cart)
+        cart_item.delete()
+    else:
+        cart = SessionCart(request)
+        cart.remove(product)
     
-    # Remove the item from the cart
-    cart_item.delete()
-    return redirect('cart:cart') 
-
+    return redirect('cart:cart')
 
 def total_cart_items(request):
     if request.user.is_authenticated:
         cart, created = Cart.objects.get_or_create(user=request.user)
         cart_item_count = cart.items.count()
     else:
-        cart_item_count = 0  
+        cart = SessionCart(request)
+        cart_item_count = len(cart)
 
     return render(request, 'base/navbar.html', {'cart_item_count': cart_item_count})
     
