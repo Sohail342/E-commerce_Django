@@ -2,52 +2,78 @@
 {% load static %}
 
 {% block content %}
-    <section class="ftco-section">
-    	<div class="container">
-    		<div class="row justify-content-center">
-    			<div class="col-md-10 mb-5 text-center">
-    				<ul class="product-category">
-    					<li><a href="#" class="active">All</a></li>
-    					<li><a href="{% url 'shop:shop' %}">{{ category.name}}</a></li>
-    				</ul>
-    			</div>
-    		</div>
-    		<div class="row">
-          {% if products %}
-          {% for product in products %}
-    			<div class="col-md-6 col-lg-3 ftco-animate">
-    				<div class="product">
-    					<a href="{% url 'shop:product-details' product.id %}" class="img-prod"><img class="img-fluid" src="{{ product.photo.url }}" alt="Colorlib Template">
-    						<div class="overlay"></div>
-    					</a>
-    					<div class="text py-3 pb-4 px-3 text-center">
-    						<h3><a href="{% url 'shop:product-details' product.id %}">{{ product.name }}</a></h3>
-    						<div class="d-flex">
-    							<div class="pricing">
-		    						<p class="price"><span>PKR {{ product.price }}</span></p>
-		    					</div>
-	    					</div>
-    						<div class="bottom-area d-flex px-3">
-	    						<div class="m-auto d-flex">
-	    							<a href="{% url 'shop:product-details' product.id %}" class="add-to-cart d-flex justify-content-center align-items-center text-center">
-	    								<span><i class="ion-ios-menu"></i></span>
-	    							</a>
-	    							<a href="{% url 'cart:add_to_cart' product.id %}" class="buy-now d-flex justify-content-center align-items-center mx-1">
-	    								<span><i class="ion-ios-cart"></i></span>
-	    							</a>
-    							</div>
-    						</div>
-    					</div>
-    				</div>
-    			</div>
-          {% endfor %}
-          {% else %}
-          <p>There is No Product Here!</p>
-          {% endif %}
-    		</div>
-    		<div class="row mt-5">
-          </div>
+<link rel="stylesheet" href="{% static 'css/product-listing.css' %}">
+<link rel="stylesheet" href="{% static 'css/enhanced-product-listing.css' %}">
+<link rel="stylesheet" href="{% static 'css/color-enhancements.css' %}">
+<link rel="stylesheet" href="{% static 'css/ionicons.min.css' %}">
+<script src="{% static 'js/product-listing.js' %}"></script>
+
+<section class="ftco-section">
+    <div class="container-fluid px-4">
+        <div class="row">
+            <!-- Filter Sidebar -->
+            <div class="col-md-3">
+                <div class="filter-sidebar">
+                    <div class="search-container">
+                        <input type="text" class="search-input" placeholder="Search products..." id="productSearch">
+                    </div>
+                    
+                    <h4>Categories</h4>
+                    <ul class="list-unstyled">
+                        <li><a href="{% url 'shop:shop' %}" class="category-link">All Products</a></li>
+                        <li><a href="#" class="category-link active">{{ category.name }}</a></li>
+                    </ul>
+                    
+                    <h4>Price Range</h4>
+                    <div class="range-slider">
+                        <input type="range" min="0" max="10000" value="0" class="price-range" id="minPrice">
+                        <input type="range" min="0" max="10000" value="10000" class="price-range" id="maxPrice">
+                        <div class="price-output">
+                            <span>PKR <span id="minPriceValue">0</span></span>
+                            <span>PKR <span id="maxPriceValue">10000</span></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
+            <!-- Product Grid -->
+            <div class="col-md-9">
+                <div class="product-grid">
+                    {% if products %}
+                    {% for product in products %}
+                    <div class="product-card">
+                        <div class="product-image">
+                            <a href="{% url 'shop:product_detail' product.id %}">
+                                <img src="{{ product.photo.url }}" alt="{{ product.name }}">
+                            </a>
+                            <div class="action-icons">
+                                <button class="icon-button wishlist-btn" title="Add to Wishlist">
+                                    <i class="ion-ios-heart-outline"></i>
+                                </button>
+                                <button class="icon-button" title="Quick View">
+                                    <i class="ion-ios-search"></i>
+                                </button>
+                            </div>
+                            <a href="{% url 'shop:product_detail' product.id %}" class="quick-view-btn">Quick View</a>
+                        </div>
+                        <div class="product-info">
+                            <h3 class="product-name">
+                                <a href="{% url 'shop:product_detail' product.id %}">{{ product.name }}</a>
+                            </h3>
+                            <div class="product-price">PKR {{ product.price }}</div>
+                            <div class="product-actions">
+                                <a href="{% url 'shop:product_detail' product.id %}" class="action-button btn-primary">View Details</a>
+                                <a href="{% url 'cart:add_to_cart' product.id %}" class="action-button add-to-cart-btn">Add to Cart</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <div class="alert alert-info">No products found in this category.</div>
+                    {% endif %}
+                </div>
+            </div>
         </div>
-    	</div>
-    </section>
+    </div>
+</section>
 {% endblock %}

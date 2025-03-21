@@ -1,0 +1,155 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/enhanced-product-details.css' %}">
+<link rel="stylesheet" href="{% static 'css/wishlist-animations.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/magnific-popup.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/magnific-popup.js/1.1.0/jquery.magnific-popup.min.js"></script>
+<section class="ftco-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 mb-5 ftco-animate">
+                <div class="product-image-container">
+                    <a href="{{ product.photo.url }}" class="image-popup">
+                        <img src="{{ product.photo.url }}" class="img-fluid product-image" alt="Product Image">
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6 product-details pl-md-5 ftco-animate">
+                <h3>{{ product.name }}</h3>
+                <div class="rating d-flex align-items-center">
+                    <p class="text-left mr-3">
+                        <strong>5.0</strong>
+                        <span class="text-warning">★★★★★</span>
+                    </p>
+                    <p class="text-left mr-3 text-muted">100 Ratings</p>
+                    <p class="text-left text-muted">500 Sold</p>
+                </div>
+                <p class="price text-primary font-weight-bold">PKR {{ product.price }}</p>
+                <p>{{ product.details }}</p>
+                <p class="text-success">In Stock: {{ inventory }}</p>
+                <div class="input-group col-md-6 d-flex mb-3">
+                    <button type="button" class="quantity-left-minus btn btn-outline-secondary" data-type="minus">
+                        <i class="ion-ios-remove"></i>
+                    </button>
+                    <input type="text" id="quantity" name="quantity" class="form-control text-center" value="1" min="1" max="{{inventory}}" readonly>
+                    <button type="button" class="quantity-right-plus btn btn-outline-secondary" data-type="plus">
+                        <i class="ion-ios-add"></i>
+                    </button>
+                </div>
+                <p class="d-flex align-items-center gap-3">
+                    <a href="#" id="add-to-cart" class="btn btn-primary btn-lg d-flex align-items-center gap-2">
+                        <i class="fas fa-shopping-cart"></i> Add to Cart
+                    </a>
+                    
+                    <button class="btn btn-outline-danger btn-lg d-flex align-items-center gap-2 toggle-wishlist {% if product.id in wishlist_products %}active{% endif %}" 
+                        data-product-id="{{ product.id }}">
+                        <i class="fas fa-heart"></i> 
+                        <span class="wishlist-text">
+                            {% if product.id in wishlist_products %}In Wishlist{% else %}Add to Wishlist{% endif %}
+                        </span>
+                    </button>
+                </p>
+                
+                <!-- Include FontAwesome for icons -->
+                <script src="https://kit.fontawesome.com/your-fontawesome-kit.js" crossorigin="anonymous"></script>
+                
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="ftco-section">
+    <div class="container">
+        <div class="row justify-content-center mb-3 pb-3">
+            <div class="col-md-12 heading-section text-center ftco-animate">
+                <h2 class="mb-4">Related Products</h2>
+                <p>Discover more at Pehnava</p>
+            </div>
+        </div>
+        <div class="row">
+            {% for rel_product in related_products %}
+            <div class="col-md-6 col-lg-3 ftco-animate">
+                <div class="product">
+                    <a href="#" class="img-prod">
+                        <img class="img-fluid" src="{{ rel_product.photo.url }}" alt="Related Product Image">
+                        <span class="status">30% Off</span>
+                        <div class="overlay"></div>
+                    </a>
+                    <div class="text py-3 pb-4 px-3 text-center">
+                        <h3><a href="#">{{ rel_product.name }}</a></h3>
+                        <p class="price text-primary font-weight-bold">PKR {{ rel_product.price }}</p>
+                        <div class="bottom-area d-flex px-3">
+                            <a href="{% url 'cart:add_to_cart' rel_product.id %}" class="buy-now btn btn-sm btn-primary">Add to Cart</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Wishlist functionality
+        const wishlistBtn = document.querySelector('.toggle-wishlist');
+        if (wishlistBtn) {
+            wishlistBtn.addEventListener('click', function() {
+                const productId = this.dataset.productId;
+                fetch(`/wishlist/toggle/${productId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'added') {
+                        this.classList.add('active');
+                    } else {
+                        this.classList.remove('active');
+                    }
+                });
+            });
+        }
+
+        $('.image-popup').magnificPopup({
+            type: 'image',
+            closeOnContentClick: true,
+            closeBtnInside: false,
+            fixedContentPos: true,
+            mainClass: 'mfp-no-margins mfp-with-zoom',
+            image: {
+                verticalFit: true
+            },
+            zoom: {
+                enabled: true,
+                duration: 300
+            }
+        });
+        const quantityInput = document.getElementById('quantity');
+        const addToCartButton = document.getElementById('add-to-cart');
+
+        document.querySelector('.quantity-left-minus').addEventListener('click', function() {
+            let currentValue = parseInt(quantityInput.value);
+            if (currentValue > parseInt(quantityInput.getAttribute('min'))) {
+                quantityInput.value = currentValue - 1;
+            }
+        });
+
+        document.querySelector('.quantity-right-plus').addEventListener('click', function() {
+            let currentValue = parseInt(quantityInput.value);
+            if (currentValue < parseInt(quantityInput.getAttribute('max'))) {
+                quantityInput.value = currentValue + 1;
+            }
+        });
+
+        addToCartButton.addEventListener('click', function() {
+            const quantity = quantityInput.value;
+            this.href = "{% url 'cart:add_to_cart' product.id %}?quantity=" + quantity;
+        });
+    });
+</script>
+{% endblock %}

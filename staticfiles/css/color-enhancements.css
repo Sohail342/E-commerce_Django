@@ -1,0 +1,98 @@
+/* Color Enhancement Styles */
+:root {
+    --primary-color: #82ae46;
+    --primary-hover: #6f9339;
+    --secondary-color: #333;
+    --text-color: #4a4a4a;
+    --light-gray: #f8f9fa;
+    --border-color: #ddd;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --info-color: #17a2b8;
+}
+
+/* Text Colors */
+.text-primary { color: var(--primary-color); }
+.text-secondary { color: var(--secondary-color); }
+
+/* Background Colors */
+.bg-primary { background-color: var(--primary-color); }
+.bg-light { background-color: var(--light-gray); }
+
+/* Button Colors */
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-hover);
+    border-color: var(--primary-hover);
+}
+
+.btn-outline-primary {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* Product Card Colors */
+.product-card {
+    background: white;
+    border: 1px solid var(--border-color);
+}
+
+.product-price {
+    color: var(--primary-color);
+}
+
+.product-name a:hover {
+    color: var(--primary-color);
+}
+
+/* Category Links */
+.category-link {
+    color: var(--text-color);
+}
+
+.category-link:hover,
+.category-link.active {
+    color: var(--primary-color);
+}
+
+/* Alert Colors */
+.alert-success { background-color: var(--success-color); }
+.alert-danger { background-color: var(--danger-color); }
+.alert-warning { background-color: var(--warning-color); }
+.alert-info { background-color: var(--info-color); }
+
+/* Form Elements */
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(130, 174, 70, 0.25);
+}
+
+/* Loader Colors */
+.ftco-loader .path {
+    stroke: var(--primary-color);
+}
+
+/* Price Range Slider */
+.price-range::-webkit-slider-thumb {
+    background: var(--primary-color);
+}
+
+.price-range::-moz-range-thumb {
+    background: var(--primary-color);
+}
+
+/* Wishlist Button */
+.wishlist-btn.active {
+    color: var(--danger-color);
+}

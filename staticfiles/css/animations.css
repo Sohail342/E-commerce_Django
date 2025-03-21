@@ -1,0 +1,217 @@
+/* Custom animations for enhanced UI interactivity */
+
+/* Fade in animation for product cards with staggered delay */
+.product {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    visibility: visible !important;
+}
+
+.product:nth-child(2n) {
+    animation-delay: 0.2s;
+}
+
+.product:nth-child(3n) {
+    animation-delay: 0.3s;
+}
+
+/* Loading animation for images */
+.img-prod {
+    position: relative;
+    overflow: hidden;
+}
+
+.img-prod::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(to right, transparent, rgba(255,255,255,0.3), transparent);
+    animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+    to {
+        left: 150%;
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Smooth hover effect for product cards */
+.product {
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.product:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+/* Product image hover effect */
+.product .img-prod img {
+    transition: transform 0.3s ease;
+}
+
+.product:hover .img-prod img {
+    transform: scale(1.05);
+}
+
+/* Product title hover effect */
+.product-title {
+    color: #333;
+    transition: color 0.3s ease;
+}
+
+.product-title:hover {
+    color: #82ae46;
+}
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.ftco-animate {
+    opacity: 1;
+    animation: fadeInUp 0.6s ease-out forwards;
+    visibility: visible !important;
+}
+
+/* Smooth hover effect for product cards */
+.product {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* Category image zoom effect */
+.category-wrap {
+    transition: transform 0.5s ease;
+    overflow: hidden;
+}
+
+.category-wrap:hover {
+    transform: scale(1.02);
+}
+
+/* Button hover animations */
+.btn-primary {
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+/* Cart and menu icon animations */
+.ion-ios-cart, .ion-ios-menu {
+    transition: transform 0.3s ease;
+}
+
+.buy-now:hover .ion-ios-cart,
+.add-to-cart:hover .ion-ios-menu {
+    transform: scale(1.2);
+}
+
+/* Slider overlay fade effect */
+.slider-item .overlay {
+    transition: opacity 0.3s ease;
+}
+
+.slider-item:hover .overlay {
+    opacity: 0.4;
+}
+
+/* Text elements hover effect */
+.text h3 a, .category-wrap h2 a {
+    transition: color 0.3s ease;
+}
+
+.text h3 a:hover, .category-wrap h2 a:hover {
+    color: #82ae46;
+}
+
+/* Smooth hover effect for product cards */
+.product {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* Category image zoom effect */
+.category-wrap {
+    transition: transform 0.5s ease;
+    overflow: hidden;
+}
+
+.category-wrap:hover {
+    transform: scale(1.02);
+}
+
+/* Button hover animations */
+.btn-primary {
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+/* Cart and menu icon animations */
+.ion-ios-cart, .ion-ios-menu {
+    transition: transform 0.3s ease;
+}
+
+.buy-now:hover .ion-ios-cart,
+.add-to-cart:hover .ion-ios-menu {
+    transform: scale(1.2);
+}
+
+/* Slider overlay fade effect */
+.slider-item .overlay {
+    transition: opacity 0.3s ease;
+}
+
+.slider-item:hover .overlay {
+    opacity: 0.4;
+}
+
+/* Text elements hover effect */
+.text h3 a, .category-wrap h2 a {
+    transition: color 0.3s ease;
+}
+
+.text h3 a:hover, .category-wrap h2 a:hover {
+    color: #82ae46;
+}

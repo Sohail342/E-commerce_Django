@@ -66,12 +66,12 @@
       {% for product in products %}
       <div class="col-md-6 col-lg-3 ftco-animate fadeIn" data-aos="fade-up" data-aos-duration="800" data-aos-delay="{{ forloop.counter|multiply:200 }}">
         <div class="product hover-shadow">
-          <a href="{% url 'shop:product-details' product.id %}" class="img-prod position-relative">
+          <a href="{% url 'shop:product_detail' product.id %}" class="img-prod position-relative">
             <img class="img-fluid transition-transform" src="{{ product.photo.url }}" alt="{{ product.name }}">
             <div class="overlay transition-opacity"></div>
           </a>
           <div class="text py-3 pb-4 px-3 text-center">
-            <h3><a href="{% url 'shop:product-details' product.id %}" class="product-title">{{ product.name }}</a></h3>
+            <h3><a href="{% url 'shop:product_detail' product.id %}" class="product-title">{{ product.name }}</a></h3>
             <div class="d-flex">
               <div class="pricing">
                 <p class="price"><span class="price-sale highlight">PKR {{ product.price }}</span></p>
@@ -79,7 +79,7 @@
             </div>
             <div class="bottom-area d-flex px-3">
               <div class="m-auto d-flex">
-                <a href="{% url 'shop:product-details' product.id %}" class="add-to-cart d-flex justify-content-center align-items-center text-center btn-hover">
+                <a href="{% url 'shop:product_detail' product.id %}" class="add-to-cart d-flex justify-content-center align-items-center text-center btn-hover">
                   <span><i class="ion-ios-menu"></i></span>
                 </a>
                 <a href="{% url 'cart:add_to_cart' product.id %}" class="buy-now d-flex justify-content-center align-items-center mx-1 btn-hover">

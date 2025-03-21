@@ -29,17 +29,16 @@ def shop_page(request):
     return render(request, 'shop/shop.html', context)
 
 
-def product_details(request, product_id):
+def product_detail(request, product_id):
     product_details = Product.objects.get(id=product_id)
     ctg = Category.objects.get(name=product_details.category)
-    related_products = Product.objects.filter(category=ctg)
     invertory = product_details.inventory
     context = {
         'product': product_details,
-        'related_products': related_products,
-        'invertory':invertory
+        'category': ctg,
+        'inventory': invertory,
     }
-    return render(request, 'shop/product-details.html', context)
+    return render(request, 'shop/product-detail.html', context)
 
 
 

@@ -3,13 +3,115 @@
 {% load static %}
 {% load widget_tweaks %}
 {% block content %}
+<style>
+.signin-section {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
 
-    <section class="ftco-section contact-section bg-light">
+.form-container {
+    animation: slideInLeft 0.5s ease-out;
+}
+
+.image-container {
+    animation: slideInRight 0.5s ease-out;
+}
+
+.signin-card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    transition: transform 0.3s ease;
+}
+
+.signin-card:hover {
+    transform: translateY(-5px);
+}
+
+.form-control {
+    border-radius: 8px;
+    padding: 12px;
+    border: 2px solid #e9ecef;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #4D3146;
+    box-shadow: 0 0 0 0.2rem rgba(77, 49, 70, 0.25);
+}
+
+.input-group-text {
+    background-color: #4D3146;
+    color: white;
+    border: none;
+    border-radius: 8px 0 0 8px;
+}
+
+.btn-primary {
+    background-color: #4D3146;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #372637;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(77, 49, 70, 0.2);
+}
+
+.logo-img {
+    max-width: 180px;
+    margin-bottom: 2rem;
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@media (max-width: 768px) {
+    .signin-card {
+        margin: 1rem;
+    }
+    .image-container {
+        display: none !important;
+    }
+}
+</style>
+
+    <section class="signin-section">
       <div class="container">
         <div class="row justify-content-center">
           <div class="col-md-12 d-flex flex-column flex-md-row">
             <div class="form-container" style="flex: 1; display: flex; align-items: center; justify-content: center;">
-              <form class="bg-white p-5 contact-form rounded shadow-sm" action="{% url 'account:signin' %}" method="post" style="width: 100%; max-width: 480px;">
+              <form class="signin-card p-5" action="{% url 'account:signin' %}" method="post" style="width: 100%; max-width: 480px;">
+                <div class="text-center mb-4">
+                  <img src="{% static 'images/logo.svg' %}" alt="Pehnava Logo" class="logo-img">
+                </div>
                 <h2 class="text-center mb-4">Welcome Back</h2>
                 {% if form.non_field_errors %}
                   <span class="text-danger mt-4 text-sm text-center">{{ form.non_field_errors.as_ul }}</span>
@@ -65,7 +167,7 @@
               </form>
             </div>
             <div class="image-container d-none d-md-flex" style="flex: 1; display: flex; align-items: center; justify-content: center;">
-              <img src="{% static 'images/brandLogo.svg' %}" alt="Brand Logo" class="responsive-img wow fadeIn" style="width: 100%; max-width: 480px; height: auto; object-fit: contain;">
+              <img src="{% static 'images/logo.svg' %}" alt="Pehnava Logo" class="responsive-img wow fadeIn" style="width: 100%; max-width: 480px; height: auto; object-fit: contain;">
             </div>
           </div>
         </div>

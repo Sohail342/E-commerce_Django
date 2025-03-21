@@ -2,237 +2,323 @@
 {% load static %}
 
 {% block content %}
+<link rel="stylesheet" href="{% static 'css/enhanced-checkout.css' %}">
 <section class="ftco-section">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-xl-7 ftco-animate">
-                {% if cart_is_empty %}
-                <h3>Your cart is empty</h3>
-                <a href="{% url 'shop:shop' %}" class="btn btn-primary">Continue Shopping</a>
-
-                {% else %}
-                <form action="{% url 'order:checkout' %}" class="billing-form needs-validation" method="POST" novalidate>
-                    {% csrf_token %}
-                    <div class="card shadow-sm mb-4">
-                        <div class="card-header bg-primary text-white">
-                            <h3 class="mb-0 billing-heading">Shipping Information</h3>
-                        </div>
-                        <div class="card-body">
-                            <div class="row g-3">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="firstname" class="form-label">First Name*</label>
-                                <input type="text" class="form-control" id="firstname" name="firstname" required>
-                                <div class="invalid-feedback">Please enter your first name.</div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="lastname" class="form-label">Last Name (Optional)</label>
-                                <input type="text" class="form-control" id="lastname" name="lastname">
-                                <div class="form-text">Optional field</div>
-                            </div>
-                        </div>
-                        <div class="w-100"></div>
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <label for="country">State / Country</label>
-                                <div class="select-wrap">
-                                    <div class="icon"><span class="ion-ios-arrow-down"></span></div>
-                                    <select name="country" id="country" class="form-control">
-                                        <option value="Pakistan">Pakistan</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="w-100"></div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="streetaddress" class="form-label">Street Address*</label>
-                                <input type="text" class="form-control" id="streetaddress" name="streetaddress"
-                                    placeholder="House number and street name" required>
-                                <div class="invalid-feedback">Please enter your street address.</div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <input type="text" class="form-control" name="apartment"
-                                    placeholder="Apartment, suite, unit etc: (optional)">
-                            </div>
-                        </div>
-                        <div class="w-100"></div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="towncity">Town / City*</label>
-                                <input type="text" name="towncity" class="form-control" placeholder="" required>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="postcodezip">Postcode / ZIP (Optional)</label>
-                                <input type="text" name="postcodezip" class="form-control" placeholder="">
-                            </div>
-                        </div>
-                        <div class="w-100"></div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="phone" class="form-label">Phone*</label>
-                                <input type="tel" name="phone" id="phone" class="form-control" pattern="[0-9]{11}" placeholder="03XX-XXXXXXX" required>
-                                <div class="invalid-feedback">Please enter a valid 11-digit phone number.</div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label for="emailaddress" class="form-label">Email Address*</label>
-                                <input type="email" name="emailaddress" id="emailaddress" class="form-control" placeholder="you@example.com" required>
-                                <div class="invalid-feedback">Please enter a valid email address.</div>
-                            </div>
-                        </div>
-                        <div class="w-100"></div>
-                    </div>
-
+    <div class="checkout-container">
+        {% if cart_is_empty %}
+        <div class="empty-cart animate-fade-in">
+            <h3>Your cart is empty</h3>
+            <a href="{% url 'shop:shop' %}" class="btn btn-primary">Continue Shopping</a>
+        </div>
+        {% else %}
+        <div class="checkout-steps">
+            <div class="checkout-step active">
+                <div class="step-number">1</div>
+                <p class="step-title">Shipping</p>
             </div>
-            <div class="col-xl-5">
-                <div class="row mt-5 pt-3">
-                    <div class="col-md-12 d-flex mb-5">
-                        <div class="cart-detail cart-total p-4 rounded shadow bg-light w-100" style="background: linear-gradient(to bottom right, #ffffff, #f8f9fa);">
-                            <h3 class="billing-heading mb-4 text-center fw-bold border-bottom pb-3">Cart Total</h3>
-                            <div class="price-items-container">
-                                <div class="price-item d-flex justify-content-between align-items-center mb-3 py-2 hover-highlight">
-                                    <span class="d-flex align-items-center">
-                                        <i class="fas fa-shopping-cart me-2"></i>
-                                        <span>Items {{ cart_items }}</span>
-                                    </span>
-                                    <span class="fw-semibold price">PKR&nbsp;{{ subtotal }}</span>
-                                </div>
-                                <div class="price-item d-flex justify-content-between align-items-center mb-3 py-2 hover-highlight">
-                                    <span class="d-flex align-items-center">
-                                        <i class="fas fa-box me-2"></i>
-                                        <span>Shipping</span>
-                                    </span>
-                                    <span class="fw-semibold price">PKR&nbsp;0.00</span>
-                                </div>
-                                <div class="price-item d-flex justify-content-between align-items-center mb-3 py-2 hover-highlight">
-                                    <span class="d-flex align-items-center">
-                                        <i class="fas fa-truck me-2"></i>
-                                        <span>Delivery</span>
-                                    </span>
-                                    <span class="fw-semibold text-primary price">PKR&nbsp;250</span>
-                                </div>
-                                <div class="price-item d-flex justify-content-between align-items-center mb-3 py-2 hover-highlight">
-                                    <span class="d-flex align-items-center">
-                                        <i class="fas fa-tag me-2"></i>
-                                        <span>Discount</span>
-                                    </span>
-                                    <span class="fw-semibold text-danger price">PKR&nbsp;0.00</span>
-                                </div>
-                            </div>
-                            <div class="total-section p-3 mt-4 rounded" style="background: rgba(0,0,0,0.03);">
-                                <div class="price-item d-flex justify-content-between align-items-center">
-                                    <span class="fs-4 fw-bold d-flex align-items-center">
-                                        <i class="fas fa-calculator me-2"></i>
-                                        <span>Total</span>
-                                    </span>
-                                    <span class="fs-4 fw-bold text-primary price">PKR&nbsp;{{ total }}</span>
-                                </div>
-                            </div>
+            <div class="checkout-step">
+                <div class="step-number">2</div>
+                <p class="step-title">Payment</p>
+            </div>
+            <div class="checkout-step">
+                <div class="step-number">3</div>
+                <p class="step-title">Review</p>
+            </div>
+        </div>
+
+        <form action="{% url 'order:checkout' %}" class="checkout-form needs-validation" method="POST" novalidate>
+            {% csrf_token %}
+            <div class="form-section animate-fade-in">
+                <h3 class="mb-4">Shipping Information</h3>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="firstname" class="form-label">First Name*</label>
+                            <input type="text" class="form-control" id="firstname" name="firstname" required>
+                            <div class="invalid-feedback">Please enter your first name.</div>
                         </div>
                     </div>
-                </div>
-            </div>
-            
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="lastname" class="form-label">Last Name</label>
+                            <input type="text" class="form-control" id="lastname" name="lastname">
+                            <div class="form-text">Optional field</div>
+                        </div>
+                    </div>
+
                     <div class="col-md-12">
-                        <div class="cart-detail p-3 p-md-4">
-                            <h3 class="billing-heading mb-4">Select Payment Method</h3>
-                            <div class="alert alert-info">
-                                <i class="fas fa-info-circle"></i> Currently, we only support Cash on Delivery (COD) payment method.
-                            </div>
-                            {% comment %} <div class="form-group">
-                                <div class="col-md-12">
-                                    <div class="radio">
-                                        <label><input type="radio" name="payment_method" value="JazzCash" class="mr-2" required> JazzCash</label>
-                                    </div>
-                                </div>
-                            </div> {% endcomment %}
-                            <div class="form-group">
-                                <div class="col-md-12">
-                                    <div class="radio">
-                                        <label><input type="radio" name="payment_method" value="COD" class="mr-2" required>COD</label>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <div class="col-md-12">
-                                    <div class="checkbox">
-                                        <label><input type="checkbox" value="" class="mr-2" required>I have read and accept the <a href="{% url 'about:other-details' %}">terms and conditions<a/></label>
-                                    </div>
-                                </div>
-                            </div>
-                            <input type="hidden" name="payment_method" id="hidden-payment-method" value="" required>
-                            <button type="submit" class="btn btn-primary py-3 px-4">Place an order</button>
+                        <div class="form-group">
+                            <label for="country">State / Country</label>
+                            <select name="country" id="country" class="form-control">
+                                <option value="Pakistan">Pakistan</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="streetaddress" class="form-label">Street Address*</label>
+                            <input type="text" class="form-control" id="streetaddress" name="streetaddress" placeholder="House number and street name" required>
+                            <div class="invalid-feedback">Please enter your street address.</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="apartment" class="form-label">Apartment/Suite</label>
+                            <input type="text" class="form-control" name="apartment" id="apartment" placeholder="Apartment, suite, unit etc: (optional)">
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="towncity" class="form-label">Town / City*</label>
+                            <input type="text" name="towncity" id="towncity" class="form-control" required>
+                            <div class="invalid-feedback">Please enter your town/city.</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="postcodezip" class="form-label">Postcode / ZIP</label>
+                            <input type="text" name="postcodezip" id="postcodezip" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="phone" class="form-label">Phone*</label>
+                            <input type="tel" name="phone" id="phone" class="form-control" pattern="[0-9]{11}" placeholder="03XX-XXXXXXX" required>
+                            <div class="invalid-feedback">Please enter a valid 11-digit phone number.</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="emailaddress" class="form-label">Email Address*</label>
+                            <input type="email" name="emailaddress" id="emailaddress" class="form-control" placeholder="you@example.com" required>
+                            <div class="invalid-feedback">Please enter a valid email address.</div>
                         </div>
                     </div>
                 </div>
-            </div> <!-- .col-md-8 -->
-            </form>
-            {% endif %}
+            </div>
+
+            <div class="form-section animate-fade-in">
+                <h3 class="mb-4">Payment Method</h3>
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> Currently, we only support Cash on Delivery (COD) payment method.
+                </div>
+                <div class="payment-methods">
+                    <div class="payment-method selected">
+                        <input type="radio" name="payment_method" value="COD" checked required>
+                        <label>Cash on Delivery</label>
+                        <p class="text-muted">Pay when you receive your order</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section animate-fade-in">
+                <h3 class="mb-4">Order Summary</h3>
+                <div class="order-summary">
+                    <div class="summary-item">
+                        <span>Items ({{ cart_items }})</span>
+                        <span>PKR {{ subtotal }}</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Shipping</span>
+                        <span>PKR 0.00</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Delivery</span>
+                        <span class="text-primary">PKR 250</span>
+                    </div>
+                    <div class="summary-item">
+                        <span>Discount</span>
+                        <span class="text-danger">PKR 0.00</span>
+                    </div>
+                    <div class="summary-total">
+                        <span>Total</span>
+                        <span>PKR {{ total }}</span>
+                    </div>
+
+                    
+                <div class="form-check mt-4">
+                    <input type="checkbox" class="form-check-input" id="terms" required>
+                    <label class="form-check-label" for="terms">I have read and accept the <a href="{% url 'about:other-details' %}">terms and conditions</a></label>
+                    <div class="invalid-feedback">You must agree to the terms and conditions.</div>
+                </div>
+
+                <button type="submit" class="btn-checkout mt-4">Place Order</button>
+                </div>
+
+            </div>
+        </form>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Order Confirmation Modal -->
+<div class="modal fade" id="orderConfirmationModal" tabindex="-1" aria-labelledby="orderConfirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="orderConfirmationModalLabel">Confirm Your Order</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Please review your order details before confirming:</p>
+                <div class="confirmation-details">
+                    <div class="shipping-review"></div>
+                    <div class="payment-review"></div>
+                    <div class="order-total-review"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Edit Order</button>
+                <button type="button" class="btn btn-primary" id="confirmOrder">Confirm Order</button>
+            </div>
         </div>
     </div>
-</section> <!-- .section -->
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Get all radio buttons and the hidden input
-        const radios = document.querySelectorAll('input[name="payment_method"]');
-        const hiddenInput = document.getElementById('hidden-payment-method');
+</div>
 
-        // Add change event listener to all radio buttons
-        radios.forEach(radio => {
-            radio.addEventListener('change', function() {
-                if (this.checked) {
-                    hiddenInput.value = this.value;
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('.needs-validation');
+    const steps = document.querySelectorAll('.checkout-step');
+    let currentStep = 0;
+
+    // Function to check if all required fields are filled
+    function validateRequiredFields() {
+        const requiredFields = form.querySelectorAll('[required]');
+        let isValid = true;
+
+        // Reset previous validation states
+        requiredFields.forEach(field => {
+            field.classList.remove('is-invalid');
+            const feedbackElement = field.nextElementSibling;
+            if (feedbackElement && feedbackElement.classList.contains('invalid-feedback')) {
+                feedbackElement.style.display = 'none';
+            }
+        });
+
+        // Check each required field
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                isValid = false;
+                field.classList.add('is-invalid');
+                const feedbackElement = field.nextElementSibling;
+                if (feedbackElement && feedbackElement.classList.contains('invalid-feedback')) {
+                    feedbackElement.style.display = 'block';
+                }
+                field.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        });
+
+        if (!isValid) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-danger mt-3';
+            alertDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Please fill in all required fields before proceeding.';
+            
+            // Remove any existing alert
+            const existingAlert = form.querySelector('.alert-danger');
+            if (existingAlert) {
+                existingAlert.remove();
+            }
+            
+            form.insertBefore(alertDiv, form.firstChild);
+            setTimeout(() => alertDiv.remove(), 5000); // Remove alert after 5 seconds
+        }
+
+        return isValid;
+    }
+    
+    function updateSteps() {
+        steps.forEach((step, index) => {
+            step.classList.remove('active');
+            if (index === currentStep) {
+                step.classList.add('active');
+            } else if (index < currentStep) {
+                step.classList.add('completed');
+            }
+        });
+    }
+
+    function validateStep(step) {
+        let isValid = true;
+        const currentSection = document.querySelectorAll('.form-section')[step];
+        const requiredFields = currentSection.querySelectorAll('[required]');
+        
+        requiredFields.forEach(field => {
+            if (!field.checkValidity()) {
+                isValid = false;
+                field.classList.add('is-invalid');
+            }
+        });
+
+        return isValid;
+    }
+
+    function updateConfirmationModal() {
+        const shippingReview = document.querySelector('.shipping-review');
+        const paymentReview = document.querySelector('.payment-review');
+        const orderTotalReview = document.querySelector('.order-total-review');
+
+        // Update shipping details
+        shippingReview.innerHTML = `
+            <h6>Shipping Details</h6>
+            <p>${document.getElementById('firstname').value} ${document.getElementById('lastname').value}</p>
+            <p>${document.getElementById('streetaddress').value}</p>
+            <p>${document.getElementById('towncity').value}, ${document.getElementById('country').value}</p>
+            <p>Phone: ${document.getElementById('phone').value}</p>
+            <p>Email: ${document.getElementById('emailaddress').value}</p>
+        `;
+
+        // Update payment method
+        paymentReview.innerHTML = `
+            <h6>Payment Method</h6>
+            <p>Cash on Delivery</p>
+        `;
+
+        // Update order total
+        const total = document.querySelector('.summary-total span:last-child').textContent;
+        orderTotalReview.innerHTML = `
+            <h6>Order Total</h6>
+            <p class="font-weight-bold">${total}</p>
+        `;
+    }
+
+    if (form) {
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            if (validateStep(currentStep)) {
+                if (currentStep < 2) {
+                    currentStep++;
+                    updateSteps();
+                    document.querySelectorAll('.form-section')[currentStep].scrollIntoView({ behavior: 'smooth' });
+                } else if (validateRequiredFields()) {
+                    updateConfirmationModal();
+                    new bootstrap.Modal(document.getElementById('orderConfirmationModal')).show();
+                }
+            }
+            form.classList.add('was-validated');
+        });
+
+        // Confirm order button handler
+        document.getElementById('confirmOrder').addEventListener('click', function() {
+            form.submit();
+        });
+
+        // Update step indicators as user scrolls through sections
+        const sections = document.querySelectorAll('.form-section');
+
+        window.addEventListener('scroll', function() {
+            sections.forEach((section, index) => {
+                const rect = section.getBoundingClientRect();
+                if (rect.top <= window.innerHeight / 2 && rect.bottom >= window.innerHeight / 2) {
+                    currentStep = index;
+                    updateSteps();
                 }
             });
         });
-    });
+    }
+});
 </script>
 {% endblock %}
-<style>
-.card-header {
-    border-bottom: 0;
-}
-.form-label {
-    font-weight: 500;
-    margin-bottom: 0.5rem;
-}
-.invalid-feedback {
-    font-size: 0.875rem;
-}
-.alert-info {
-    background-color: #e8f4f8;
-    border-color: #d6e9f0;
-    color: #0c5460;
-}
-.hover-highlight:hover {
-    background-color: rgba(0,0,0,0.02);
-    border-radius: 4px;
-    transition: background-color 0.2s ease;
-}
-.price-item {
-    transition: all 0.2s ease;
-    padding: 0.75rem;
-    margin-bottom: 0.5rem;
-}
-.price-items-container {
-    margin-bottom: 1.5rem;
-}
-.price {
-    min-width: 100px;
-    text-align: right;
-}
-.total-section {
-    transition: background-color 0.3s ease;
-}
-.total-section:hover {
-    background: rgba(0,0,0,0.05);
-}
-</style>

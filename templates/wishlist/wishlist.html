@@ -1,0 +1,91 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-12 mb-4">
+            <h2 class="text-center mb-4">My Wishlist</h2>
+            {% if not user.is_authenticated %}
+            <div class="alert alert-info text-center">
+                <p>Sign in to save your wishlist permanently!</p>
+                <a href="{% url 'account:signin' %}?next={% url 'wishlist:sync_wishlist' %}" class="btn btn-primary">Sign In</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row">
+        {% if wishlist_items %}
+            {% for item in wishlist_items %}
+            <div class="col-md-4 mb-4">
+                <div class="card product h-100">
+                    <div class="img-prod">
+                        <a href="{% url 'shop:product_detail' item.product.id %}">
+                            <img class="img-fluid" src="{{ item.product.photo.url }}" alt="{{ item.product.name }}">
+                            <div class="overlay"></div>
+                        </a>
+                    </div>
+                    <div class="card-body text-center">
+                        <h3>
+                            <a href="{% url 'shop:product_detail' item.product.id %}">{{ item.product.name }}</a>
+                        </h3>
+                        <div class="price">
+                            <p class="font-weight-bold">${{ item.product.price }}</p>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <form action="{% url 'cart:add_to_cart' item.product.id %}" method="post" class="d-inline">
+                                {% csrf_token %}
+                                <input type="hidden" name="product_id" value="{{ item.product.id }}">
+                                <input type="hidden" name="quantity" value="1">
+                                <button type="submit" class="btn btn-primary">Add to Cart</button>
+                            </form>
+                            <button class="btn btn-outline-danger remove-from-wishlist" 
+                                    data-product-id="{{ item.product.id }}">
+                                <i class="ion-ios-heart"></i> Remove
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12 text-center">
+                <p>Your wishlist is empty.</p>
+                <a href="{% url 'shop:shop' %}" class="btn btn-primary">Continue Shopping</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const removeButtons = document.querySelectorAll('.remove-from-wishlist');
+        
+        removeButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const productId = this.dataset.productId;
+                const card = this.closest('.col-md-4');
+                
+                fetch(`/wishlist/toggle/${productId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'removed') {
+                        card.remove();
+                        if (document.querySelectorAll('.product').length === 0) {
+                            location.reload();
+                        }
+                    }
+                });
+            });
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %}

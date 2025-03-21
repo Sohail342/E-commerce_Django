@@ -1,6 +1,7 @@
+{% load static %}
 <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
   <div class="container">
-    <a class="navbar-brand" href="{% url 'home' %}">Youkiddies</a>
+    <a class="navbar-brand" href="{% url 'home' %}"><img src="{% static 'images/logo.svg' %}" alt="Pehnava" style="height: 40px;"></a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="oi oi-menu"></span> Menu
     </button>
@@ -12,6 +13,12 @@
         <li class="nav-item"><a href="{% url 'about:about' %}" class="nav-link">About</a></li>
         <li class="nav-item"><a href="{% url 'contact' %}" class="nav-link">Contact</a></li>
         <li class="nav-item cta cta-colored"><a href="{% url 'cart:cart' %}" class="nav-link"><span class="icon-shopping_cart"></span>[{{cart_item_count}}]</a></li>
+        <li class="nav-item cta cta-colored">
+          <a href="{% url 'wishlist:wishlist' %}" class="nav-link position-relative">
+            <span class="ion-ios-heart"></span>
+            <span class="badge badge-danger badge-pill position-absolute" style="top: 0; right: -10px; font-size: 0.7em;">{{wishlist_count}}</span>
+          </a>
+        </li>
         {% if request.user.is_authenticated %}
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
