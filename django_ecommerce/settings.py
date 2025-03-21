@@ -18,7 +18,7 @@ SECRET_KEY = 'django-insecure-4otbrtd-bed^yc29c3zwo2k0)c$)o_8=_48^g#@o)h9*uod#@h
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["https://e-commerce-django-weld.vercel.app/"]
 
 
 # Application definition
