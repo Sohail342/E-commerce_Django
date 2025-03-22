@@ -2,101 +2,160 @@
 {% load static %}
 
 {% block content %}
-    <section class="ftco-section contact-section bg-light">
-      <div class="container">
-        <div class="row justify-content-center mb-5">
-          <div class="col-md-8 text-center">
-            <h2 class="mb-4">Get in Touch</h2>
-            <p class="lead">We'd love to hear from you. Drop us a line and we'll get back to you as soon as possible.</p>
-          </div>
+<!-- Hero Section -->
+<section class="relative bg-gradient-to-r from-blue-100 to-indigo-200 py-24">
+    <div class="container mx-auto px-4">
+        <div class="max-w-3xl mx-auto text-center text-gray-800">
+            <h1 class="text-4xl md:text-5xl font-bold mb-6" data-aos="fade-up">Get in Touch</h1>
+            <p class="text-xl opacity-90" data-aos="fade-up" data-aos-delay="200">We'd love to hear from you. Drop us a line and we'll get back to you as soon as possible.</p>
         </div>
-      	<div class="row d-flex mb-5 contact-info">
-          <div class="w-100"></div>
-          <div class="col-md-4 d-flex wow fadeInUp" data-wow-delay="0.2s">
-          	<div class="info bg-white p-4 w-100 rounded shadow-sm hover-shadow">
-              <div class="icon mb-3">
-                <i class="fas fa-map-marker-alt fa-2x text-primary"></i>
-              </div>
-	            <h4 class="mb-3">Address</h4>
-              <p>Ocean Mall Karachi, Pakistan</p>
-	          </div>
-          </div>
-          <div class="col-md-4 d-flex wow fadeInUp" data-wow-delay="0.4s">
-          	<div class="info bg-white p-4 w-100 rounded shadow-sm hover-shadow">
-              <div class="icon mb-3">
-                <i class="fas fa-phone fa-2x text-primary"></i>
-              </div>
-              <h4 class="mb-3">Phone</h4>
-	            <p><a href="tel://+923428041928" class="text-dark">+92 3428041928</a></p>
-	          </div>
-          </div>
-          <div class="col-md-4 d-flex wow fadeInUp" data-wow-delay="0.6s">
-          	<div class="info bg-white p-4 w-100 rounded shadow-sm hover-shadow">
-              <div class="icon mb-3">
-                <i class="fas fa-envelope fa-2x text-primary"></i>
-              </div>
-              <h4 class="mb-3">Email</h4>
-	            <p><a href="mailto:sohailahmed34280@gmail.com" class="text-dark">sohailahmed34280@gmail.com</a></p>
-	          </div>
-          </div>
-        </div>
-        <div class="row block-9 d-flex align-items-stretch">
-          <div class="col-md-6 mb-5 mb-md-0 wow fadeInLeft">
-            <div class="map-container rounded shadow-sm" style="height: 450px;">
-              <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3619.5098375318067!2d67.0285543!3d24.8732983!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3eb33da6f06df6f1%3A0x1a8f731c2fc9c1b2!2sOcean%20Mall!5e0!3m2!1sen!2s!4v1635000000000!5m2!1sen!2s"
-                width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy">
-              </iframe>
+    </div>
+    <div class="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-white"></div>
+</section>
+
+<!-- Contact Info Section -->
+<section class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Address Card -->
+            <div class="bg-white p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300" data-aos="fade-up" data-aos-delay="100">
+                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-map-marker-alt text-2xl text-blue-600"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-center mb-4">Address</h3>
+                <p class="text-gray-600 text-center">Ocean Mall Karachi, Pakistan</p>
             </div>
-          </div>
-          <div class="col-md-6 order-md-last d-flex wow fadeInRight">
-            <form class="bg-white p-5 contact-form w-100 rounded shadow-sm" method="post">
-              <h3 class="mb-4">Send us a Message</h3>
-              {% csrf_token %}
-              <div class="form-group">
-                {% if messages %}
-                  {% for message in messages %}
-                  <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                      <span aria-hidden="true">&times;</span>
-                    </button>
-                  </div>
-                  {% endfor %}
-                {% endif %}
-              </div>
-              <div class="form-group">
-                {{ form.name }}
-                {% if form.name.errors %}
-                  <div class="invalid-feedback d-block">{{ form.name.errors }}</div>
-                {% endif %}
-              </div>
-              <div class="form-group">
-                {{ form.email }}
-                {% if form.email.errors %}
-                  <div class="invalid-feedback d-block">{{ form.email.errors }}</div>
-                {% endif %}
-              </div>
-              <div class="form-group">
-                {{ form.subject }}
-                {% if form.subject.errors %}
-                  <div class="invalid-feedback d-block">{{ form.subject.errors }}</div>
-                {% endif %}
-              </div>
-              <div class="form-group">
-                {{ form.message }}
-                {% if form.message.errors %}
-                  <div class="invalid-feedback d-block">{{ form.message.errors }}</div>
-                {% endif %}
-              </div>
-              <div class="form-group mb-0">
-                <button type="submit" class="btn btn-primary py-3 px-5 btn-block wow pulse" data-wow-delay="0.5s">
-                  <i class="fas fa-paper-plane mr-2"></i>Send Message
-                </button>
-              </div>
-            </form>
-          </div>
+
+            <!-- Phone Card -->
+            <div class="bg-white p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300" data-aos="fade-up" data-aos-delay="200">
+                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-phone text-2xl text-green-600"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-center mb-4">Phone</h3>
+                <p class="text-center">
+                    <a href="tel://+923428041928" class="text-gray-600 hover:text-primary-600 transition-colors duration-200">+92 3428041928</a>
+                </p>
+            </div>
+
+            <!-- Email Card -->
+            <div class="bg-white p-8 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300" data-aos="fade-up" data-aos-delay="300">
+                <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-envelope text-2xl text-purple-600"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-center mb-4">Email</h3>
+                <p class="text-center">
+                    <a href="mailto:sohailahmed34280@gmail.com" class="text-gray-600 hover:text-primary-600 transition-colors duration-200">sohailahmed34280@gmail.com</a>
+                </p>
+            </div>
         </div>
-      </div>
-    </section>
+    </div>
+</section>
+<!-- Contact Form and Map Section -->
+<section class="py-16 bg-gray-50">
+    <div class="container mx-auto px-4">
+        <div class="grid md:grid-cols-2 gap-8">
+            <!-- Map Section -->
+            <div class="rounded-xl overflow-hidden shadow-lg" data-aos="fade-right">
+                <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3619.5098375318067!2d67.0285543!3d24.8732983!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3eb33da6f06df6f1%3A0x1a8f731c2fc9c1b2!2sOcean%20Mall!5e0!3m2!1sen!2s!4v1635000000000!5m2!1sen!2s"
+                    class="w-full h-[450px]" style="border:0;" allowfullscreen="" loading="lazy">
+                </iframe>
+            </div>
+
+            <!-- Contact Form -->
+            <div data-aos="fade-left">
+                <form method="post" class="bg-white p-6 md:p-8 rounded-xl shadow-lg transform transition-all duration-300 hover:shadow-xl">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-8 relative pb-2 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-16 after:h-1 after:bg-primary-600 after:rounded-full">Send us a Message</h3>
+                    {% csrf_token %}
+
+                    {% if messages %}
+                        {% for message in messages %}
+                        <div class="mb-6 p-4 rounded-lg bg-green-50 text-green-700 relative transform transition-all duration-300 hover:scale-[1.02]" role="alert">
+                            <div class="flex items-center">
+                                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                </svg>
+                                {{ message }}
+                            </div>
+                            <button type="button" class="absolute top-4 right-4 text-green-700 hover:text-green-900 transition-colors duration-200" data-dismiss="alert">
+                                <span class="sr-only">Close</span>
+                                <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                                </svg>
+                            </button>
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <div class="space-y-6">
+                        <div class="relative group">
+                            <div class="relative">
+                                {{ form.name }}
+                                <label class="absolute text-sm text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-focus:px-2 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1 pointer-events-none">Your Name</label>
+                            </div>
+                            {% if form.name.errors %}
+                                <p class="mt-2 text-sm text-red-600 flex items-center">
+                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                    </svg>
+                                    {{ form.name.errors }}
+                                </p>
+                            {% endif %}
+                        </div>
+
+                        <div class="relative group">
+                            <div class="relative">
+                                {{ form.email }}
+                                <label class="absolute text-sm text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-focus:px-2 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1 pointer-events-none">Your Email</label>
+                            </div>
+                            {% if form.email.errors %}
+                                <p class="mt-2 text-sm text-red-600 flex items-center">
+                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                    </svg>
+                                    {{ form.email.errors }}
+                                </p>
+                            {% endif %}
+                        </div>
+
+                        <div class="relative group">
+                            <div class="relative">
+                                {{ form.subject }}
+                                <label class="absolute text-sm text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-focus:px-2 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1 pointer-events-none">Subject</label>
+                            </div>
+                            {% if form.subject.errors %}
+                                <p class="mt-2 text-sm text-red-600 flex items-center">
+                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                    </svg>
+                                    {{ form.subject.errors }}
+                                </p>
+                            {% endif %}
+                        </div>
+
+                        <div class="relative group">
+                            <div class="relative">
+                                {{ form.message }}
+                                <label class="absolute text-sm text-gray-500 duration-300 transform -translate-y-4 scale-75 top-2 z-10 origin-[0] bg-white px-2 peer-focus:px-2 peer-placeholder-shown:scale-100 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:top-1/2 peer-focus:top-2 peer-focus:scale-75 peer-focus:-translate-y-4 left-1 pointer-events-none">Message</label>
+                            </div>
+                            {% if form.message.errors %}
+                                <p class="mt-2 text-sm text-red-600 flex items-center">
+                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                                    </svg>
+                                    {{ form.message.errors }}
+                                </p>
+                            {% endif %}
+                        </div>
+
+                        <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white px-6 py-4 rounded-lg font-semibold text-lg transition-all duration-300 transform hover:scale-[1.02] hover:shadow-xl hover:from-blue-700 hover:to-indigo-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex items-center justify-center space-x-3 group">
+                            <i class="fas fa-paper-plane text-xl group-hover:rotate-12 transition-transform duration-300"></i>
+                            <span>Send Message</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock %}

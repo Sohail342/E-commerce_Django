@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.http import JsonResponse
 from .models import Product, Cart, CartItem
 from .cart_session import SessionCart
 from shop.models import Product
@@ -40,6 +41,7 @@ def cart_page(request):
         cart_items = cart
         total = cart.get_total_price()
         cart_is_empty = len(cart) == 0
+        
     
     return render(request, 'cart/cart.html', {
         'cart_items': cart_items,
@@ -69,5 +71,29 @@ def total_cart_items(request):
         cart_item_count = len(cart)
 
     return render(request, 'base/navbar.html', {'cart_item_count': cart_item_count})
+
+def validate_quantity(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    requested_quantity = int(request.GET.get('quantity'))
+    
+    if requested_quantity <= product.inventory:
+        if request.user.is_authenticated:
+            cart = get_object_or_404(Cart, user=request.user)
+            cart_item = get_object_or_404(CartItem, cart=cart, product=product)
+            cart_item.quantity = requested_quantity
+            cart_item.save()
+        else:
+            cart = SessionCart(request)
+            cart.update(product, requested_quantity)
+        
+        return JsonResponse({
+            'valid': True,
+            'quantity': requested_quantity
+        })
+    else:
+        return JsonResponse({
+            'valid': False,
+            'max_quantity': product.inventory
+        })
     
     

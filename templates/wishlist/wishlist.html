@@ -2,89 +2,168 @@
 {% load static %}
 
 {% block content %}
-<div class="container py-5">
-    <div class="row">
-        <div class="col-md-12 mb-4">
-            <h2 class="text-center mb-4">My Wishlist</h2>
-            {% if not user.is_authenticated %}
-            <div class="alert alert-info text-center">
-                <p>Sign in to save your wishlist permanently!</p>
-                <a href="{% url 'account:signin' %}?next={% url 'wishlist:sync_wishlist' %}" class="btn btn-primary">Sign In</a>
-            </div>
-            {% endif %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+    <div class="mb-4 sm:mb-8">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            
+            <a href="{% url 'shop:shop' %}" class="inline-flex items-center px-4 py-2 border border-primary-600 text-sm font-medium rounded-md text-primary-600 bg-white hover:bg-primary-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Continue Shopping
+            </a>
         </div>
+        {% if not user.is_authenticated %}
+        <div class="mt-4 bg-blue-50 border-l-4 border-blue-400 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between rounded-md gap-3">
+            <p class="text-sm text-blue-700">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Sign in to save your wishlist permanently!
+            </p>
+            <a href="{% url 'account:signin' %}?next={% url 'wishlist:sync_wishlist' %}" class="inline-flex items-center justify-center px-2 py-1 text-xs font-medium rounded-md text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 w-28 h-8 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300 shadow-md hover:shadow-lg sm:w-32 sm:h-9 sm:px-3 sm:py-1.5 sm:text-sm">Sign In</a>
+        </div>
+        {% endif %}
     </div>
 
-    <div class="row">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {% if wishlist_items %}
             {% for item in wishlist_items %}
-            <div class="col-md-4 mb-4">
-                <div class="card product h-100">
-                    <div class="img-prod">
-                        <a href="{% url 'shop:product_detail' item.product.id %}">
-                            <img class="img-fluid" src="{{ item.product.photo.url }}" alt="{{ item.product.name }}">
-                            <div class="overlay"></div>
+            <div class="transform transition duration-300 hover:-translate-y-1">
+                <div class="bg-white rounded-lg shadow-md overflow-hidden h-full flex flex-col">
+                    <div class="relative aspect-w-1 aspect-h-1 bg-gray-100 group">
+                        <a href="{% url 'shop:product_detail' item.product.id %}" class="block h-full">
+                            <img class="object-cover w-full h-full transform transition duration-300 group-hover:scale-105" src="{{ item.product.photo.url }}" alt="{{ item.product.name }}">
                         </a>
+                        <button class="absolute top-3 right-3 bg-red-500 hover:bg-red-600 text-white rounded-full p-2 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-110 active:scale-95 remove-from-wishlist" 
+                            data-product-id="{{ item.product.id }}" 
+                            title="Remove from wishlist"
+                            aria-label="Remove from wishlist">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transform transition-transform duration-300 group-hover:rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
                     </div>
-                    <div class="card-body text-center">
-                        <h3>
-                            <a href="{% url 'shop:product_detail' item.product.id %}">{{ item.product.name }}</a>
+                    <div class="p-4 flex flex-col flex-grow">
+                        <h3 class="text-lg font-semibold mb-2 line-clamp-2">
+                            <a href="{% url 'shop:product_detail' item.product.id %}" class="text-gray-900 hover:text-primary-600 transition-colors duration-200">{{ item.product.name }}</a>
                         </h3>
-                        <div class="price">
-                            <p class="font-weight-bold">${{ item.product.price }}</p>
+                        <div class="mb-4">
+                            <span class="text-xl sm:text-2xl font-bold text-primary-600">PKR {{ item.product.price }}</span>
                         </div>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <form action="{% url 'cart:add_to_cart' item.product.id %}" method="post" class="d-inline">
-                                {% csrf_token %}
-                                <input type="hidden" name="product_id" value="{{ item.product.id }}">
-                                <input type="hidden" name="quantity" value="1">
-                                <button type="submit" class="btn btn-primary">Add to Cart</button>
-                            </form>
-                            <button class="btn btn-outline-danger remove-from-wishlist" 
-                                    data-product-id="{{ item.product.id }}">
-                                <i class="ion-ios-heart"></i> Remove
+                        <form action="{% url 'cart:add_to_cart' item.product.id %}" method="post" class="mt-auto">
+                            {% csrf_token %}
+                            <input type="hidden" name="product_id" value="{{ item.product.id }}">
+                            <input type="hidden" name="quantity" value="1">
+                            <button type="submit" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold px-4 py-3 rounded-md hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-md hover:shadow-lg flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                                </svg>
+                                Add to Cart
                             </button>
-                        </div>
+                        </form>
                     </div>
                 </div>
             </div>
             {% endfor %}
         {% else %}
-            <div class="col-12 text-center">
-                <p>Your wishlist is empty.</p>
-                <a href="{% url 'shop:shop' %}" class="btn btn-primary">Continue Shopping</a>
+            <div class="col-span-full text-center py-12 sm:py-16">
+                <div class="max-w-md mx-auto">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-gray-400 mb-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                    </svg>
+                    <h3 class="text-xl sm:text-2xl font-semibold text-gray-900 mb-3">Your wishlist is empty</h3>
+                    <p class="text-gray-600 mb-8">Explore our products and add your favorites to the wishlist!</p>
+                    <a href="{% url 'shop:shop' %}" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                        </svg>
+                        Start Shopping
+                    </a>
+                </div>
             </div>
         {% endif %}
     </div>
 </div>
 
+{% block extra_css %}{% endblock %}
+
 {% block extra_js %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const removeButtons = document.querySelectorAll('.remove-from-wishlist');
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
         
         removeButtons.forEach(button => {
             button.addEventListener('click', function() {
                 const productId = this.dataset.productId;
-                const card = this.closest('.col-md-4');
+                const card = this.closest('.transform');
+                
+                // Add loading spinner to button
+                button.innerHTML = `
+                    <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                `;
                 
                 fetch(`/wishlist/toggle/${productId}/`, {
                     method: 'POST',
                     headers: {
-                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                        'X-CSRFToken': csrfToken,
+                        'Content-Type': 'application/json'
                     }
                 })
                 .then(response => response.json())
                 .then(data => {
                     if (data.status === 'removed') {
-                        card.remove();
-                        if (document.querySelectorAll('.product').length === 0) {
-                            location.reload();
-                        }
+                        // Create toast notification
+                        showToast('success', 'Product removed from wishlist');
+
+                        // Animate card removal
+                        card.style.transition = 'all 0.3s ease';
+                        card.style.opacity = '0';
+                        card.style.transform = 'scale(0.9) translateY(-10px)';
+                        
+                        setTimeout(() => {
+                            card.remove();
+                            // Check if no items left and reload if needed
+                            if (document.querySelectorAll('.transform').length === 0) {
+                                location.reload();
+                            }
+                        }, 300);
                     }
+                })
+                .catch(error => {
+                    // Reset button
+                    button.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    `;
+                    showToast('error', 'Failed to remove product');
                 });
             });
         });
+
+        // Toast notification function
+        function showToast(type, message) {
+            const toast = document.createElement('div');
+            const bgColor = type === 'success' ? 'bg-green-500' : 'bg-red-500';
+            const icon = type === 'success' 
+                ? '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>'
+                : '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>';
+            
+            toast.className = `fixed bottom-4 right-4 ${bgColor} text-white px-6 py-3 rounded-lg shadow-lg flex items-center z-50 transform translate-y-0 opacity-100 transition-all duration-500`;
+            toast.innerHTML = icon + message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(10px)';
+                setTimeout(() => toast.remove(), 500);
+            }, 3000);
+        }
     });
 </script>
 {% endblock %}

@@ -6,6 +6,7 @@ from django.urls import reverse
 from django.contrib import messages
 from SendEmail.views import send_email
 from .forms import UserRegForm
+from order.models import Order
 
 def signup(request):
     if not request.user.is_authenticated:
@@ -44,6 +45,11 @@ def signin(request):
 def signout(request):
     logout(request)
     return redirect('home')
+
+@login_required
+def order_history(request):
+    orders = Order.objects.filter(user=request.user).order_by('-created_at')
+    return render(request, 'account/order_history.html', {'orders': orders})
 
 @login_required
 def profile(request):

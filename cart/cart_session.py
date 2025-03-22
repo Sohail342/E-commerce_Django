@@ -30,8 +30,17 @@ class SessionCart:
         del self.session[settings.CART_SESSION_ID]
         self.save()
 
+    def update(self, product, quantity):
+        product_id = str(product.id)
+        if product_id in self.cart:
+            self.cart[product_id]['quantity'] = quantity
+            self.save()
+
     def get_total_price(self):
-        return sum(Decimal(item['price']) * item['quantity'] for item in self.cart.values())
+        total = Decimal('0.00')
+        for item in self.cart.values():
+            total += Decimal(str(item['price'])) * Decimal(str(item['quantity']))
+        return total.quantize(Decimal('0.01'))
 
     def get_total_items(self):
         return sum(item['quantity'] for item in self.cart.values())

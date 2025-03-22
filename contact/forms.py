@@ -8,21 +8,21 @@ class ContactForm(forms.ModelForm):
         fields = '__all__'
         widgets = {
             'name': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Your Name'
+                'class': 'peer w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-300 bg-white',
+                'placeholder': ' '
             }),
             'email': forms.EmailInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Your Email',
-                'name' : 'email'
+                'class': 'peer w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-300 bg-white',
+                'placeholder': ' ',
+                'name': 'email'
             }),
             'subject': forms.TextInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Subject'
+                'class': 'peer w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-300 bg-white',
+                'placeholder': ' '
             }),
             'message': forms.Textarea(attrs={
-                'class': 'form-control',
-                'placeholder': 'Message'
+                'class': 'peer w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-300 bg-white min-h-[150px] resize-y',
+                'placeholder': ' '
             })
         }
 

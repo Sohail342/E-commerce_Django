@@ -1,43 +1,46 @@
 {% load static %}
-<section class="service-section">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-3">
-                <div class="service-item">
-                    <div class="service-icon">
-                        <img src="{% static 'images/delivery-truck.svg' %}" alt="Free Shipping">
-                    </div>
-                    <h3 class="service-title">FREE SHIPPING</h3>
-                    <p class="service-text">ON ORDER OVER RS.10000</p>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="service-item">
-                    <div class="service-icon">
-                        <img src="{% static 'images/handcraft.svg' %}" alt="Handcrafted Excellence">
-                    </div>
-                    <h3 class="service-title">HANDCRAFTED EXCELLENCE</h3>
-                    <p class="service-text">ARTISANAL QUALITY</p>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="service-item">
-                    <div class="service-icon">
-                        <img src="{% static 'images/quality.svg' %}" alt="Premium Materials">
-                    </div>
-                    <h3 class="service-title">PREMIUM MATERIALS</h3>
-                    <p class="service-text">FINEST JEWELRY</p>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="service-item">
-                    <div class="service-icon">
-                        <img src="{% static 'images/support.svg' %}" alt="Support">
-                    </div>
-                    <h3 class="service-title">SUPPORT</h3>
-                    <p class="service-text">24/7 SUPPORT</p>
-                </div>
-            </div>
+<section class="bg-white py-12 sm:py-16">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 gap-y-12 sm:grid-cols-2 sm:gap-x-8 sm:gap-y-16 lg:grid-cols-4 place-items-center">
+      <div class="group relative flex flex-col items-center text-center max-w-xs mx-auto w-full" data-aos="fade-up" data-aos-duration="800">
+        <div class="flex h-16 w-16 items-center justify-center rounded-lg bg-primary-50 transition-colors duration-200 group-hover:bg-primary-100">
+          <img src="{% static 'images/delivery-truck.svg' %}" alt="Free Shipping" class="h-8 w-8 transition-transform duration-200 group-hover:scale-110">
         </div>
+        <div class="mt-4">
+          <h3 class="text-lg font-semibold text-gray-900 group-hover:text-primary-600 transition-colors duration-200">FREE SHIPPING</h3>
+          <p class="mt-2 text-sm text-gray-600">ON ORDER OVER RS.10000</p>
+        </div>
+      </div>
+
+      <div class="group relative flex flex-col items-center text-center max-w-xs mx-auto w-full" data-aos="fade-up" data-aos-duration="800" data-aos-delay="200">
+        <div class="flex h-16 w-16 items-center justify-center rounded-lg bg-primary-50 transition-colors duration-200 group-hover:bg-primary-100">
+          <img src="{% static 'images/handcraft.svg' %}" alt="Handcrafted Excellence" class="h-8 w-8 transition-transform duration-200 group-hover:scale-110">
+        </div>
+        <div class="mt-4">
+          <h3 class="text-lg font-semibold text-gray-900 group-hover:text-primary-600 transition-colors duration-200">HANDCRAFTED EXCELLENCE</h3>
+          <p class="mt-2 text-sm text-gray-600">ARTISANAL QUALITY</p>
+        </div>
+      </div>
+
+      <div class="group relative flex flex-col items-center text-center max-w-xs mx-auto w-full" data-aos="fade-up" data-aos-duration="800" data-aos-delay="400">
+        <div class="flex h-16 w-16 items-center justify-center rounded-lg bg-primary-50 transition-colors duration-200 group-hover:bg-primary-100">
+          <img src="{% static 'images/quality.svg' %}" alt="Premium Materials" class="h-8 w-8 transition-transform duration-200 group-hover:scale-110">
+        </div>
+        <div class="mt-4">
+          <h3 class="text-lg font-semibold text-gray-900 group-hover:text-primary-600 transition-colors duration-200">PREMIUM MATERIALS</h3>
+          <p class="mt-2 text-sm text-gray-600">FINEST JEWELRY</p>
+        </div>
+      </div>
+
+      <div class="group relative flex flex-col items-center text-center max-w-xs mx-auto w-full" data-aos="fade-up" data-aos-duration="800" data-aos-delay="600">
+        <div class="flex h-16 w-16 items-center justify-center rounded-lg bg-primary-50 transition-colors duration-200 group-hover:bg-primary-100">
+          <img src="{% static 'images/support.svg' %}" alt="Support" class="h-8 w-8 transition-transform duration-200 group-hover:scale-110">
+        </div>
+        <div class="mt-4">
+          <h3 class="text-lg font-semibold text-gray-900 group-hover:text-primary-600 transition-colors duration-200">SUPPORT</h3>
+          <p class="mt-2 text-sm text-gray-600">24/7 SUPPORT</p>
+        </div>
+      </div>
     </div>
+  </div>
 </section>

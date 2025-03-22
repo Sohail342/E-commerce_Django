@@ -25,7 +25,6 @@ def shop_page(request):
         'total_products': product_list.count()
     }
 
-    print("Display", context['is_paginated'])
     return render(request, 'shop/shop.html', context)
 
 

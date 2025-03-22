@@ -2,78 +2,103 @@
 {% load static %}
 
 {% block content %}
-<link rel="stylesheet" href="{% static 'css/product-listing.css' %}">
-<link rel="stylesheet" href="{% static 'css/enhanced-product-listing.css' %}">
-<link rel="stylesheet" href="{% static 'css/color-enhancements.css' %}">
-<link rel="stylesheet" href="{% static 'css/ionicons.min.css' %}">
-<script src="{% static 'js/product-listing.js' %}"></script>
-
-<section class="ftco-section">
-    <div class="container-fluid px-4">
-        <div class="row">
-            <!-- Filter Sidebar -->
-            <div class="col-md-3">
-                <div class="filter-sidebar">
-                    <div class="search-container">
-                        <input type="text" class="search-input" placeholder="Search products..." id="productSearch">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="flex flex-col lg:flex-row gap-8">
+        <!-- Filter Sidebar -->
+        <div class="lg:w-1/4">
+            <div class="bg-white rounded-lg shadow-md p-6 sticky top-4">
+                <div class="mb-6">
+                    <div class="relative">
+                        <input type="text" class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500" placeholder="Search products..." id="productSearch">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-search text-gray-400"></i>
+                        </div>
                     </div>
-                    
-                    <h4>Categories</h4>
-                    <ul class="list-unstyled">
-                        <li><a href="{% url 'shop:shop' %}" class="category-link">All Products</a></li>
-                        <li><a href="#" class="category-link active">{{ category.name }}</a></li>
+                </div>
+                
+                <div class="mb-6">
+                    <h4 class="text-lg font-semibold text-gray-900 mb-4">Categories</h4>
+                    <ul class="space-y-2">
+                        <li>
+                            <a href="{% url 'shop:shop' %}" class="block px-4 py-2 rounded-md hover:bg-gray-100 transition-colors duration-200 {% if not category %}bg-primary-50 text-primary-600{% else %}text-gray-600{% endif %}">
+                                All Products
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" class="block px-4 py-2 rounded-md bg-primary-50 text-primary-600">
+                                {{ category.name }}
+                            </a>
+                        </li>
                     </ul>
-                    
-                    <h4>Price Range</h4>
-                    <div class="range-slider">
-                        <input type="range" min="0" max="10000" value="0" class="price-range" id="minPrice">
-                        <input type="range" min="0" max="10000" value="10000" class="price-range" id="maxPrice">
-                        <div class="price-output">
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-semibold text-gray-900 mb-4">Price Range</h4>
+                    <div class="space-y-4">
+                        <div class="relative">
+                            <input type="range" min="0" max="10000" value="0" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" id="minPrice">
+                        </div>
+                        <div class="relative">
+                            <input type="range" min="0" max="10000" value="10000" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" id="maxPrice">
+                        </div>
+                        <div class="flex justify-between text-sm text-gray-600">
                             <span>PKR <span id="minPriceValue">0</span></span>
                             <span>PKR <span id="maxPriceValue">10000</span></span>
                         </div>
                     </div>
                 </div>
             </div>
-    
-            <!-- Product Grid -->
-            <div class="col-md-9">
-                <div class="product-grid">
-                    {% if products %}
-                    {% for product in products %}
-                    <div class="product-card">
-                        <div class="product-image">
-                            <a href="{% url 'shop:product_detail' product.id %}">
-                                <img src="{{ product.photo.url }}" alt="{{ product.name }}">
+        </div>
+
+        <!-- Product Grid -->
+        <div class="lg:w-3/4">
+            {% if products %}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for product in products %}
+                <div class="transform transition duration-300 hover:-translate-y-2">
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden h-full flex flex-col">
+                        <div class="relative aspect-w-1 aspect-h-1 bg-gray-100 group">
+                            <a href="{% url 'shop:product_detail' product.id %}" class="block h-full">
+                                <img class="object-cover w-full h-full transform transition duration-300 group-hover:scale-105" src="{{ product.photo.url }}" alt="{{ product.name }}">
                             </a>
-                            <div class="action-icons">
-                                <button class="icon-button wishlist-btn" title="Add to Wishlist">
-                                    <i class="ion-ios-heart-outline"></i>
+                            <div class="absolute top-4 right-4 space-y-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <button class="bg-white p-2 rounded-full shadow-md hover:bg-primary-50 transition-colors duration-200" title="Add to Wishlist">
+                                    <i class="fas fa-heart text-primary-600"></i>
                                 </button>
-                                <button class="icon-button" title="Quick View">
-                                    <i class="ion-ios-search"></i>
+                                <button class="bg-white p-2 rounded-full shadow-md hover:bg-primary-50 transition-colors duration-200" title="Quick View">
+                                    <i class="fas fa-search text-primary-600"></i>
                                 </button>
                             </div>
-                            <a href="{% url 'shop:product_detail' product.id %}" class="quick-view-btn">Quick View</a>
                         </div>
-                        <div class="product-info">
-                            <h3 class="product-name">
-                                <a href="{% url 'shop:product_detail' product.id %}">{{ product.name }}</a>
+                        <div class="p-4 flex flex-col flex-grow">
+                            <h3 class="text-lg font-semibold mb-2">
+                                <a href="{% url 'shop:product_detail' product.id %}" class="text-gray-900 hover:text-primary-600 transition-colors duration-200">{{ product.name }}</a>
                             </h3>
-                            <div class="product-price">PKR {{ product.price }}</div>
-                            <div class="product-actions">
-                                <a href="{% url 'shop:product_detail' product.id %}" class="action-button btn-primary">View Details</a>
-                                <a href="{% url 'cart:add_to_cart' product.id %}" class="action-button add-to-cart-btn">Add to Cart</a>
+                            <div class="mb-4">
+                                <span class="text-2xl font-bold text-primary-600">PKR {{ product.price }}</span>
+                            </div>
+                            <div class="mt-auto space-y-2">
+                                <a href="{% url 'shop:product_detail' product.id %}" class="block text-center px-4 py-2 border border-primary-600 text-primary-600 rounded-md hover:bg-primary-50 transition-colors duration-200">View Details</a>
+                                <a href="{% url 'cart:add_to_cart' product.id %}" class="block text-center px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors duration-200">Add to Cart</a>
                             </div>
                         </div>
                     </div>
-                    {% endfor %}
-                    {% else %}
-                    <div class="alert alert-info">No products found in this category.</div>
-                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-16">
+                <div class="max-w-md mx-auto">
+                    <i class="fas fa-box-open text-gray-400 text-6xl mb-6"></i>
+                    <h3 class="text-2xl font-semibold text-gray-900 mb-3">No products found</h3>
+                    <p class="text-gray-600 mb-8">We couldn't find any products in this category.</p>
+                    <a href="{% url 'shop:shop' %}" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 transition-colors duration-200">
+                        <i class="fas fa-arrow-left mr-2"></i>Back to Shop
+                    </a>
                 </div>
             </div>
+            {% endif %}
         </div>
     </div>
-</section>
+</div>
 {% endblock %}

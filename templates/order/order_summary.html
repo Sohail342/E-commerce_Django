@@ -2,77 +2,80 @@
 {% load static %}
 
 {% block content %}
-<section class="ftco-section">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-xl-8 ftco-animate">
-                <div class="order-confirmation p-4 rounded shadow bg-light" style="background: linear-gradient(to bottom right, #ffffff, #f8f9fa);">
-                    <div class="text-center mb-4">
-                        <i class="fas fa-check-circle text-success" style="font-size: 3rem;"></i>
-                        <h2 class="mt-3">Thank You {{ request.user.username|title }} For Your Order! 🎉</h2>
-                        <p class="text-muted">Your order has been placed successfully</p>
+<section class="min-h-screen py-12 bg-gradient-to-b from-gray-50 to-gray-100">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="max-w-3xl mx-auto">
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden transform hover:-translate-y-2 transition-all duration-300 border border-gray-100">
+                <div class="bg-gradient-to-br from-white to-blue-50 p-6 sm:p-8 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-64 h-64 bg-blue-100 rounded-full filter blur-3xl opacity-20 -mr-32 -mt-32"></div>
+                    <div class="text-center space-y-3">
+                        <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-green-100 to-green-200 rounded-full ring-4 ring-green-50 shadow-lg">
+                            <i class="fas fa-check-circle text-4xl text-green-500"></i>
+                        </div>
+                        <h2 class="text-3xl sm:text-4xl font-bold text-gray-800 tracking-tight">Thank You {{ request.user.username|title }}! 🎉</h2>
+                        <p class="text-lg text-gray-600">Your order has been placed successfully</p>
                     </div>
 
-                    <div class="order-details p-4 rounded" style="background: rgba(0,0,0,0.02);">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h3 class="mb-0">Order #{{ order.id }}</h3>
-                            <span class="badge bg-success">Confirmed</span>
+                    <div class="mt-8 bg-white/80 backdrop-blur-sm rounded-xl p-6 space-y-6 shadow-sm border border-gray-100">
+                        <div class="flex flex-wrap justify-between items-center gap-4">
+                            <h3 class="text-2xl font-semibold text-gray-800">Order #{{ order.id }}</h3>
+                            <span class="px-4 py-1.5 bg-gradient-to-r from-green-100 to-green-200 text-green-700 rounded-full text-sm font-semibold shadow-sm border border-green-200">Confirmed</span>
                         </div>
                         
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <div class="info-group">
-                                    <label class="text-muted">Order Date</label>
-                                    <p class="mb-3">{{ order.created_at|date:"F d, Y" }}</p>
-                                </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-2 p-4 bg-gray-50/50 rounded-lg">
+                                <label class="text-sm text-gray-500 font-medium uppercase tracking-wide">Order Date</label>
+                                <p class="text-gray-700 font-medium">{{ order.created_at|date:"F d, Y" }}</p>
                             </div>
-                            <div class="col-md-6">
-                                <div class="info-group">
-                                    <label class="text-muted">Payment Method</label>
-                                    <p class="mb-3">{{ order.payment_method }}</p>
-                                </div>
+                            <div class="space-y-2 p-4 bg-gray-50/50 rounded-lg">
+                                <label class="text-sm text-gray-500 font-medium uppercase tracking-wide">Payment Method</label>
+                                <p class="text-gray-700 font-medium">{{ order.payment_method }}</p>
                             </div>
-                            <div class="col-12">
-                                <div class="info-group">
-                                    <label class="text-muted">Shipping Address</label>
-                                    <p class="mb-3">{{ order.shipping_address }}</p>
+                            <div class="col-span-1 md:col-span-2 space-y-2 p-4 bg-gray-50/50 rounded-lg">
+                                <label class="text-sm text-gray-500 font-medium uppercase tracking-wide">Shipping Address</label>
+                                <p class="text-gray-700 font-medium">{{ order.shipping_address }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 bg-white/80 backdrop-blur-sm rounded-xl p-6 shadow-sm border border-gray-100">
+                        <h4 class="text-xl font-semibold text-gray-800 mb-6 flex items-center gap-2">
+                            <i class="fas fa-receipt text-blue-500"></i>
+                            Order Summary
+                        </h4>
+                        <div class="space-y-4">
+                            <div class="space-y-4 sm:space-y-6">
+                                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 sm:p-5 hover:bg-blue-50/50 rounded-lg transition-all duration-200 border border-transparent hover:border-blue-100">
+                                    <span class="flex items-center gap-3 text-gray-700 mb-2 sm:mb-0">
+                                        <i class="fas fa-shopping-cart text-blue-500 text-lg sm:text-xl"></i>
+                                        <span class="font-medium text-sm sm:text-base">Items ({{ total_quantity }})</span>
+                                    </span>
+                                    <span class="font-semibold text-gray-900 text-base sm:text-lg">PKR {{ subtotal }}</span>
+                                </div>
+                                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 sm:p-5 hover:bg-blue-50/50 rounded-lg transition-all duration-200 border border-transparent hover:border-blue-100">
+                                    <span class="flex items-center gap-3 text-gray-700 mb-2 sm:mb-0">
+                                        <i class="fas fa-truck text-blue-500 text-lg sm:text-xl"></i>
+                                        <span class="font-medium text-sm sm:text-base">Delivery Charges</span>
+                                    </span>
+                                    <span class="font-semibold text-blue-600 text-base sm:text-lg">PKR 250</span>
+                                </div>
+                                <div class="mt-6 pt-6 border-t border-gray-200">
+                                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 sm:p-5 bg-gradient-to-r from-blue-50 to-blue-100/50 rounded-lg shadow-sm border border-blue-200">
+                                        <span class="flex items-center gap-3 text-gray-800 mb-2 sm:mb-0">
+                                            <i class="fas fa-calculator text-blue-600 text-xl sm:text-2xl"></i>
+                                            <span class="font-bold text-lg sm:text-xl">Total</span>
+                                        </span>
+                                        <span class="font-bold text-blue-600 text-xl sm:text-2xl">PKR {{ order.total_price }}</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="order-summary mt-4 p-4 rounded" style="background: rgba(0,0,0,0.02);">
-                        <h4 class="mb-4">Order Summary</h4>
-                        <div class="price-items-container">
-                            <div class="price-item d-flex justify-content-between align-items-center mb-3 py-2 hover-highlight">
-                                <span class="d-flex align-items-center">
-                                    <i class="fas fa-shopping-cart me-2"></i>
-                                    <span>Items ({{ total_quantity }})</span>
-                                </span>
-                                <span class="fw-semibold price">PKR {{ subtotal }}</span>
-                            </div>
-                            <div class="price-item d-flex justify-content-between align-items-center mb-3 py-2 hover-highlight">
-                                <span class="d-flex align-items-center">
-                                    <i class="fas fa-truck me-2"></i>
-                                    <span>Delivery Charges</span>
-                                </span>
-                                <span class="fw-semibold text-primary price">PKR 250</span>
-                            </div>
-                        </div>
-                        <div class="total-section p-3 mt-4 rounded" style="background: rgba(0,0,0,0.03);">
-                            <div class="price-item d-flex justify-content-between align-items-center">
-                                <span class="fs-4 fw-bold d-flex align-items-center">
-                                    <i class="fas fa-calculator me-2"></i>
-                                    <span>Total</span>
-                                </span>
-                                <span class="fs-4 fw-bold text-primary price">PKR {{ order.total_price }}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="text-center mt-4">
-                        <a href="{% url 'shop:shop' %}" class="btn btn-primary py-3 px-4">
-                            <i class="fas fa-shopping-bag me-2"></i>Continue Shopping
+                    <div class="mt-8 text-center">
+                        <a href="{% url 'shop:shop' %}" class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-lg font-semibold rounded-xl shadow-lg hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 transform hover:scale-105">
+                            <i class="fas fa-shopping-bag mr-3 text-xl"></i>
+                            Continue Shopping
                         </a>
                     </div>
                 </div>
@@ -80,45 +83,4 @@
         </div>
     </div>
 </section>
-
-<style>
-.hover-highlight:hover {
-    background-color: rgba(0,0,0,0.02);
-    border-radius: 4px;
-    transition: background-color 0.2s ease;
-}
-.price-item {
-    transition: all 0.2s ease;
-    padding: 0.75rem;
-    margin-bottom: 0.5rem;
-}
-.price-items-container {
-    margin-bottom: 1.5rem;
-}
-.price {
-    min-width: 100px;
-    text-align: right;
-}
-.total-section {
-    transition: background-color 0.3s ease;
-}
-.total-section:hover {
-    background: rgba(0,0,0,0.05);
-}
-.order-confirmation {
-    transition: transform 0.3s ease;
-}
-.order-confirmation:hover {
-    transform: translateY(-2px);
-}
-.info-group label {
-    font-size: 0.875rem;
-    margin-bottom: 0.25rem;
-    display: block;
-}
-.info-group p {
-    font-size: 1rem;
-    color: #333;
-}
-</style>
 {% endblock %}

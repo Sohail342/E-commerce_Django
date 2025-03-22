@@ -1,53 +1,84 @@
 {% extends 'base/base.html' %}
 {% load static %}
 
-{% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/cart-redesign.css' %}">
-{% endblock %}
-
 {% block content %}
-<section class="cart-section">
-    <div class="container">
+<section class="py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {% if cart_is_empty %}
-        <div class="empty-cart">
-            <h3>Your Shopping Cart is Empty</h3>
-            <a href="{% url 'shop:shop' %}" class="continue-shopping">Continue Shopping</a>
+        <div class="text-center py-16 bg-white rounded-lg shadow-sm">
+            <svg class="mx-auto h-16 w-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+            </svg>
+            <h3 class="mt-4 text-xl font-medium text-gray-900">Your Shopping Cart is Empty</h3>
+            <a href="{% url 'shop:shop' %}" class="mt-6 inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 transition-colors">
+                Continue Shopping
+                <svg class="ml-2 -mr-1 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                </svg>
+            </a>
         </div>
         {% else %}
-        <div class="row">
-            <div class="col-md-8">
-                {% for item in cart_items %}
-                <div class="cart-item">
-                    <div class="cart-item-image">
-                        <img src="{{ item.product.photo.url }}" alt="{{ item.product.name }}">
-                    </div>
-                    <div class="cart-item-details">
-                        <h3 class="cart-item-name">{{ item.product.name }}</h3>
-                        <p class="cart-item-price">PKR {{ item.product.price }}</p>
-                        <div class="cart-item-quantity">
-                            <button class="quantity-btn decrease">-</button>
-                            <input type="number" class="quantity-input" value="{{ item.quantity }}" min="1">
-                            <button class="quantity-btn increase">+</button>
+        <div class="flex flex-col lg:flex-row gap-4 lg:gap-8">
+            <div class="flex-grow">
+                <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                    <div class="divide-y divide-gray-200">
+                        {% for item in cart_items %}
+                        <div class="p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-6 cart-item" data-product-id="{{ item.product.id }}" data-unit-price="{{ item.product.price }}" x-data="{ quantity: {{ item.quantity }} }">
+                            <div class="flex-shrink-0 w-full sm:w-24 h-48 sm:h-24 bg-gray-100 rounded-md overflow-hidden">
+                                <img src="{{ item.product.photo.url }}" alt="{{ item.product.name }}" class="w-full h-full object-center object-cover">
+                            </div>
+                            <div class="flex-grow space-y-2 sm:space-y-0">
+                                <h3 class="text-base sm:text-lg font-medium text-gray-900">
+                                    <a href="{% url 'shop:product_detail' item.product.id %}" class="hover:text-primary-600 transition-colors">{{ item.product.name }}</a>
+                                </h3>
+                                <p class="text-sm text-gray-500">PKR {{ item.product.price }}</p>
+                                <div class="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-start sm:space-y-0 sm:space-x-4">
+                                    <div class="flex items-center border border-gray-300 rounded-md shadow-sm max-w-[160px]">
+                                        <button class="p-2 sm:p-3 text-gray-600 hover:text-primary-600 transition-colors quantity-btn decrease touch-manipulation active:bg-gray-100 min-w-[40px]" @click="quantity = Math.max(1, quantity - 1)">
+                                            <svg class="h-4 w-4 sm:h-5 sm:w-5 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/>
+                                            </svg>
+                                        </button>
+                                        <input type="number" x-model="quantity" class="w-12 sm:w-16 border-0 text-center focus:ring-0 text-sm sm:text-base font-medium px-0" min="1" max="{{item.product.inventory}}">
+                                        <button class="p-2 sm:p-3 text-gray-600 hover:text-primary-600 transition-colors quantity-btn increase touch-manipulation active:bg-gray-100 min-w-[40px]" @click="quantity+1">
+                                            <svg class="h-4 w-4 sm:h-5 sm:w-5 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    <div class="flex items-center justify-between w-full sm:w-auto space-x-4 sm:hidden">
+                                        <span class="text-base font-medium text-gray-900 item-price">PKR {{ item.total_price }}</span>
+                                        <button onclick="window.location.href='{% url 'cart:clear_cart' item.product.id %}'" class="text-sm text-red-600 hover:text-red-700 transition-colors">
+                                            Remove
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="hidden sm:flex flex-shrink-0 flex-col items-end space-y-2">
+                                <span class="text-lg font-medium text-gray-900 item-price">PKR {{ item.total_price }}</span>
+                                <button onclick="window.location.href='{% url 'cart:clear_cart' item.product.id %}'" class="text-sm text-red-600 hover:text-red-700 transition-colors">
+                                    Remove
+                                </button>
+                            </div>
                         </div>
+                        {% endfor %}
                     </div>
-                    <div class="cart-item-total">
-                        PKR {{ item.total_price }}
-                    </div>
-                    <button class="remove-item" onclick="window.location.href='{% url 'cart:clear_cart' item.product.id %}'">
-                        <i class="fas fa-times"></i>
-                    </button>
                 </div>
-                {% endfor %}
             </div>
-            <div class="col-md-4">
-                <div class="cart-summary">
-                    <div class="cart-total">
-                        <span>Total</span>
-                        <span>PKR {{ cart_total }}</span>
+            <div class="w-full lg:w-96 mt-6 lg:mt-0">
+                <div class="bg-white rounded-lg shadow-sm p-4 sm:p-6 sticky top-24">
+                    <h2 class="text-lg font-medium text-gray-900">Order Summary</h2>
+                    <div class="mt-4 sm:mt-6 flex justify-between items-baseline">
+                        <span class="text-base font-medium text-gray-900">Total</span>
+                        <span class="text-xl sm:text-2xl font-semibold text-primary-600 cart-total">PKR {{ cart_total }}</span>
                     </div>
-                    <a href="{% url 'order:checkout' %}" class="checkout-btn">
-                        Proceed to Checkout
-                        <span class="spinner"></span>
+                    <a href="{% url 'order:checkout' %}" class="mt-4 sm:mt-6 w-full inline-flex justify-center items-center px-4 sm:px-6 py-3 sm:py-4 border border-transparent text-base sm:text-lg font-semibold rounded-lg text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 transform hover:scale-[1.02] transition-all duration-200 shadow-lg hover:shadow-xl">
+                        <span class="relative flex items-center gap-2">
+                            <span>Proceed to Checkout</span>
+                            <svg class="h-5 w-5 sm:h-6 sm:w-6 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                            </svg>
+                        </span>
                     </a>
                 </div>
             </div>

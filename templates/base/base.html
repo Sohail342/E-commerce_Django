@@ -1,55 +1,83 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-full bg-gray-50">
   {% load static %}
   <!-- header files -->
   {% include 'base/header.html' %}
   <!-- header files -->
-  <script src="{% static 'js/product-animations.js' %}"></script>
-  <!-- header files -->
-  <body class="goto-here">
+  <script src="{% static 'js/category-slider.js' %}"></script>
+  <script src="{% static 'js/toast.js' %}"></script>
+  <script src="{% static 'js/filter-sidebar.js' %}"></script>
+  <link rel="stylesheet" href="{% static 'src/category-slider.css' %}">
+  <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <body class="h-full">
 
-		<!-- header and nav start-->
+    <!-- header and nav start-->
     {% include 'base/navbar.html' %}
     <!-- END nav -->
 
     {% if messages %}
-    <div class="container mt-4">
+    <div class="fixed top-4 right-4 z-50 w-full max-w-lg">
         {% for message in messages %}
-        <div class="alert alert-{{ message.tags }}">
-            {{ message }}
+        <div x-data="{ show: true }" x-show="show" x-transition:enter="transform ease-out duration-500 transition" x-transition:enter-start="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2" x-transition:enter-end="translate-y-0 opacity-100 sm:translate-x-0" x-transition:leave="transform ease-in duration-300 transition" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="rounded-lg p-6 mb-4 shadow-lg border {% if message.tags == 'success' %}bg-green-100 border-green-500 text-green-900{% elif message.tags == 'error' %}bg-red-100 border-red-500 text-red-900{% elif message.tags == 'warning' %}bg-yellow-100 border-yellow-500 text-yellow-900{% else %}bg-blue-100 border-blue-500 text-blue-900{% endif %}">
+            <div class="flex items-start">
+                <div class="flex-shrink-0">
+                    {% if message.tags == 'success' %}
+                    <svg class="h-6 w-6 text-green-600" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                    </svg>
+                    {% elif message.tags == 'error' %}
+                    <svg class="h-6 w-6 text-red-600" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                    </svg>
+                    {% else %}
+                    <svg class="h-6 w-6 text-blue-600" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                    </svg>
+                    {% endif %}
+                </div>
+                <div class="ml-4 flex-1">
+                    <p class="text-base font-semibold">{{ message }}</p>
+                </div>
+                <div class="ml-4">
+                    <button @click="show = false" type="button" class="inline-flex rounded-md p-1.5 focus:outline-none focus:ring-2 focus:ring-offset-2 {% if message.tags == 'success' %}text-green-600 hover:bg-green-200 focus:ring-green-600{% elif message.tags == 'error' %}text-red-600 hover:bg-red-200 focus:ring-red-600{% elif message.tags == 'warning' %}text-yellow-600 hover:bg-yellow-200 focus:ring-yellow-600{% else %}text-blue-600 hover:bg-blue-200 focus:ring-blue-600{% endif %}">
+                        <span class="sr-only">Dismiss</span>
+                        <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
         </div>
         {% endfor %}
     </div>
     {% endif %}
 
-    
-
-    {% block content %}
-
-    {% endblock %}
+    <main class="min-h-screen">
+        {% block content %}
+        {% endblock %}
+    </main>
 
     <!-- footer -->
     {% include 'base/footer.html' %}
     <!-- footer -->
 
+    <!-- loader -->
+    <div id="ftco-loader" x-data="{ loading: true }" x-init="setTimeout(() => loading = false, 500)" x-show="loading" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 transition-opacity" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+        <div class="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-primary-600"></div>
+    </div>
 
-
-  <!-- loader -->
-  <div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/></svg></div>
-
-
-  <!-- js files -->
-  {% include 'base/js.html' %}
-  <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
-  <script>
-    AOS.init({
-      duration: 800,
-      once: true,
-      offset: 100,
-      disable: window.matchMedia('(prefers-reduced-motion: reduce)')
-    });
-  </script>
-  <!-- js files -->
+    <!-- js files -->
+    {% include 'base/js.html' %}
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 100,
+            disable: window.matchMedia('(prefers-reduced-motion: reduce)')
+        });
+    </script>
+    <!-- js files -->
 
   </body>
 </html>

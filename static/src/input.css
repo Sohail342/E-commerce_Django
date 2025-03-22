@@ -1,0 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all duration-200;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-primary-700 bg-primary-100 hover:bg-primary-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all duration-200;
+  }
+  .btn-accent {
+    @apply inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-accent-600 hover:bg-accent-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-500 transition-all duration-200;
+  }
+  .card {
+    @apply bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 animate-fade-in;
+  }
+  .product-card {
+    @apply card group cursor-pointer;
+  }
+  .product-card-image {
+    @apply aspect-w-1 aspect-h-1 w-full overflow-hidden bg-gray-200 group-hover:opacity-75 transition-opacity duration-300;
+  }
+  .product-card-content {
+    @apply p-4 space-y-2;
+  }
+  .form-input {
+    @apply mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 transition-colors duration-200;
+  }
+  .nav-link {
+    @apply text-gray-600 hover:text-primary-600 px-3 py-2 text-sm font-medium transition-all duration-200 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-primary-600 after:transition-all after:duration-200 hover:after:w-full;
+  }
+  .nav-link-active {
+    @apply text-primary-600 after:w-full;
+  }
+  .product-grid {
+    @apply grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4;
+  }
+  .section-padding {
+    @apply py-12 px-4 sm:px-6 lg:px-8;
+  }
+  .hero-section {
+    @apply relative overflow-hidden bg-white;
+  }
+  .hero-content {
+    @apply relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-32 text-center sm:py-48 lg:py-56 animate-fade-in;
+  }
+  .badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium transition-colors duration-200;
+  }
+  .badge-primary {
+    @apply badge bg-primary-100 text-primary-800;
+  }
+  .badge-accent {
+    @apply badge bg-accent-100 text-accent-800;
+  }
+  .loading-spinner {
+    @apply animate-bounce-subtle inline-block h-8 w-8 rounded-full border-4 border-primary-500 border-r-transparent;
+  }
+}

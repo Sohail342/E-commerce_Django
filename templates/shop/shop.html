@@ -1,104 +1,227 @@
 {% extends 'base/base.html' %}
 {% load static %}
 
-{% block content %}
-<link rel="stylesheet" href="{% static 'css/product-listing.css' %}">
-<link rel="stylesheet" href="{% static 'css/enhanced-product-listing.css' %}">
-<link rel="stylesheet" href="{% static 'css/ionicons.min.css' %}">
-<script src="{% static 'js/product-listing.js' %}"></script>
+{% block extra_js %}
+<script src="{% static 'js/filter-sidebar.js' %}"></script>
+{% endblock %}
 
-<section class="ftco-section">
-    <div class="container-fluid px-4">
-        <div class="row">
+{% block extra_head %}
+<style>
+    /* Custom range slider styles */
+    input[type="range"] {
+        -webkit-appearance: none;
+        appearance: none;
+        height: 8px;
+        border-radius: 8px;
+        background: #e5e7eb;
+        outline: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #4f46e5;
+        cursor: pointer;
+        border: 2px solid white;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s ease;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #4f46e5;
+        cursor: pointer;
+        border: 2px solid white;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s ease;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover,
+    input[type="range"]::-moz-range-thumb:hover {
+        transform: scale(1.1);
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+    }
+
+    input[type="range"]::-webkit-slider-thumb:active,
+    input[type="range"]::-moz-range-thumb:active {
+        transform: scale(0.95);
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="py-16 bg-gradient-to-b from-gray-50 to-white">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Mobile Filter Toggle Button -->
+        <div class="lg:hidden mb-4">
+            <button id="filterToggle" class="w-full flex items-center justify-center space-x-2 bg-white px-4 py-3 rounded-lg shadow-sm border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/>
+                </svg>
+                <span>Show Filters</span>
+            </button>
+        </div>
+        <div class="flex flex-col lg:flex-row gap-8">
             <!-- Filter Sidebar -->
-            <div class="col-md-3">
-                <div class="filter-sidebar">
-                    <div class="search-container">
-                        <input type="text" class="search-input" placeholder="Search products..." id="productSearch">
+            <div id="filterSidebar" class="fixed inset-0 lg:relative z-40 lg:z-0 transform transition-all duration-300 ease-in-out lg:transform-none -translate-x-full lg:translate-x-0 pointer-events-none lg:pointer-events-auto opacity-0 lg:opacity-100">
+                <!-- Backdrop -->
+                <div class="fixed inset-0 bg-black bg-opacity-25 lg:hidden transition-opacity duration-300 ease-in-out opacity-0 pointer-events-none" id="sidebarBackdrop"></div>
+                
+                <div class="relative w-4/5 max-w-xs lg:w-full h-full lg:h-auto bg-white lg:rounded-xl shadow-lg lg:p-6 p-4 overflow-y-auto lg:sticky lg:top-24 border-r lg:border lg:border-gray-100 backdrop-blur-sm">
+                    <!-- Close button for mobile -->
+                    <button id="closeFilter" class="lg:hidden absolute right-4 top-4 text-gray-500 hover:text-gray-700">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                    <!-- Search Bar -->
+                    <div class="mb-6">
+                        <div class="relative">
+                            <input type="text" class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all bg-gray-50 hover:bg-white focus:bg-white" placeholder="Search products..." id="productSearch">
+                            <svg class="absolute right-3 top-2.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                        </div>
                     </div>
                     
-                    <h4>Categories</h4>
-                    <ul class="list-unstyled">
-                        <li><a href="#" class="active">All</a></li>
-                        {% for ctg in category %}
-                        <li><a href="{% url 'shop:category' ctg.name %}">{{ ctg.name }}</a></li>
-                        {% endfor %}
-                    </ul>
+                    <!-- Categories -->
+                    <div class="mb-6">
+                        <h4 class="text-lg font-semibold mb-4">Categories</h4>
+                        <ul class="space-y-2">
+                            <li><a href="#" class="text-primary-600 font-medium hover:text-primary-700 transition-colors">All</a></li>
+                            {% for ctg in category %}
+                            <li><a href="{% url 'shop:category' ctg.name %}" class="text-gray-600 hover:text-primary-600 transition-colors">{{ ctg.name }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
                     
-                    <h4>Price Range</h4>
-                    <div class="range-slider">
-                        <input type="range" min="0" max="10000" value="0" class="price-range" id="minPrice">
-                        <input type="range" min="0" max="10000" value="10000" class="price-range" id="maxPrice">
-                        <div class="price-output">
-                            <span>PKR <span id="minPriceValue">0</span></span>
-                            <span>PKR <span id="maxPriceValue">10000</span></span>
+                    <!-- Price Range -->
+                    <div>
+                        <h4 class="text-lg font-semibold mb-4">Price Range</h4>
+                        <div class="space-y-6">
+                            <div class="relative pt-1">
+                                <input type="range" min="0" max="10000" value="0" 
+                                    class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary-500/30 range-sm" 
+                                    id="minPrice">
+                                <div class="w-full h-2 absolute pointer-events-none bg-primary-500/20 rounded-lg" style="top: 0.25rem;"></div>
+                            </div>
+                            <div class="relative pt-1">
+                                <input type="range" min="0" max="10000" value="10000" 
+                                    class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary-500/30 range-sm" 
+                                    id="maxPrice">
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <div class="flex flex-col">
+                                    <span class="text-xs text-gray-500">Min Price</span>
+                                    <span class="text-sm font-medium text-gray-900">PKR <span id="minPriceValue">0</span></span>
+                                </div>
+                                <div class="flex flex-col text-right">
+                                    <span class="text-xs text-gray-500">Max Price</span>
+                                    <span class="text-sm font-medium text-gray-900">PKR <span id="maxPriceValue">10000</span></span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
     
             <!-- Product Grid -->
-            <div class="col-md-9">
-                <div class="product-grid">
+            <div class="w-full lg:w-3/4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
                     {% if products %}
                     {% for product in products %}
-                    <div class="product-card">
-                        <div class="product-image">
-                            <a href="{% url 'shop:product_detail' product.id %}">
-                                <img src="{{ product.photo.url }}" alt="{{ product.name }}">
+                    <div class="group bg-white rounded-xl shadow-sm hover:shadow-xl overflow-hidden transform transition-all duration-300 ease-in-out hover:-translate-y-2 border border-gray-100">
+                        <!-- Fixed height/width image container -->
+                        <div class="relative w-full h-64"> <!-- Fixed height for all image containers -->
+                            <a href="{% url 'shop:product_detail' product.id %}" class="block w-full h-full">
+                                <img src="{{ product.photo.url }}" alt="{{ product.name }}" class="w-full h-full object-contain bg-gray-50"> <!-- object-contain preserves aspect ratio -->
                             </a>
-                            <div class="action-icons">
-                                <button class="icon-button" title="Add to Wishlist">
-                                    <i class="ion-ios-heart-outline"></i>
-                                </button>
-                                <button class="icon-button" title="Quick View">
-                                    <i class="ion-ios-search"></i>
-                                </button>
-                            </div>
-                            <a href="{% url 'shop:product_detail' product.id %}" class="quick-view-btn">Quick View</a>
+                            <!-- Wishlist Heart Icon -->
+                            <button class="absolute top-4 right-4 p-2 rounded-full bg-white/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-white hover:scale-110 hover:shadow-lg">
+                                <svg class="w-5 h-5 text-gray-600 hover:text-red-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                                </svg>
+                            </button>
                         </div>
-                        <div class="product-info">
-                            <h3 class="product-name">
-                                <a href="{% url 'shop:product_detail' product.id %}">{{ product.name }}</a>
-                            </h3>
-                            <div class="product-price">PKR {{ product.price }}</div>
-                            <div class="product-actions">
-                                <a href="{% url 'shop:product_detail' product.id %}" class="action-button">View Details</a>
-                                <a href="{% url 'cart:add_to_cart' product.id %}" class="action-button">Add to Cart</a>
+                        
+                        <!-- Product Details with consistent spacing -->
+                        <div class="p-5">
+                            <!-- Title container with fixed height -->
+                            <div class="h-14 mb-3">
+                                <h3 class="text-lg font-semibold line-clamp-2">
+                                    <a href="{% url 'shop:product_detail' product.id %}" class="text-gray-800 hover:text-primary-600 transition-colors">{{ product.name }}</a>
+                                </h3>
+                            </div>
+                            
+                            <!-- Price with fixed position -->
+                            <div class="h-8 mb-4">
+                                <div class="text-primary-600 font-medium text-lg">PKR {{ product.price }}</div>
+                            </div>
+                            
+                            <!-- Buttons (these are already working fine) -->
+                            <div class="grid grid-cols-2 gap-2">
+                                <a href="{% url 'shop:product_detail' product.id %}" class="bg-blue-100 text-blue-800 py-2 px-3 rounded-lg text-center font-medium hover:bg-blue-200 transition-all duration-300 flex items-center justify-center">
+                                    <span>Details</span>
+                                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                    </svg>
+                                </a>
+                                <a href="{% url 'cart:add_to_cart' product.id %}" class="bg-green-600 text-white py-2 px-3 rounded-lg text-center font-medium hover:bg-green-700 transition-all duration-300 flex items-center justify-center">
+                                    <span>Cart</span>
+                                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                    </svg>
+                                </a>
                             </div>
                         </div>
                     </div>
                     {% endfor %}
                     {% else %}
-                    <p>No products found</p>
+                    <div class="col-span-full text-center py-8 text-gray-500">No products found</div>
                     {% endif %}
                 </div>
             </div>
-    
-            <!-- Pagination -->
-            <div class="row mt-5">
-                {% if is_paginated %}
-                <div class="col-md-12 d-flex justify-content-center">
-                    <div class="pagination">
-                        {% if products.has_previous %}
-                            <a href="?page={{ products.previous_page_number }}" class="page-link">&laquo; Previous</a>
+        </div>
+
+        <!-- Pagination -->
+        <div class="mt-16 w-full">
+            {% if is_paginated %}
+            <div class="flex justify-center">
+                <nav class="inline-flex rounded-lg shadow-md space-x-1" aria-label="Pagination">
+                    {% if products.has_previous %}
+                        <a href="?page={{ products.previous_page_number }}" class="relative inline-flex items-center px-4 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                            <span class="sr-only">Previous</span>
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                            </svg>
+                        </a>
+                    {% endif %}
+
+                    {% for num in products.paginator.page_range %}
+                        {% if products.number == num %}
+                            <a class="relative inline-flex items-center px-4 py-2 border border-primary-600 bg-primary-600 text-sm font-medium text-white hover:bg-primary-700 transition-colors" href="?page={{ num }}" aria-current="page">{{ num }}</a>
+                        {% else %}
+                            <a class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors" href="?page={{ num }}">{{ num }}</a>
                         {% endif %}
-    
-                        {% for num in products.paginator.page_range %}
-                            {% if products.number == num %}
-                                <a class="page-link active" href="?page={{ num }}">{{ num }}</a>
-                            {% else %}
-                                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
-                            {% endif %}
-                        {% endfor %}
-    
-                        {% if products.has_next %}
-                            <a href="?page={{ products.next_page_number }}" class="page-link">Next &raquo;</a>
-                        {% endif %}
-                    </div>
-                </div>
-                {% endif %}
+                    {% endfor %}
+
+                    {% if products.has_next %}
+                        <a href="?page={{ products.next_page_number }}" class="relative inline-flex items-center px-4 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                            <span class="sr-only">Next</span>
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </a>
+                    {% endif %}
+                </nav>
             </div>
+            {% endif %}
         </div>
     </div>
 </section>

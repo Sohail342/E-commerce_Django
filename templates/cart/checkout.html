@@ -3,149 +3,266 @@
 
 {% block content %}
 <link rel="stylesheet" href="{% static 'css/enhanced-checkout.css' %}">
-<section class="ftco-section">
-    <div class="checkout-container">
+<section class="bg-gray-50 py-12">
+    <div class="max-w-6xl mx-auto px-4">
         {% if cart_is_empty %}
-        <div class="empty-cart animate-fade-in">
-            <h3>Your cart is empty</h3>
-            <a href="{% url 'shop:shop' %}" class="btn btn-primary">Continue Shopping</a>
+        <div class="text-center py-16 animate-fade-in">
+            <h3 class="text-2xl font-semibold text-gray-700 mb-6">Your cart is empty</h3>
+            <a href="{% url 'shop:shop' %}" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">Continue Shopping</a>
         </div>
         {% else %}
-        <div class="checkout-steps">
-            <div class="checkout-step active">
-                <div class="step-number">1</div>
-                <p class="step-title">Shipping</p>
+        <div class="flex justify-between items-center mb-12 px-4 relative">
+            <div class="flex flex-col items-center relative z-10 w-1/3">
+                <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold shadow-lg">1</div>
+                <p class="text-sm font-medium mt-2 text-blue-600">Shipping</p>
             </div>
-            <div class="checkout-step">
-                <div class="step-number">2</div>
-                <p class="step-title">Payment</p>
+            <div class="flex flex-col items-center relative z-10 w-1/3">
+                <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-semibold">2</div>
+                <p class="text-sm font-medium mt-2 text-gray-600">Payment</p>
             </div>
-            <div class="checkout-step">
-                <div class="step-number">3</div>
-                <p class="step-title">Review</p>
+            <div class="flex flex-col items-center relative z-10 w-1/3">
+                <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-semibold">3</div>
+                <p class="text-sm font-medium mt-2 text-gray-600">Review</p>
             </div>
+            <div class="absolute top-5 left-0 w-full h-0.5 bg-gray-200 -z-10"></div>
         </div>
 
-        <form action="{% url 'order:checkout' %}" class="checkout-form needs-validation" method="POST" novalidate>
+        <form action="{% url 'order:checkout' %}" class="space-y-8 needs-validation" method="POST" novalidate>
             {% csrf_token %}
-            <div class="form-section animate-fade-in">
+            <div class="bg-white rounded-lg shadow-lg p-6 animate-fade-in">
                 <h3 class="mb-4">Shipping Information</h3>
-                <div class="row g-3">
-                    <div class="col-md-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-2">
                         <div class="form-group">
-                            <label for="firstname" class="form-label">First Name*</label>
-                            <input type="text" class="form-control" id="firstname" name="firstname" required>
-                            <div class="invalid-feedback">Please enter your first name.</div>
+                            <label for="firstname" class="block text-sm font-medium text-gray-700">First Name*</label>
+                            <input type="text" class="w-full px-4 py-2 mt-1 text-gray-900 placeholder-gray-400 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out" id="firstname" name="firstname" required>
+                            <div class="text-red-600 text-sm mt-1 hidden">Please enter your first name.</div>
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="space-y-2">
                         <div class="form-group">
-                            <label for="lastname" class="form-label">Last Name</label>
-                            <input type="text" class="form-control" id="lastname" name="lastname">
-                            <div class="form-text">Optional field</div>
+                            <label for="lastname" class="block text-sm font-medium text-gray-700">Last Name</label>
+                            <input type="text" class="w-full px-4 py-2 mt-1 text-gray-900 placeholder-gray-400 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out" id="lastname" name="lastname">
+                            <div class="text-gray-500 text-sm mt-1">Optional field</div>
                         </div>
                     </div>
 
-                    <div class="col-md-12">
+                    <div class="col-span-full space-y-2">
                         <div class="form-group">
-                            <label for="country">State / Country</label>
-                            <select name="country" id="country" class="form-control">
+                            <label for="country" class="block text-sm font-medium text-gray-700">State / Country</label>
+                            <select name="country" id="country" class="w-full px-4 py-2 mt-1 text-gray-900 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out bg-white">
                                 <option value="Pakistan">Pakistan</option>
                             </select>
                         </div>
                     </div>
 
-                    <div class="col-md-6">
+                    <div class="space-y-2">
                         <div class="form-group">
-                            <label for="streetaddress" class="form-label">Street Address*</label>
-                            <input type="text" class="form-control" id="streetaddress" name="streetaddress" placeholder="House number and street name" required>
-                            <div class="invalid-feedback">Please enter your street address.</div>
+                            <label for="streetaddress" class="block text-sm font-medium text-gray-700">Street Address*</label>
+                            <input type="text" class="w-full px-4 py-2 mt-1 text-gray-900 placeholder-gray-400 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out" id="streetaddress" name="streetaddress" placeholder="House number and street name" required>
+                            <div class="text-red-600 text-sm mt-1 hidden">Please enter your street address.</div>
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="space-y-2">
                         <div class="form-group">
-                            <label for="apartment" class="form-label">Apartment/Suite</label>
-                            <input type="text" class="form-control" name="apartment" id="apartment" placeholder="Apartment, suite, unit etc: (optional)">
-                        </div>
-                    </div>
-
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="towncity" class="form-label">Town / City*</label>
-                            <input type="text" name="towncity" id="towncity" class="form-control" required>
-                            <div class="invalid-feedback">Please enter your town/city.</div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="postcodezip" class="form-label">Postcode / ZIP</label>
-                            <input type="text" name="postcodezip" id="postcodezip" class="form-control">
+                            <label for="apartment" class="block text-sm font-medium text-gray-700">Apartment/Suite</label>
+                            <input type="text" class="w-full px-4 py-2 mt-1 text-gray-900 placeholder-gray-400 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out" name="apartment" id="apartment" placeholder="Apartment, suite, unit etc: (optional)">
+                            <div class="text-gray-500 text-sm mt-1">Optional field</div>
                         </div>
                     </div>
 
-                    <div class="col-md-6">
+                    <div class="space-y-2">
                         <div class="form-group">
-                            <label for="phone" class="form-label">Phone*</label>
-                            <input type="tel" name="phone" id="phone" class="form-control" pattern="[0-9]{11}" placeholder="03XX-XXXXXXX" required>
-                            <div class="invalid-feedback">Please enter a valid 11-digit phone number.</div>
+                            <label for="towncity" class="block text-sm font-medium text-gray-700">Town / City*</label>
+                            <input type="text" name="towncity" id="towncity" class="w-full px-4 py-2 mt-1 text-gray-900 placeholder-gray-400 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out" required>
+                            <div class="text-red-600 text-sm mt-1 hidden">Please enter your town/city.</div>
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="space-y-2">
                         <div class="form-group">
-                            <label for="emailaddress" class="form-label">Email Address*</label>
-                            <input type="email" name="emailaddress" id="emailaddress" class="form-control" placeholder="you@example.com" required>
-                            <div class="invalid-feedback">Please enter a valid email address.</div>
+                            <label for="postcodezip" class="block text-sm font-medium text-gray-700">Postcode / ZIP</label>
+                            <input type="text" name="postcodezip" id="postcodezip" class="w-full px-4 py-2 mt-1 text-gray-900 placeholder-gray-400 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out">
+                            <div class="text-gray-500 text-sm mt-1">Optional field</div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <div class="form-group">
+                            <label for="phone" class="block text-sm font-medium text-gray-700">Phone*</label>
+                            <input type="tel" name="phone" id="phone" class="w-full px-4 py-2 mt-1 text-gray-900 placeholder-gray-400 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out" pattern="[0-9]{11}" placeholder="03XX-XXXXXXX" required>
+                            <div class="text-red-600 text-sm mt-1 hidden">Please enter a valid 11-digit phone number.</div>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="form-group">
+                            <label for="emailaddress" class="block text-sm font-medium text-gray-700">Email Address*</label>
+                            <input type="email" name="emailaddress" id="emailaddress" class="w-full px-4 py-2 mt-1 text-gray-900 placeholder-gray-400 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out" placeholder="you@example.com" required>
+                            <div class="text-red-600 text-sm mt-1 hidden">Please enter a valid email address.</div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="form-section animate-fade-in">
-                <h3 class="mb-4">Payment Method</h3>
-                <div class="alert alert-info">
-                    <i class="fas fa-info-circle"></i> Currently, we only support Cash on Delivery (COD) payment method.
+            <div class="bg-white rounded-lg shadow-lg p-6 mt-8 animate-fade-in">
+                <h3 class="text-xl font-semibold text-gray-800 mb-6">Payment Method</h3>
+                <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-blue-700">Currently, we only support Cash on Delivery (COD) payment method.</p>
+                        </div>
+                    </div>
                 </div>
                 <div class="payment-methods">
-                    <div class="payment-method selected">
-                        <input type="radio" name="payment_method" value="COD" checked required>
-                        <label>Cash on Delivery</label>
-                        <p class="text-muted">Pay when you receive your order</p>
+                    <div class="payment-method selected bg-gradient-to-r from-blue-50 to-white p-6 rounded-lg border-2 border-blue-500 shadow-md transition-all duration-300 hover:shadow-lg">
+                        <div class="flex items-center space-x-3">
+                            <input type="radio" name="payment_method" value="COD" checked required class="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300">
+                            <div>
+                                <label class="text-lg font-medium text-gray-900">Cash on Delivery</label>
+                                <p class="text-gray-500 mt-1">Pay when you receive your order</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="form-section animate-fade-in">
-                <h3 class="mb-4">Order Summary</h3>
-                <div class="order-summary">
-                    <div class="summary-item">
-                        <span>Items ({{ cart_items }})</span>
-                        <span>PKR {{ subtotal }}</span>
+            <div class="bg-gradient-to-br from-white to-blue-50 rounded-xl shadow-xl p-6 mt-8 animate-fade-in transform hover:scale-[1.02] transition-all duration-300 sm:p-8">
+                <h3 class="text-2xl font-bold text-gray-800 mb-8 flex items-center gap-3">
+                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    </svg>
+                    Order Summary
+                </h3>
+                <div class="space-y-6 bg-white/50 backdrop-blur-sm p-6 rounded-lg shadow-inner sm:p-8">
+                    <div class="flex justify-between items-center text-gray-700 hover:bg-blue-50/50 p-2 rounded-lg transition-colors duration-200">
+                        <span class="font-medium flex items-center gap-2">
+                            <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                            </svg>
+                            Items ({{ cart_items }})
+                        </span>
+                        <span class="font-semibold animate-fade-in">PKR {{ subtotal }}</span>
                     </div>
-                    <div class="summary-item">
-                        <span>Shipping</span>
-                        <span>PKR 0.00</span>
+                    <div class="flex justify-between items-center text-gray-700 hover:bg-green-50/50 p-2 rounded-lg transition-colors duration-200">
+                        <span class="font-medium flex items-center gap-2">
+                            <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Shipping
+                        </span>
+                        <span class="font-semibold text-green-600 animate-pulse">Free</span>
                     </div>
-                    <div class="summary-item">
-                        <span>Delivery</span>
-                        <span class="text-primary">PKR 250</span>
+                    <div class="flex justify-between items-center text-gray-700 hover:bg-blue-50/50 p-2 rounded-lg transition-colors duration-200">
+                        <span class="font-medium flex items-center gap-2">
+                            <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                            Delivery
+                        </span>
+                        <span class="font-semibold text-blue-600 animate-fade-in">PKR 250</span>
                     </div>
-                    <div class="summary-item">
-                        <span>Discount</span>
-                        <span class="text-danger">PKR 0.00</span>
+                    <div class="flex justify-between items-center text-gray-700 hover:bg-red-50/50 p-2 rounded-lg transition-colors duration-200">
+                        <span class="font-medium flex items-center gap-2">
+                            <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                            </svg>
+                            Discount
+                        </span>
+                        <span class="font-semibold text-red-600 animate-fade-in">- PKR 0.00</span>
                     </div>
-                    <div class="summary-total">
-                        <span>Total</span>
-                        <span>PKR {{ total }}</span>
+                    <div class="flex justify-between items-center text-xl font-bold mt-6 pt-6 border-t-2 border-gray-200 hover:bg-blue-100/20 p-3 rounded-lg transition-colors duration-300">
+                        <span class="text-gray-800">Total</span>
+                        <span class="text-blue-600 animate-fade-in">PKR {{ total }}</span>
                     </div>
 
                     
-                <div class="form-check mt-4">
-                    <input type="checkbox" class="form-check-input" id="terms" required>
-                    <label class="form-check-label" for="terms">I have read and accept the <a href="{% url 'about:other-details' %}">terms and conditions</a></label>
-                    <div class="invalid-feedback">You must agree to the terms and conditions.</div>
+                <div class="mt-6 flex items-start space-x-2">
+                    <div class="flex items-center h-5">
+                        <input type="checkbox" id="terms" required class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded transition duration-150 ease-in-out">
+                    </div>
+                    <div class="ml-3 text-sm">
+                        <label for="terms" class="font-medium text-gray-700">I have read and accept the <a href="{% url 'about:other-details' %}" class="text-blue-600 hover:text-blue-800 underline">terms and conditions</a></label>
+                        <p class="text-red-600 mt-1 hidden">You must agree to the terms and conditions.</p>
+                    </div>
                 </div>
 
-                <button type="submit" class="btn-checkout mt-4">Place Order</button>
+                <div id="orderConfirmationModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+                    <div class="bg-white rounded-xl max-w-lg w-full p-6 transform transition-all scale-95 opacity-0" id="modalContent">
+                        <h3 class="text-xl font-bold text-gray-900 mb-4">Confirm Your Order</h3>
+                        <p class="text-gray-600 mb-6">Please review your order details before proceeding. This action cannot be undone.</p>
+                        <div class="flex flex-col sm:flex-row justify-end gap-3">
+                            <button type="button" id="cancelOrder" class="w-full sm:w-auto px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200">Cancel</button>
+                            <button type="button" id="confirmOrder" class="w-full sm:w-auto px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200">Confirm Order</button>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" id="placeOrderBtn" class="w-full sm:w-auto px-8 py-4 text-lg font-semibold rounded-xl text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 flex items-center justify-center space-x-3 mt-8">
+                    <span>Place Order</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const form = document.querySelector('form');
+                        const modal = document.getElementById('orderConfirmationModal');
+                        const modalContent = document.getElementById('modalContent');
+                        const placeOrderBtn = document.getElementById('placeOrderBtn');
+                        const confirmOrderBtn = document.getElementById('confirmOrder');
+                        const cancelOrderBtn = document.getElementById('cancelOrder');
+                        const requiredFields = form.querySelectorAll('[required]');
+
+                        function validateForm() {
+                            let isValid = true;
+                            requiredFields.forEach(field => {
+                                const errorDiv = field.nextElementSibling;
+                                if (!field.value.trim()) {
+                                    isValid = false;
+                                    field.classList.add('border-red-500');
+                                    if (errorDiv && errorDiv.classList.contains('hidden')) {
+                                        errorDiv.classList.remove('hidden');
+                                    }
+                                } else {
+                                    field.classList.remove('border-red-500');
+                                    if (errorDiv) {
+                                        errorDiv.classList.add('hidden');
+                                    }
+                                }
+                            });
+                            return isValid;
+                        }
+
+                        placeOrderBtn.addEventListener('click', function() {
+                            if (validateForm()) {
+                                modal.classList.remove('hidden');
+                                setTimeout(() => {
+                                    modalContent.classList.remove('scale-95', 'opacity-0');
+                                    modalContent.classList.add('scale-100', 'opacity-100');
+                                }, 50);
+                            } else {
+                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                            }
+                        });
+
+                        confirmOrderBtn.addEventListener('click', function() {
+                            form.submit();
+                        });
+
+                        cancelOrderBtn.addEventListener('click', function() {
+                            modalContent.classList.add('scale-95', 'opacity-0');
+                            modalContent.classList.remove('scale-100', 'opacity-100');
+                            setTimeout(() => {
+                                modal.classList.add('hidden');
+                            }, 200);
+                        });
+                    });
+                </script>
                 </div>
 
             </div>
@@ -155,24 +272,31 @@
 </section>
 
 <!-- Order Confirmation Modal -->
-<div class="modal fade" id="orderConfirmationModal" tabindex="-1" aria-labelledby="orderConfirmationModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="orderConfirmationModalLabel">Confirm Your Order</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p>Please review your order details before confirming:</p>
-                <div class="confirmation-details">
-                    <div class="shipping-review"></div>
-                    <div class="payment-review"></div>
-                    <div class="order-total-review"></div>
+<div class="fixed inset-0 z-50 hidden overflow-y-auto" id="orderConfirmationModal" aria-labelledby="orderConfirmationModalLabel" aria-hidden="true">
+    <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+            <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+        </div>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div class="sm:flex sm:items-start">
+                    <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900" id="orderConfirmationModalLabel">Confirm Your Order</h3>
+                        <div class="mt-4">
+                            <p class="text-sm text-gray-500">Please review your order details before confirming:</p>
+                            <div class="confirmation-details mt-4 space-y-4 divide-y divide-gray-100">
+                                <div class="shipping-review py-2"></div>
+                                <div class="payment-review py-2"></div>
+                                <div class="order-total-review py-2"></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Edit Order</button>
-                <button type="button" class="btn btn-primary" id="confirmOrder">Confirm Order</button>
+            <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <button type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm" id="confirmOrder">Confirm Order</button>
+                <button type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm closeModal">Edit Order</button>
             </div>
         </div>
     </div>
@@ -182,6 +306,8 @@
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.querySelector('.needs-validation');
     const steps = document.querySelectorAll('.checkout-step');
+    const modal = document.getElementById('orderConfirmationModal');
+    const closeModalBtn = document.querySelector('.closeModal');
     let currentStep = 0;
 
     // Function to check if all required fields are filled
@@ -191,10 +317,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Reset previous validation states
         requiredFields.forEach(field => {
-            field.classList.remove('is-invalid');
+            field.classList.remove('border-red-500');
             const feedbackElement = field.nextElementSibling;
-            if (feedbackElement && feedbackElement.classList.contains('invalid-feedback')) {
-                feedbackElement.style.display = 'none';
+            if (feedbackElement && feedbackElement.classList.contains('text-red-600')) {
+                feedbackElement.classList.add('hidden');
             }
         });
 
@@ -202,10 +328,10 @@ document.addEventListener('DOMContentLoaded', function() {
         requiredFields.forEach(field => {
             if (!field.value.trim()) {
                 isValid = false;
-                field.classList.add('is-invalid');
+                field.classList.add('border-red-500');
                 const feedbackElement = field.nextElementSibling;
-                if (feedbackElement && feedbackElement.classList.contains('invalid-feedback')) {
-                    feedbackElement.style.display = 'block';
+                if (feedbackElement && feedbackElement.classList.contains('text-red-600')) {
+                    feedbackElement.classList.remove('hidden');
                 }
                 field.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
@@ -213,112 +339,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (!isValid) {
             const alertDiv = document.createElement('div');
-            alertDiv.className = 'alert alert-danger mt-3';
-            alertDiv.innerHTML = '<i class="fas fa-exclamation-circle"></i> Please fill in all required fields before proceeding.';
-            
-            // Remove any existing alert
-            const existingAlert = form.querySelector('.alert-danger');
-            if (existingAlert) {
-                existingAlert.remove();
-            }
-            
-            form.insertBefore(alertDiv, form.firstChild);
-            setTimeout(() => alertDiv.remove(), 5000); // Remove alert after 5 seconds
-        }
-
-        return isValid;
-    }
-    
-    function updateSteps() {
-        steps.forEach((step, index) => {
-            step.classList.remove('active');
-            if (index === currentStep) {
-                step.classList.add('active');
-            } else if (index < currentStep) {
-                step.classList.add('completed');
-            }
-        });
-    }
-
-    function validateStep(step) {
-        let isValid = true;
-        const currentSection = document.querySelectorAll('.form-section')[step];
-        const requiredFields = currentSection.querySelectorAll('[required]');
-        
-        requiredFields.forEach(field => {
-            if (!field.checkValidity()) {
-                isValid = false;
-                field.classList.add('is-invalid');
-            }
-        });
-
-        return isValid;
-    }
-
-    function updateConfirmationModal() {
-        const shippingReview = document.querySelector('.shipping-review');
-        const paymentReview = document.querySelector('.payment-review');
-        const orderTotalReview = document.querySelector('.order-total-review');
-
-        // Update shipping details
-        shippingReview.innerHTML = `
-            <h6>Shipping Details</h6>
-            <p>${document.getElementById('firstname').value} ${document.getElementById('lastname').value}</p>
-            <p>${document.getElementById('streetaddress').value}</p>
-            <p>${document.getElementById('towncity').value}, ${document.getElementById('country').value}</p>
-            <p>Phone: ${document.getElementById('phone').value}</p>
-            <p>Email: ${document.getElementById('emailaddress').value}</p>
-        `;
-
-        // Update payment method
-        paymentReview.innerHTML = `
-            <h6>Payment Method</h6>
-            <p>Cash on Delivery</p>
-        `;
-
-        // Update order total
-        const total = document.querySelector('.summary-total span:last-child').textContent;
-        orderTotalReview.innerHTML = `
-            <h6>Order Total</h6>
-            <p class="font-weight-bold">${total}</p>
-        `;
-    }
-
-    if (form) {
-        form.addEventListener('submit', function(event) {
-            event.preventDefault();
-            
-            if (validateStep(currentStep)) {
-                if (currentStep < 2) {
-                    currentStep++;
-                    updateSteps();
-                    document.querySelectorAll('.form-section')[currentStep].scrollIntoView({ behavior: 'smooth' });
-                } else if (validateRequiredFields()) {
-                    updateConfirmationModal();
-                    new bootstrap.Modal(document.getElementById('orderConfirmationModal')).show();
-                }
-            }
-            form.classList.add('was-validated');
-        });
-
-        // Confirm order button handler
-        document.getElementById('confirmOrder').addEventListener('click', function() {
-            form.submit();
-        });
-
-        // Update step indicators as user scrolls through sections
-        const sections = document.querySelectorAll('.form-section');
-
-        window.addEventListener('scroll', function() {
-            sections.forEach((section, index) => {
-                const rect = section.getBoundingClientRect();
-                if (rect.top <= window.innerHeight / 2 && rect.bottom >= window.innerHeight / 2) {
-                    currentStep = index;
-                    updateSteps();
-                }
-            });
-        });
-    }
-});
+            alertDiv.className = 'bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4';
+            alertDiv.innerHTML = '<div class="flex"><div class="flex-shrink-0
 </script>
 {% endblock %}

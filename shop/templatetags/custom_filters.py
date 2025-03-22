@@ -2,10 +2,19 @@ from django import template
 
 register = template.Library()
 
-@register.filter(name='multiply')
+
+@register.filter
 def multiply(value, arg):
     """Multiplies the value by the argument"""
     try:
         return int(value) * int(arg)
     except (ValueError, TypeError):
-        return value
+        return ''
+
+@register.filter
+def add(value, arg):
+    """Adds the arg to the value."""
+    try:
+        return int(value) + int(arg)
+    except (ValueError, TypeError):
+        return ''

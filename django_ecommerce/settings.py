@@ -16,7 +16,7 @@ load_dotenv()
 SECRET_KEY = 'django-insecure-4otbrtd-bed^yc29c3zwo2k0)c$)o_8=_48^g#@o)h9*uod#@h'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ["https://e-commerce-django-weld.vercel.app", "*"]
 
@@ -86,6 +86,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'cart.cart_context_processors.cart_item_count',
+                'wishlist.wishlist_context_processors.wishlist_count',
             ],
         },
     },

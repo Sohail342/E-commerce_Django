@@ -1,61 +1,108 @@
 {% extends 'base/base.html' %}
 
 {% block content %}
-<div class="container-fluid py-5">
-    <h1 class="text-center mb-5 display-4">Shipping Information</h1>
+<!-- Hero Section -->
+<section class="relative bg-gradient-to-r from-blue-100 to-indigo-200 py-24">
+    <div class="container mx-auto px-4">
+        <div class="max-w-3xl mx-auto text-center text-gray-800">
+            <h1 class="text-4xl md:text-5xl font-bold mb-6" data-aos="fade-up">Shipping Information</h1>
+            <p class="text-xl opacity-90" data-aos="fade-up" data-aos-delay="200">Everything you need to know about our shipping services and delivery process.</p>
+        </div>
+    </div>
+    <div class="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-white"></div>
+</section>
 
-    <!-- Shipping Methods Section -->
-    <div class="row justify-content-center mb-5">
-        <div class="col-lg-8">
-            <div class="card border-0 shadow-sm rounded-lg">
-                <div class="card-body p-4">
-                    <h2 class="card-title h4 mb-3">Shipping Methods</h2>
-                    <p class="text-muted">We offer standard shipping across Pakistan.</p>
+<div class="container mx-auto px-4 py-16">
+    <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-2">
+        <!-- Shipping Methods Section -->
+        <div class="group" data-aos="fade-up" data-aos-delay="100">
+            <div class="h-full bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 p-8 border border-gray-100">
+                <div class="flex items-center mb-6">
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+                        <i class="fas fa-shipping-fast text-2xl text-blue-600"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-800">Shipping Methods</h2>
+                </div>
+                <div class="space-y-4">
+                    <p class="text-gray-600">We offer reliable standard shipping across Pakistan to ensure your orders reach you safely and on time.</p>
+                    <div class="bg-blue-50 rounded-lg p-4">
+                        <p class="text-blue-800 font-medium">Standard Shipping</p>
+                        <p class="text-blue-600 mt-1">Available nationwide</p>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Shipping Costs Section -->
-    <div class="row justify-content-center mb-5">
-        <div class="col-lg-8">
-            <div class="card border-0 shadow-sm rounded-lg">
-                <div class="card-body p-4">
-                    <h2 class="card-title h4 mb-3">Shipping Costs</h2>
-                    <p class="text-muted mb-4">All orders within Pakistan have a fixed shipping cost.</p>
-                    <div class="card border-light bg-light mb-3">
-                        <div class="card-body">
-                            <h5 class="card-title font-weight-bold">Standard Shipping</h5>
-                            <p class="card-text text-muted">250 PKR (Pakistan-wide Only)</p>
+        <!-- Shipping Costs Section -->
+        <div class="group" data-aos="fade-up" data-aos-delay="200">
+            <div class="h-full bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 p-8 border border-gray-100">
+                <div class="flex items-center mb-6">
+                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mr-4">
+                        <i class="fas fa-tags text-2xl text-green-600"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-800">Shipping Costs</h2>
+                </div>
+                <div class="space-y-4">
+                    <p class="text-gray-600">All orders within Pakistan have a fixed shipping cost, with free shipping available on qualifying orders.</p>
+                    <div class="bg-green-50 rounded-lg p-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-green-800 font-medium">Standard Rate</span>
+                            <span class="text-green-600 font-bold">250 PKR</span>
+                        </div>
+                        <div class="mt-2 pt-2 border-t border-green-100">
+                            <span class="text-green-800 font-medium">Free Shipping</span>
+                            <p class="text-green-600 mt-1">On orders over 10,000 PKR</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Delivery Times Section -->
-    <div class="row justify-content-center mb-5">
-        <div class="col-lg-8">
-            <div class="card border-0 shadow-sm rounded-lg">
-                <div class="card-body p-4">
-                    <h2 class="card-title h4 mb-3">Delivery Times</h2>
-                    <p class="text-muted">All orders are processed within 1-2 business days. Delivery times may vary depending on your location within Pakistan.</p>
-                    <ul class="list-group">
-                        <li class="list-group-item border-light">Estimated Delivery Time: <strong>3-5 business days</strong></li>
-                    </ul>
+        <!-- Delivery Times Section -->
+        <div class="group" data-aos="fade-up" data-aos-delay="300">
+            <div class="h-full bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 p-8 border border-gray-100">
+                <div class="flex items-center mb-6">
+                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mr-4">
+                        <i class="fas fa-clock text-2xl text-purple-600"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-800">Delivery Times</h2>
+                </div>
+                <div class="space-y-4">
+                    <p class="text-gray-600">We process all orders within 1-2 business days. Delivery times may vary based on your location within Pakistan.</p>
+                    <div class="bg-purple-50 rounded-lg p-4">
+                        <div class="space-y-2">
+                            <div class="flex justify-between items-center">
+                                <span class="text-purple-800 font-medium">Processing Time</span>
+                                <span class="text-purple-600">1-2 business days</span>
+                            </div>
+                            <div class="flex justify-between items-center pt-2 border-t border-purple-100">
+                                <span class="text-purple-800 font-medium">Delivery Time</span>
+                                <span class="text-purple-600">3-5 business days</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Tracking Your Order Section -->
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="card border-0 shadow-sm rounded-lg">
-                <div class="card-body p-4">
-                    <h2 class="card-title h4 mb-3">Tracking Your Order</h2>
-                    <p class="text-muted">After your order is shipped, we will send you an email with tracking information to help you follow your package's delivery progress.</p>
+        <!-- Tracking Section -->
+        <div class="group" data-aos="fade-up" data-aos-delay="400">
+            <div class="h-full bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300 p-8 border border-gray-100">
+                <div class="flex items-center mb-6">
+                    <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mr-4">
+                        <i class="fas fa-map-marker-alt text-2xl text-orange-600"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-800">Order Tracking</h2>
+                </div>
+                <div class="space-y-4">
+                    <p class="text-gray-600">Stay informed about your order's journey. We provide tracking information via email once your order is shipped.</p>
+                    <div class="bg-orange-50 rounded-lg p-4">
+                        <div class="space-y-3">
+                            <p class="text-orange-800 font-medium">Track Your Order</p>
+                            <p class="text-orange-600">Tracking details will be sent to your email</p>
+                            <p class="text-orange-600">Customer support available for tracking assistance</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
