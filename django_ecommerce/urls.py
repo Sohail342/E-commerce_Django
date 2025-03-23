@@ -16,4 +16,4 @@ urlpatterns = [
     path('accounts/', include('account.urls')),
     path('order/', include('order.urls')),
     path('wishlist/', include('wishlist.urls', namespace='wishlist')),
-]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]+static(settings.base.MEDIA_URL, document_root=settings.base.MEDIA_ROOT)

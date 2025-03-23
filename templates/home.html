@@ -60,16 +60,16 @@
 {% include 'base\services.html' %}
 
 
-<section class="py-16 sm:py-24 md:py-32 bg-gradient-to-b from-gray-50/90 via-white to-gray-100/95 overflow-hidden relative">
+<section class="py-8 sm:py-12 md:py-16 bg-gradient-to-b from-gray-50/90 via-white to-gray-100/95 overflow-hidden relative">
   <div class="absolute inset-0 bg-gradient-to-tr from-primary-50/40 via-transparent to-indigo-50/40 pointer-events-none backdrop-blur-[2px]"></div>
   <div class="mx-auto max-w-7xl px-6 sm:px-8 lg:px-12 relative">
-    <div class="text-center space-y-8" data-aos="fade-up" data-aos-duration="800">
+    <div class="text-center space-y-6" data-aos="fade-up" data-aos-duration="800">
       <span class="inline-block rounded-full bg-primary-100/95 px-6 py-2.5 text-sm sm:text-base font-semibold text-primary-800 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-primary-100/60 ring-1 ring-primary-100" data-aos="fade-up" data-aos-delay="200">Featured Products</span>
       <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-gray-900 bg-clip-text text-transparent bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700" data-aos="fade-up" data-aos-delay="400">Our Products</h2>
       <p class="mx-auto max-w-2xl text-base sm:text-lg text-gray-700 leading-relaxed font-medium" data-aos="fade-up" data-aos-delay="600">Imagination meets reality. Discover magic at PEHNAVA</p>
     </div>
 
-    <div class="mt-8 sm:mt-12 md:mt-16 relative">
+    <div class="mt-4 sm:mt-6 md:mt-8 relative">
       {% if products %}
       <div class="product-slider-container relative bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-2xl sm:rounded-3xl shadow-xl p-6 sm:p-8 md:p-10 lg:p-12 overflow-hidden touch-pan-y border border-gray-100/80">
         <div class="absolute inset-0 bg-gradient-to-tr from-primary-50/30 via-transparent to-indigo-50/30 rounded-2xl sm:rounded-3xl pointer-events-none backdrop-blur-[1px]"></div>
@@ -78,7 +78,7 @@
           <div class="swiper-wrapper">
             {% for product in products %}
             <div class="swiper-slide p-2 sm:p-3 w-full sm:w-1/2 md:w-1/3 lg:w-1/4">
-              <div class="product-card group relative flex flex-col h-[400px] sm:h-[450px] bg-gradient-to-br from-white via-white to-gray-50 rounded-xl sm:rounded-2xl shadow-lg hover:shadow-2xl transform transition-all duration-500 hover:-translate-y-2 active:scale-95 touch-manipulation border border-gray-100/80 hover:bg-gradient-to-br hover:from-primary-50 hover:via-white hover:to-primary-50" 
+              <div class="product-card group relative flex flex-col h-[400px] sm:h-[450px] bg-white rounded-xl sm:rounded-2xl shadow-lg hover:shadow-2xl transform transition-all duration-500 hover:-translate-y-2 active:scale-95 touch-manipulation border border-gray-100/80" 
                    data-aos="fade-up" data-aos-duration="800" data-aos-delay="{{ forloop.counter|multiply:100 }}">
                   <!-- Hot Label -->
                   
@@ -259,7 +259,7 @@
 
 
 <!--Hot trending Products-->
-<section class="py-16 sm:py-24 md:py-32 bg-gradient-to-b from-gray-50/90 via-white to-gray-100/95 overflow-hidden relative">
+<section class="py-8 sm:py-12 md:py-16 bg-gradient-to-b from-gray-50/90 via-white to-gray-100/95 overflow-hidden relative">
   <div class="absolute inset-0 bg-gradient-to-tr from-primary-50/40 via-transparent to-indigo-50/40 pointer-events-none backdrop-blur-[2px]"></div>
   <div class="mx-auto max-w-7xl px-6 sm:px-8 lg:px-12 relative">
     <div class="text-center space-y-8" data-aos="fade-up" data-aos-duration="800">
@@ -268,7 +268,7 @@
       <p class="mx-auto max-w-2xl text-base sm:text-lg text-gray-700 leading-relaxed font-medium" data-aos="fade-up" data-aos-delay="600">Explore the Extraordinary – PEHNAVA, Where Magic Lives.</p>
     </div>
 
-    <div class="mt-8 sm:mt-12 md:mt-16 relative">
+    <div class="mt-4 sm:mt-6 md:mt-8 relative">
       {% if trending %}
       <div class="product-slider-container relative bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-2xl sm:rounded-3xl shadow-xl p-6 sm:p-8 md:p-10 lg:p-12 overflow-hidden touch-pan-y border border-gray-100/80">
         <div class="absolute inset-0 bg-gradient-to-tr from-primary-50/30 via-transparent to-indigo-50/30 rounded-2xl sm:rounded-3xl pointer-events-none backdrop-blur-[1px]"></div>
@@ -277,7 +277,7 @@
           <div class="swiper-wrapper">
             {% for product in trending %}
             <div class="swiper-slide p-2 sm:p-3 w-full sm:w-1/2 md:w-1/3 lg:w-1/4">
-              <div class="product-card group relative flex flex-col h-[400px] sm:h-[450px] bg-gradient-to-br from-white via-white to-gray-50 rounded-xl sm:rounded-2xl shadow-lg hover:shadow-2xl transform transition-all duration-500 hover:-translate-y-2 active:scale-95 touch-manipulation border border-gray-100/80 hover:bg-gradient-to-br hover:from-primary-50 hover:via-white hover:to-primary-50" 
+              <div class="product-card group relative flex flex-col h-[400px] sm:h-[450px] bg-white rounded-xl sm:rounded-2xl shadow-lg hover:shadow-2xl transform transition-all duration-500 hover:-translate-y-2 active:scale-95 touch-manipulation border border-gray-100/80" 
                    data-aos="fade-up" data-aos-duration="800" data-aos-delay="{{ forloop.counter|multiply:100 }}">
                   <!-- Hot Label -->
                   <div class="absolute top-4 right-4 z-10">
