@@ -24,6 +24,6 @@ DATABASES = {
 }
 
 
-ALLOWED_HOSTS = ['.vercel.app/']
+ALLOWED_HOSTS = ['.vercel.app/', 'e-commerce-django-nu.vercel.app/']
 
 
