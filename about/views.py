@@ -19,8 +19,8 @@ def reviews_view(request):
 
 
 def Shipping_information(request):
-    return render(request, 'footer_links/shipping.html')
+    return render(request, 'base/shipping.html')
 
 
 def Other_details(request):
-    return render(request, 'footer_links/other_details.html')
+    return render(request, 'base/other_details.html')

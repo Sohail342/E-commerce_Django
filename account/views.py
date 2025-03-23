@@ -16,7 +16,7 @@ def signup(request):
             if form.is_valid():   
                 user = form.save()
                 login(request, user)
-                send_email(email, 'send_emails/welcome.html')
+                send_email(email, 'SendEmail/welcome.html')
                 return redirect(reverse("home"))
         else:
             form =  UserRegForm()

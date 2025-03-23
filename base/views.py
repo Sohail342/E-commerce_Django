@@ -10,7 +10,7 @@ def base(request):
             if not Subscriber.objects.filter(email=email).exists():
                 Subscriber.objects.create(email=email)
                 message = "Successfully subscribed."
-                send_email(email, 'send_emails/subscribe')
+                send_email(email, 'SendEmail/subscribe')
             else:
                 message = "Email is already subscribed."
         else:

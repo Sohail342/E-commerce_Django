@@ -12,5 +12,5 @@ def home_page(request):
         'categories':categories,
         'trending':trending,
     }
-    return render(request, 'home.html', context)
+    return render(request, 'base/home.html', context)
 

@@ -12,7 +12,7 @@ def contact_page(request):
         if form.is_valid():
             form.save()
             email = request.POST.get('email')
-            send_email(email, 'send_emails/contact.html')
+            send_email(email, 'SendEmail/contact.html')
             messages.add_message(request, messages.INFO, 'Submitted.')
             return redirect('contact')
     context = {

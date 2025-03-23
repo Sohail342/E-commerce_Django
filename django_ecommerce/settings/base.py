@@ -31,17 +31,17 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'widget_tweaks',
+    
+    # Custum Apps
     'contact',
     'about',
     'shop',
     'cart',
     'base',
     'order',
-
     'account',
     'SendEmail',
-    
-    'widget_tweaks',
     'wishlist',
 ]
 
@@ -70,7 +70,7 @@ ROOT_URLCONF = 'django_ecommerce.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

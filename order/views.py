@@ -109,7 +109,7 @@ def checkout(request):
             cart.clear()
         
         messages.success(request, 'Order placed successfully!')
-        send_email(emailaddress, 'send_emails/succefully_order.html') 
+        send_email(emailaddress, 'SendEmail/succefully_order.html') 
         return redirect('order:order_summary', order_id=order.id) 
     else:
         if not cart_is_empty:
