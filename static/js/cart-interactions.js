@@ -17,7 +17,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const itemContainer = quantityInput.closest('.cart-item');
         // Get ALL price elements in this container, both mobile and desktop
         const priceElements = itemContainer.querySelectorAll('.item-price');
-        const unitPrice = parseFloat(itemContainer.dataset.unitPrice);
+        const isOnSale = itemContainer.querySelector('.text-green-600') !== null;
+        const unitPrice = isOnSale ? 
+            parseFloat(itemContainer.querySelector('.text-primary-600').textContent.replace('PKR ', '')) :
+            parseFloat(itemContainer.dataset.unitPrice);
         const quantity = parseInt(quantityInput.value);
 
         console.log(`Unit Price: ${unitPrice}, Quantity: ${quantity}`);
@@ -36,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     console.log(`Total Price: ${totalPrice}`);
                     // Update ALL price elements
                     priceElements.forEach(element => {
-                        element.textContent = `PKR ${totalPrice.toFixed(2)}`;
+                        element.textContent = `PKR ${totalPrice.toFixed(1)}`;
                     });
                 } else {
                     createToast(`Maximum available quantity is ${data.max_quantity}`, 'warning');
@@ -44,7 +47,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const totalPrice = unitPrice * data.max_quantity;
                     // Update ALL price elements
                     priceElements.forEach(element => {
-                        element.textContent = `PKR ${totalPrice.toFixed(2)}`;
+                        element.textContent = `PKR ${totalPrice.toFixed(1)}`;
                     });
                 }
                 updateCartTotal();
@@ -73,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
         const totalElement = document.querySelector('.cart-total');
         if (totalElement) {
-            totalElement.textContent = `PKR ${total.toFixed(2)}`;
+            totalElement.textContent = `PKR ${total.toFixed(1)}`;
         }
     }
 

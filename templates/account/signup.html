@@ -19,88 +19,100 @@
 </style>
 {% endblock %}
 
-    <section class="ftco-section contact-section bg-light">
-      <div class="container">
-        <div class="row block-9">
-          <div class="col-md-12 d-flex flex-column flex-md-row">
-            <div class="form-container" style="flex: 1; display: flex; align-items: center;">
-              <form class="bg-white p-5 contact-form" action="{% url 'account:signup' %}" method="post" style="width: 100%;">
+    <section class="min-h-screen flex items-center bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8 animate-fade-in">
+      <div class="max-w-7xl mx-auto w-full">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-8">
+          <div class="w-full md:w-1/2 max-w-md">
+            <form class="bg-white shadow-xl rounded-2xl p-8 space-y-6 transform transition-all duration-300 hover:shadow-2xl hover:-translate-y-1" action="{% url 'account:signup' %}" method="post">
                 {% if form.non_field_errors %}
                   <span class="text-danger mt-4 text-sm text-center">{{ form.non_field_errors.as_ul }}</span>
                 {% endif %}
                 {% csrf_token %}
 
-                <div class="form-group">
-                  <label for="username">Username</label>
-                  {{form.username}}
-                  {% if form.username.errors %}
-                    <span class="text-danger mt-4 text-sm text-center">{{ form.username.errors }}</span>
-                  {% endif %}
+                <div class="space-y-4">
+                  <div class="relative">
+                    <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+                    {{form.username|attr:"class:mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 sm:text-sm transition duration-200"}}
+                    {% if form.username.errors %}
+                      <p class="mt-2 text-sm text-red-600">{{ form.username.errors }}</p>
+                    {% endif %}
+                  </div>
+                  <div class="relative">
+                    <label for="first_name" class="block text-sm font-medium text-gray-700">First Name</label>
+                    {{form.first_name|attr:"class:mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 sm:text-sm transition duration-200"}}
+                    {% if form.first_name.errors %}
+                      <p class="mt-2 text-sm text-red-600">{{ form.first_name.errors }}</p>
+                    {% endif %}
+                  </div>
+                  <div class="relative">
+                    <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                    {{form.email|attr:"class:mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 sm:text-sm transition duration-200"}}
+                    {% if form.email.errors %}
+                      <p class="mt-2 text-sm text-red-600">{{ form.email.errors }}</p>
+                    {% endif %}
+                  </div>
                 </div>
-                <div class="form-group">
-                  <label for="first_name">First Name</label>
-                  {{form.first_name}}
-                  {% if form.first_name.errors %}
-                    <span class="text-danger mt-4 text-sm text-center">{{ form.first_name.errors }}</span>
-                  {% endif %}
-                </div>
-                <div class="form-group">
-                  <label for="email">Email</label>
-                  {{form.email}}
-                  {% if form.email.errors %}
-                    <span class="text-danger mt-4 text-sm text-center">{{ form.email.errors }}</span>
-                  {% endif %}
-                </div>
-                <div class="form-group">
-                  <label for="password1">Password</label>
-                  <div class="input-group">
-                    {{form.password1 |attr:"class:form-control" |attr:"oninput:checkPasswordStrength(this.value)"}}
-                    <div class="input-group-append">
-                      <button class="btn btn-outline-secondary" type="button" onclick="togglePassword()">
+                <div class="relative space-y-3">
+                  <label for="password1" class="block text-sm font-medium text-gray-700">Password</label>
+                  <div class="relative rounded-md shadow-sm">
+                    {{form.password1 |attr:"class:block w-full pr-10 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 sm:text-sm transition-all duration-200" |attr:"oninput:checkPasswordStrength(this.value)"}}
+                    <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                      <button type="button" onclick="togglePassword()" class="text-gray-400 hover:text-gray-500 focus:outline-none focus:text-gray-500 transition duration-150 ease-in-out">
                         <i id="toggleIcon" class="fas fa-eye"></i>
                       </button>
                     </div>
                   </div>
-                  <div class="password-strength-container mt-2">
-                    <div class="password-strength-bar" id="password-strength"></div>
-                    <span id="strength-text" class="ml-2"></span>
+                  <div class="mt-2">
+                    <div class="bg-gray-200 rounded-full overflow-hidden">
+                      <div class="password-strength-bar h-2 transition-all duration-300 ease-in-out" id="password-strength"></div>
+                    </div>
+                    <span id="strength-text" class="text-sm text-gray-600 mt-1 block"></span>
                   </div>
-                  <ul class="password-requirements mt-2">
-                    <li id="req-length">At least 8 characters</li>
-                    <li id="req-uppercase">At least one uppercase letter</li>
-                    <li id="req-lowercase">At least one lowercase letter</li>
-                    <li id="req-numbers">At least one number</li>
-                    <li id="req-special">At least one special character</li>
+                  <ul class="space-y-2 text-sm text-gray-600">
+                    <li id="req-length" class="flex items-center transition-colors duration-200"><i class="fas fa-check-circle mr-2 opacity-0 transition-opacity duration-200"></i>At least 8 characters</li>
+                    <li id="req-uppercase" class="flex items-center transition-colors duration-200"><i class="fas fa-check-circle mr-2 opacity-0 transition-opacity duration-200"></i>At least one uppercase letter</li>
+                    <li id="req-lowercase" class="flex items-center transition-colors duration-200"><i class="fas fa-check-circle mr-2 opacity-0 transition-opacity duration-200"></i>At least one lowercase letter</li>
+                    <li id="req-numbers" class="flex items-center transition-colors duration-200"><i class="fas fa-check-circle mr-2 opacity-0 transition-opacity duration-200"></i>At least one number</li>
+                    <li id="req-special" class="flex items-center transition-colors duration-200"><i class="fas fa-check-circle mr-2 opacity-0 transition-opacity duration-200"></i>At least one special character</li>
                   </ul>
                   {% if form.password1.errors %}
-                    <span class="text-danger mt-4 text-sm text-center">{{ form.password1.errors }}</span>
+                    <p class="mt-2 text-sm text-red-600">{{ form.password1.errors }}</p>
                   {% endif %}
                 </div>
-                <div class="form-group">
-                  <label for="password2">Confirm Password</label>
-                  {{form.password2 |attr:"class:form-control"}}
+                <div class="relative space-y-2">
+                  <label for="password2" class="block text-sm font-medium text-gray-700">Confirm Password</label>
+                  {{form.password2 |attr:"class:mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 sm:text-sm transition duration-200"}}
                   {% if form.password2.errors %}
-                    <span class="text-danger mt-4 text-sm text-center">{{ form.password2.errors }}</span>
+                    <p class="mt-2 text-sm text-red-600">{{ form.password2.errors }}</p>
                   {% endif %}
                 </div>
-                <div class="form-group">
-                  <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="terms" required>
-                    <label class="form-check-label" for="terms">
-                      I agree to the <a href="#" data-toggle="modal" data-target="#termsModal">Terms and Conditions</a>
-                    </label>
+                <div class="relative space-y-2">
+                  <div class="flex items-start">
+                    <div class="flex items-center h-5">
+                      <input type="checkbox" id="terms" required class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded transition duration-150 ease-in-out">
+                    </div>
+                    <div class="ml-3 text-sm">
+                      <label for="terms" class="font-medium text-gray-700">I agree to the
+                        <a href="#" data-toggle="modal" data-target="#termsModal" class="text-primary-600 hover:text-primary-500 transition duration-150 ease-in-out">Terms and Conditions</a>
+                      </label>
+                    </div>
                   </div>
                 </div>
 
-                <div class="form-group">
-                  Already have an account? Sign in <a href="{% url 'account:signin' %}">here</a>.
-                  <input type="submit" value="Register" class="btn btn-primary py-3 px-5">
-                </div> 
+                <div class="flex flex-col space-y-4 sm:flex-row sm:justify-between sm:space-y-0 sm:items-center">
+                  <p class="text-sm text-gray-600">
+                    Already have an account? 
+                    <a href="{% url 'account:signin' %}" class="text-blue-600 hover:text-blue-800 font-medium transition duration-150 ease-in-out">Sign in here</a>
+                  </p>
+                  <button type="submit" class="w-full sm:w-auto px-6 py-3 text-white bg-gradient-to-r from-blue-600 to-indigo-700 font-semibold rounded-lg shadow-md hover:from-primary-700 hover:to-primary-900 hover:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-opacity-50 transform transition-all duration-200 hover:scale-105 hover:shadow-lg">
+                    Register
+                  </button>
+                </div>
               
               </form>
             </div>
-            <div class="image-container" style="flex: 1; display: flex; align-items: center;">
-              <img src="{% static 'images/logo.svg' %}" alt="Pehnava Logo" class="responsive-img" style="width: 100%; max-width: 480px; height: auto; object-fit: contain;">
+            <div class="w-full md:w-1/2 flex items-center justify-center p-8 animate-slide-in">
+              <img src="{% static 'images/logo.svg' %}" alt="Pehnava Logo" class="w-full max-w-md h-auto object-contain transform transition-transform duration-500 hover:scale-105">
             </div>
           </div>
         </div>

@@ -20,6 +20,16 @@ class Product(models.Model):
     is_draft = models.BooleanField(default=False)
     date = models.DateTimeField(auto_now_add=True)
     inventory = models.IntegerField(default=1)
+    on_sale = models.BooleanField(default=False)
+    trending = models.BooleanField(default=False)
+    sale_percentage = models.DecimalField(max_digits=5, decimal_places=2, default=0)
+
+    @property
+    def sale_price(self):
+        if self.on_sale and self.sale_percentage > 0:
+            discount = (self.sale_percentage / 100) * self.price
+            return self.price - discount
+        return self.price
 
     def __str__(self):
         return self.name

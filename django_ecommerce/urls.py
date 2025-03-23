@@ -13,7 +13,6 @@ urlpatterns = [
     path('about/', include('about.urls')),
     path('shop/', include('shop.urls')),
     path('cart/', include('cart.urls')),
-    path('ckeditor/', include('ckeditor_uploader.urls')),
     path('accounts/', include('account.urls')),
     path('order/', include('order.urls')),
     path('wishlist/', include('wishlist.urls', namespace='wishlist')),

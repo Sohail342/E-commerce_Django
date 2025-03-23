@@ -1,5 +1,6 @@
 {% extends 'base/base.html' %}
 {% load static %}
+{% load custom_filters %}
 
 {% block content %}
 <link rel="stylesheet" href="{% static 'css/enhanced-checkout.css' %}">
@@ -121,7 +122,7 @@
                     <div class="payment-method selected bg-gradient-to-r from-blue-50 to-white p-6 rounded-lg border-2 border-blue-500 shadow-md transition-all duration-300 hover:shadow-lg">
                         <div class="flex items-center space-x-3">
                             <input type="radio" name="payment_method" value="COD" checked required class="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300">
-                            <div>
+                            <div class="payment-method-text">
                                 <label class="text-lg font-medium text-gray-900">Cash on Delivery</label>
                                 <p class="text-gray-500 mt-1">Pay when you receive your order</p>
                             </div>
@@ -130,23 +131,57 @@
                 </div>
             </div>
 
-            <div class="bg-gradient-to-br from-white to-blue-50 rounded-xl shadow-xl p-6 mt-8 animate-fade-in transform hover:scale-[1.02] transition-all duration-300 sm:p-8">
-                <h3 class="text-2xl font-bold text-gray-800 mb-8 flex items-center gap-3">
-                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="bg-gradient-to-br from-white to-blue-50 rounded-xl shadow-xl p-4 mt-8 animate-fade-in transform hover:scale-[1.01] transition-all duration-300 lg:p-6">
+                <h3 class="text-xl md:text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
+                    <svg class="w-5 h-5 md:w-6 md:h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
                     </svg>
                     Order Summary
                 </h3>
-                <div class="space-y-6 bg-white/50 backdrop-blur-sm p-6 rounded-lg shadow-inner sm:p-8">
+                <div class="space-y-4 bg-white rounded-lg shadow-sm p-4 lg:p-6">
+                    <div class="flex flex-col space-y-4">
+                    {% for item in cart_items %}
                     <div class="flex justify-between items-center text-gray-700 hover:bg-blue-50/50 p-2 rounded-lg transition-colors duration-200">
-                        <span class="font-medium flex items-center gap-2">
-                            <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
-                            </svg>
-                            Items ({{ cart_items }})
-                        </span>
-                        <span class="font-semibold animate-fade-in">PKR {{ subtotal }}</span>
+                        <div class="flex flex-col">
+                            <span class="font-medium">{{ item.product.name }} (x{{ item.quantity }})</span>
+                            {% if item.product.on_sale %}
+                            <div class="flex flex-col gap-1">
+                                <div class="flex items-center gap-2 text-sm">
+                                    <span class="text-primary-600 font-semibold">PKR {{ item.product.sale_price|multiply:item.quantity|format_price }}</span>
+                                    <span class="text-gray-500 line-through">PKR {{ item.product.price|multiply:item.quantity|format_price }}</span>
+                                </div>
+                                <div class="flex items-center gap-2 text-sm">
+                                    <span class="text-green-600 font-medium">-{{ item.product.sale_percentage }}% OFF</span>
+                                    <span class="text-green-600">Save PKR {{ item.product.price|subtract:item.product.sale_price|multiply:item.quantity|format_price }}</span>
+                                </div>
+                            </div>
+                            {% else %}
+                            <span class="text-gray-600 text-sm">PKR {{ item.total_price|format_price }}</span>
+                            {% endif %}
+                        </div>
                     </div>
+                    {% endfor %}
+                    <div class="flex justify-between items-center text-gray-700 border-t pt-2">
+                        <span class="font-medium">Subtotal ({{ cart_items|length }} items)</span>
+                        <div class="flex flex-col items-end">
+                            <span class="font-semibold animate-fade-in">PKR {{ subtotal|format_price }}</span>
+                            {% if total_savings > 0 %}
+                            <span class="text-green-600 text-sm">Total Savings: PKR {{ total_savings|format_price }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% if total_savings > 0 %}
+                    <div class="flex justify-between items-center text-gray-700 hover:bg-green-50/50 p-2 rounded-lg transition-colors duration-200">
+                        <span class="font-medium flex items-center gap-2">
+                            <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                            </svg>
+                            Total Savings
+                        </span>
+                        <span class="font-semibold text-green-600 animate-fade-in">PKR {{ total_savings|format_price }}</span>
+                    </div>
+                    {% endif %}
+                </div>
                     <div class="flex justify-between items-center text-gray-700 hover:bg-green-50/50 p-2 rounded-lg transition-colors duration-200">
                         <span class="font-medium flex items-center gap-2">
                             <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -165,28 +200,19 @@
                         </span>
                         <span class="font-semibold text-blue-600 animate-fade-in">PKR 250</span>
                     </div>
-                    <div class="flex justify-between items-center text-gray-700 hover:bg-red-50/50 p-2 rounded-lg transition-colors duration-200">
-                        <span class="font-medium flex items-center gap-2">
-                            <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                            </svg>
-                            Discount
-                        </span>
-                        <span class="font-semibold text-red-600 animate-fade-in">- PKR 0.00</span>
-                    </div>
                     <div class="flex justify-between items-center text-xl font-bold mt-6 pt-6 border-t-2 border-gray-200 hover:bg-blue-100/20 p-3 rounded-lg transition-colors duration-300">
                         <span class="text-gray-800">Total</span>
-                        <span class="text-blue-600 animate-fade-in">PKR {{ total }}</span>
+                        <span class="text-blue-600 animate-fade-in">PKR {{ total |format_price  }}</span>
                     </div>
 
                     
                 <div class="mt-6 flex items-start space-x-2">
                     <div class="flex items-center h-5">
-                        <input type="checkbox" id="terms" required class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded transition duration-150 ease-in-out">
+                        <input type="checkbox" id="terms" name="terms" required class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded transition duration-150 ease-in-out">
                     </div>
                     <div class="ml-3 text-sm">
                         <label for="terms" class="font-medium text-gray-700">I have read and accept the <a href="{% url 'about:other-details' %}" class="text-blue-600 hover:text-blue-800 underline">terms and conditions</a></label>
-                        <p class="text-red-600 mt-1 hidden">You must agree to the terms and conditions.</p>
+                        <div class="text-red-600 mt-1 hidden" id="termsError">You must agree to the terms and conditions.</div>
                     </div>
                 </div>
 
@@ -211,55 +237,13 @@
                 <script>
                     document.addEventListener('DOMContentLoaded', function() {
                         const form = document.querySelector('form');
-                        const modal = document.getElementById('orderConfirmationModal');
-                        const modalContent = document.getElementById('modalContent');
-                        const placeOrderBtn = document.getElementById('placeOrderBtn');
-                        const confirmOrderBtn = document.getElementById('confirmOrder');
-                        const cancelOrderBtn = document.getElementById('cancelOrder');
-                        const requiredFields = form.querySelectorAll('[required]');
-
-                        function validateForm() {
-                            let isValid = true;
-                            requiredFields.forEach(field => {
-                                const errorDiv = field.nextElementSibling;
-                                if (!field.value.trim()) {
-                                    isValid = false;
-                                    field.classList.add('border-red-500');
-                                    if (errorDiv && errorDiv.classList.contains('hidden')) {
-                                        errorDiv.classList.remove('hidden');
-                                    }
-                                } else {
-                                    field.classList.remove('border-red-500');
-                                    if (errorDiv) {
-                                        errorDiv.classList.add('hidden');
-                                    }
-                                }
-                            });
-                            return isValid;
-                        }
-
-                        placeOrderBtn.addEventListener('click', function() {
-                            if (validateForm()) {
-                                modal.classList.remove('hidden');
-                                setTimeout(() => {
-                                    modalContent.classList.remove('scale-95', 'opacity-0');
-                                    modalContent.classList.add('scale-100', 'opacity-100');
-                                }, 50);
-                            } else {
-                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                        const paymentMethodText = document.querySelector('.payment-method-text');
+                        form.addEventListener('submit', function(e) {
+                            if (!form.checkValidity()) {
+                                e.preventDefault();
+                                paymentMethodText.classList.add('text-gray-900');
+                                paymentMethodText.classList.remove('text-transparent');
                             }
-                        });
-
-                        confirmOrderBtn.addEventListener('click', function() {
-                            form.submit();
-                        });
-
-                        cancelOrderBtn.addEventListener('click', function() {
-                            modalContent.classList.add('scale-95', 'opacity-0');
-                            modalContent.classList.remove('scale-100', 'opacity-100');
-                            setTimeout(() => {
-                                modal.classList.add('hidden');
-                            }, 200);
                         });
                     });
                 </script>
@@ -307,12 +291,18 @@ document.addEventListener('DOMContentLoaded', function() {
     const form = document.querySelector('.needs-validation');
     const steps = document.querySelectorAll('.checkout-step');
     const modal = document.getElementById('orderConfirmationModal');
+    const modalContent = document.getElementById('modalContent');
+    const placeOrderBtn = document.getElementById('placeOrderBtn');
+    const confirmOrderBtn = document.getElementById('confirmOrder');
+    const cancelOrderBtn = document.getElementById('cancelOrder');
     const closeModalBtn = document.querySelector('.closeModal');
     let currentStep = 0;
 
     // Function to check if all required fields are filled
     function validateRequiredFields() {
         const requiredFields = form.querySelectorAll('[required]');
+        const termsCheckbox = document.getElementById('terms');
+        const termsError = document.getElementById('termsError');
         let isValid = true;
 
         // Reset previous validation states
@@ -323,6 +313,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 feedbackElement.classList.add('hidden');
             }
         });
+
+        // Check terms and conditions
+        if (!termsCheckbox.checked) {
+            isValid = false;
+            termsCheckbox.classList.add('border-red-500');
+            termsError.classList.remove('hidden');
+            termsCheckbox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else {
+            termsCheckbox.classList.remove('border-red-500');
+            termsError.classList.add('hidden');
+        }
 
         // Check each required field
         requiredFields.forEach(field => {
@@ -337,9 +338,51 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        if (!isValid) {
-            const alertDiv = document.createElement('div');
-            alertDiv.className = 'bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4';
-            alertDiv.innerHTML = '<div class="flex"><div class="flex-shrink-0
+        return isValid;
+    }
+
+    // Show modal with animation
+    function showModal() {
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            modalContent.classList.remove('scale-95', 'opacity-0');
+            modalContent.classList.add('scale-100', 'opacity-100');
+        }, 50);
+    }
+
+    // Hide modal with animation
+    function hideModal() {
+        modalContent.classList.remove('scale-100', 'opacity-100');
+        modalContent.classList.add('scale-95', 'opacity-0');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+        }, 300);
+    }
+
+    // Handle Place Order button click
+    placeOrderBtn.addEventListener('click', function() {
+        if (validateRequiredFields()) {
+            showModal();
+        }
+    });
+
+    // Handle Confirm Order button click
+    confirmOrderBtn.addEventListener('click', function() {
+        form.submit();
+    });
+
+    // Handle Cancel Order button click
+    cancelOrderBtn.addEventListener('click', hideModal);
+
+    // Handle Close Modal button click
+    closeModalBtn.addEventListener('click', hideModal);
+
+    // Close modal when clicking outside
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            hideModal();
+        }
+    });
+});
 </script>
 {% endblock %}

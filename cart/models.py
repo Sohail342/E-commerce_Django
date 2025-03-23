@@ -26,4 +26,6 @@ class CartItem(models.Model):
         return f"{self.quantity} x {self.product.name}"
 
     def total_price(self):
+        if self.product.on_sale:
+            return self.quantity * self.product.sale_price
         return self.quantity * self.product.price

@@ -1,5 +1,6 @@
 {% extends 'base/base.html' %}
 {% load static %}
+{% load custom_filters %}
 
 {% block content %}
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
@@ -48,8 +49,35 @@
                         <h3 class="text-lg font-semibold mb-2 line-clamp-2">
                             <a href="{% url 'shop:product_detail' item.product.id %}" class="text-gray-900 hover:text-primary-600 transition-colors duration-200">{{ item.product.name }}</a>
                         </h3>
+                        {% if item.product.on_sale or item.product.trending %}
+                        <div class="flex flex-wrap gap-2 mb-2">
+                            {% if item.product.on_sale %}
+                            <span class="inline-flex items-center bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-sm transform transition-transform hover:scale-105">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                {{ item.product.sale_percentage }}% Off
+                            </span>
+                            {% endif %}
+                            {% if item.product.trending %}
+                            <span class="inline-flex items-center bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-semibold px-3 py-1 rounded-full shadow-sm transform transition-transform hover:scale-105">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                                </svg>
+                                Trending
+                            </span>
+                            {% endif %}
+                        </div>
+                        {% endif %}
                         <div class="mb-4">
-                            <span class="text-xl sm:text-2xl font-bold text-primary-600">PKR {{ item.product.price }}</span>
+                            <div class="flex items-baseline gap-2">
+                                {% if item.product.on_sale %}
+                                <span class="text-xl sm:text-2xl font-bold text-primary-600">PKR {{ item.product.sale_price|format_price }}</span>
+                                <span class="text-sm text-gray-500 line-through">PKR {{ item.product.price|format_price }}</span>
+                                {% else %}
+                                <span class="text-xl sm:text-2xl font-bold text-primary-600">PKR {{ item.product.price|format_price }}</span>
+                                {% endif %}
+                            </div>
                         </div>
                         <form action="{% url 'cart:add_to_cart' item.product.id %}" method="post" class="mt-auto">
                             {% csrf_token %}

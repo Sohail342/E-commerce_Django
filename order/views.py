@@ -10,6 +10,7 @@ from cart.views import get_cart
 
 def checkout(request):
     cart = get_cart(request)
+    total_savings = 0  # Initialize total_savings at the start
     if request.user.is_authenticated:
         cart_items = cart.items.all()
     else:
@@ -33,7 +34,8 @@ def checkout(request):
 
         if request.user.is_authenticated:
             subtotal = sum(item.total_price() for item in cart_items)
-            total = 250 + subtotal  # Add delivery charges
+            total_savings = sum((item.product.price - item.product.sale_price) * item.quantity for item in cart_items if item.product.on_sale)
+            total = 250 + subtotal  # Add delivery charges to subtotal
             
             # Create a new order for authenticated user
             order = Order(
@@ -69,8 +71,9 @@ def checkout(request):
             cart.items.all().delete()
         else:
             # Handle guest user order
-            subtotal = cart.get_total_price()
-            total = 250 + subtotal  # Add delivery charges
+            subtotal = sum((item['product'].sale_price if item['product'].on_sale else item['product'].price) * item['quantity'] for item in cart)
+            total_savings = sum((item['product'].price - item['product'].sale_price) * item['quantity'] for item in cart if item['product'].on_sale)
+            total = 250 + subtotal  # Add delivery charges to subtotal
             
             # Create a new order for guest user
             order = Order(
@@ -111,10 +114,12 @@ def checkout(request):
     else:
         if not cart_is_empty:
             if request.user.is_authenticated:
-                subtotal = sum(item.total_price() for item in cart_items)
+                subtotal = sum((item.product.sale_price if item.product.on_sale else item.product.price) * item.quantity for item in cart_items)
+                total_savings = sum((item.product.price - item.product.sale_price) * item.quantity for item in cart_items if item.product.on_sale)
             else:
-                subtotal = cart.get_total_price()
-            total = 250 + subtotal
+                subtotal = sum((item['product'].sale_price if item['product'].on_sale else item['product'].price) * item['quantity'] for item in cart)
+                total_savings = sum((item['product'].price - item['product'].sale_price) * item['quantity'] for item in cart if item['product'].on_sale)
+            total = 250 + subtotal  # Only add delivery charges to subtotal
         else:
             subtotal = 0
             total = 250
@@ -122,7 +127,9 @@ def checkout(request):
     return render(request, 'cart/checkout.html', {
         'subtotal': subtotal,
         'total': total,
-        'cart_is_empty':cart_is_empty
+        'total_savings': total_savings if not cart_is_empty else 0,
+        'cart_is_empty': cart_is_empty,
+        'cart_items': cart_items
     })
 
 
@@ -131,7 +138,8 @@ def order_summary(request, order_id):
     
     # Calculate total quantity and subtotal for the order
     total_quantity = sum(item.quantity for item in order.items.all())
-    subtotal = sum(item.total_price for item in order.items.all())  # Directly access field
+    # Calculate subtotal using the stored price from OrderItem
+    subtotal = sum(item.total_price for item in order.items.all())
     
     return render(request, 'order/order_summary.html', {
         'order': order,

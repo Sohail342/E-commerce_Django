@@ -3,20 +3,34 @@
 {% load custom_filters %}
 
 {% block content %}
-<section class="py-8 sm:py-12 md:py-16 bg-gray-50">
-  <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+<section class="py-6 sm:py-12 md:py-16 bg-gray-50">
+  <div class="container mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12">
       <!-- Product Image Section -->
       <div class="relative group" data-aos="fade-right" data-aos-duration="800">
-        <div class="aspect-square w-full rounded-2xl overflow-hidden bg-white shadow-sm">
+        <div class="aspect-square w-full rounded-xl sm:rounded-2xl overflow-hidden bg-white shadow-sm sm:shadow-md hover:shadow-lg transition-shadow duration-300">
           <img src="{{ product.photo.url }}" alt="{{ product.name }}" class="w-full h-full object-contain transform transition-transform duration-500 group-hover:scale-105">
         </div>
+        {% if product.trending or product.on_sale %}
+        <div class="absolute top-4 left-4 flex flex-col space-y-2">
+          {% if product.trending %}
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gradient-to-r from-orange-400 to-red-500 text-white shadow-lg transform transition-transform hover:scale-105">
+            <i class="fas fa-fire mr-1"></i> Hot
+          </span>
+          {% endif %}
+          {% if product.on_sale %}
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-lg transform transition-transform hover:scale-105">
+            <i class="fas fa-tag mr-1"></i> Sale
+          </span>
+          {% endif %}
+        </div>
+        {% endif %}
       </div>
 
       <!-- Product Details Section -->
-      <div class="flex flex-col space-y-6" data-aos="fade-left" data-aos-duration="800" data-aos-delay="200">
+      <div class="flex flex-col space-y-4 sm:space-y-6" data-aos="fade-left" data-aos-duration="800" data-aos-delay="200">
         <div>
-          <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900">{{ product.name }}</h1>
+          <h1 class="text-xl sm:text-3xl md:text-4xl font-bold text-gray-900 leading-tight">{{ product.name }}</h1>
           <div class="mt-4 flex items-center space-x-4">
             <div class="flex items-center">
               <div class="flex items-center">
@@ -33,9 +47,19 @@
           </div>
         </div>
 
-        <div class="flex items-baseline space-x-3">
-          <p class="text-3xl font-bold text-primary-600">PKR {{ product.price }}</p>
-          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">In Stock: {{ inventory }}</span>
+        <div class="flex flex-col sm:flex-row sm:items-baseline sm:space-x-3 space-y-2 sm:space-y-0">
+          {% if product.on_sale %}
+          <div class="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
+            <p class="text-3xl sm:text-4xl font-extrabold text-primary-800 bg-primary-50 px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl shadow-sm hover:shadow-md transition-all duration-300">PKR {{ product.sale_price|format_price }}</p>
+            <div class="flex flex-row sm:flex-col items-center sm:items-start space-x-2 sm:space-x-0">
+              <span class="text-lg sm:text-xl text-gray-500 line-through">PKR {{ product.price|format_price }}</span>
+              <span class="text-base sm:text-lg font-medium text-green-600">-{{ product.sale_percentage }}% OFF</span>
+            </div>
+          </div>
+          {% else %}
+          <p class="text-3xl sm:text-4xl font-extrabold text-primary-800 bg-primary-50 px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl shadow-sm hover:shadow-md transition-all duration-300">PKR {{ product.price|format_price }}</p>
+          {% endif %}
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 w-fit">In Stock: {{ inventory }}</span>
         </div>
 
         <div class="prose prose-sm sm:prose text-gray-600 max-w-none">
@@ -43,9 +67,9 @@
         </div>
 
         <!-- Quantity Selector -->
-        <div class="flex items-center space-x-4">
+        <div class="flex items-center space-x-3 sm:space-x-4">
           <label for="quantity" class="block text-sm font-medium text-gray-700">Quantity</label>
-          <div class="flex items-center border border-gray-300 rounded-lg">
+          <div class="flex items-center border border-gray-300 rounded-lg shadow-sm hover:shadow transition-shadow duration-300">
             <button type="button" class="quantity-left-minus p-2 text-gray-600 hover:text-primary-600 transition-colors" data-type="minus">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/>
@@ -61,8 +85,8 @@
         </div>
 
         <!-- Action Buttons -->
-        <div class="flex items-center space-x-4">
-          <button id="add-to-cart" class="flex-1 max-w-xs inline-flex justify-center items-center px-6 py-3 text-lg font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-102 active:scale-98 transition-all duration-300 group relative overflow-hidden">
+        <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 w-full">
+          <button id="add-to-cart" class="w-full sm:flex-1 sm:max-w-xs inline-flex justify-center items-center px-4 sm:px-6 py-3 text-base sm:text-lg font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transform hover:scale-102 active:scale-98 transition-all duration-300 group relative overflow-hidden">
             <span class="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent group-hover:scale-x-100 scale-x-0 origin-left transition-transform duration-500"></span>
             <svg class="-ml-1 mr-3 h-6 w-6 transition-transform duration-300 group-hover:rotate-12 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
@@ -99,7 +123,7 @@
           </div>
           <div class="p-4">
             <h3 class="text-sm font-medium text-gray-900 truncate">{{ rel_product.name }}</h3>
-            <p class="mt-1 text-lg font-semibold text-primary-600">PKR {{ rel_product.price }}</p>
+            <p class="mt-1 text-lg font-semibold text-primary-600">PKR {{ rel_product.price|format_price }}</p>
             <div class="mt-4 flex items-center justify-between">
               <div class="flex items-center">
                 <svg class="h-4 w-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">

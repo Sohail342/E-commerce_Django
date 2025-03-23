@@ -1,5 +1,6 @@
 {% extends 'base/base.html' %}
 {% load static %}
+{% load custom_filters %}
 
 {% block content %}
 <section class="py-16">
@@ -23,7 +24,21 @@
                 <div class="bg-white rounded-lg shadow-sm overflow-hidden">
                     <div class="divide-y divide-gray-200">
                         {% for item in cart_items %}
-                        <div class="p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-6 cart-item" data-product-id="{{ item.product.id }}" data-unit-price="{{ item.product.price }}" x-data="{ quantity: {{ item.quantity }} }">
+                        <div class="p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-6 cart-item relative" data-product-id="{{ item.product.id }}" data-unit-price="{{ item.product.price }}" x-data="{ quantity: {{ item.quantity }} }">
+                            {% if item.product.trending or item.product.on_sale %}
+                            <div class="absolute top-2 left-2 flex flex-col gap-2 z-10">
+                                {% if item.product.trending %}
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gradient-to-r from-orange-400 to-red-500 text-white shadow-lg">
+                                    <i class="fas fa-fire mr-1"></i> Hot
+                                </span>
+                                {% endif %}
+                                {% if item.product.on_sale %}
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-lg">
+                                    <i class="fas fa-tag mr-1"></i> Sale
+                                </span>
+                                {% endif %}
+                            </div>
+                            {% endif %}
                             <div class="flex-shrink-0 w-full sm:w-24 h-48 sm:h-24 bg-gray-100 rounded-md overflow-hidden">
                                 <img src="{{ item.product.photo.url }}" alt="{{ item.product.name }}" class="w-full h-full object-center object-cover">
                             </div>
@@ -31,7 +46,15 @@
                                 <h3 class="text-base sm:text-lg font-medium text-gray-900">
                                     <a href="{% url 'shop:product_detail' item.product.id %}" class="hover:text-primary-600 transition-colors">{{ item.product.name }}</a>
                                 </h3>
-                                <p class="text-sm text-gray-500">PKR {{ item.product.price }}</p>
+                                <div class="flex items-center gap-2">
+                                    {% if item.product.on_sale %}
+                                    <span class="text-sm font-bold text-primary-600">PKR {{ item.product.sale_price|format_price }}</span>
+                                    <span class="text-sm text-gray-500 line-through">PKR {{ item.product.price|format_price }}</span>
+                                    <span class="text-xs font-medium text-green-600">-{{ item.product.sale_percentage }}%</span>
+                                    {% else %}
+                                    <span class="text-sm text-gray-500">PKR {{ item.product.price|format_price }}</span>
+                                    {% endif %}
+                                </div>
                                 <div class="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-start sm:space-y-0 sm:space-x-4">
                                     <div class="flex items-center border border-gray-300 rounded-md shadow-sm max-w-[160px]">
                                         <button class="p-2 sm:p-3 text-gray-600 hover:text-primary-600 transition-colors quantity-btn decrease touch-manipulation active:bg-gray-100 min-w-[40px]" @click="quantity = Math.max(1, quantity - 1)">
@@ -47,7 +70,13 @@
                                         </button>
                                     </div>
                                     <div class="flex items-center justify-between w-full sm:w-auto space-x-4 sm:hidden">
-                                        <span class="text-base font-medium text-gray-900 item-price">PKR {{ item.total_price }}</span>
+                                        <span class="text-base font-medium text-gray-900 item-price">
+                                    {% if item.product.on_sale %}
+                                    PKR {{ item.product.sale_price|multiply:item.quantity|format_price }}
+                                    {% else %}
+                                    PKR {{ item.total_price|format_price }}
+                                    {% endif %}
+                                </span>
                                         <button onclick="window.location.href='{% url 'cart:clear_cart' item.product.id %}'" class="text-sm text-red-600 hover:text-red-700 transition-colors">
                                             Remove
                                         </button>
@@ -55,7 +84,13 @@
                                 </div>
                             </div>
                             <div class="hidden sm:flex flex-shrink-0 flex-col items-end space-y-2">
-                                <span class="text-lg font-medium text-gray-900 item-price">PKR {{ item.total_price }}</span>
+                                <span class="text-lg font-medium text-gray-900 item-price">
+                                    {% if item.product.on_sale %}
+                                    PKR {{ item.product.sale_price|multiply:item.quantity|format_price }}
+                                    {% else %}
+                                    PKR {{ item.total_price|format_price }}
+                                    {% endif %}
+                                </span>
                                 <button onclick="window.location.href='{% url 'cart:clear_cart' item.product.id %}'" class="text-sm text-red-600 hover:text-red-700 transition-colors">
                                     Remove
                                 </button>
@@ -70,7 +105,7 @@
                     <h2 class="text-lg font-medium text-gray-900">Order Summary</h2>
                     <div class="mt-4 sm:mt-6 flex justify-between items-baseline">
                         <span class="text-base font-medium text-gray-900">Total</span>
-                        <span class="text-xl sm:text-2xl font-semibold text-primary-600 cart-total">PKR {{ cart_total }}</span>
+                        <span class="text-xl sm:text-2xl font-semibold text-primary-600 cart-total">PKR {{ cart_total|format_price }}</span>
                     </div>
                     <a href="{% url 'order:checkout' %}" class="mt-4 sm:mt-6 w-full inline-flex justify-center items-center px-4 sm:px-6 py-3 sm:py-4 border border-transparent text-base sm:text-lg font-semibold rounded-lg text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 transform hover:scale-[1.02] transition-all duration-200 shadow-lg hover:shadow-xl">
                         <span class="relative flex items-center gap-2">

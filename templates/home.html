@@ -26,8 +26,21 @@
               </a>
             </div>
           </div>
+            </div>
+            {% endfor %}
+          </div>
+          <div class="swiper-pagination"></div>
+          <button class="slider-nav-button slider-prev" aria-label="Previous slide">
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+            </svg>
+          </button>
+          <button class="slider-nav-button slider-next" aria-label="Next slide">
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+            </svg>
+          </button>
         </div>
-        {% endfor %}
       </div>
     <div class="swiper-pagination"></div>
     <button class="slider-nav-button slider-prev swiper-button-prev" aria-label="Previous slide">
@@ -47,69 +60,163 @@
 {% include 'base\services.html' %}
 
 
-<section class="py-8 sm:py-16 md:py-24 bg-gray-50">
-  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-    <div class="text-center" data-aos="fade-up" data-aos-duration="800">
-      <span class="inline-block rounded-full bg-primary-100 px-3 sm:px-4 py-1 sm:py-1.5 text-xs sm:text-sm font-semibold text-primary-800" data-aos="fade-up" data-aos-delay="200">Featured Products</span>
-      <h2 class="mt-4 sm:mt-6 text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight text-gray-900" data-aos="fade-up" data-aos-delay="400">Our Products</h2>
-      <p class="mx-auto mt-3 sm:mt-4 max-w-2xl text-base sm:text-lg text-gray-600" data-aos="fade-up" data-aos-delay="600">Imagination meets reality. Discover magic at YouKiddies</p>
+<section class="py-16 sm:py-24 md:py-32 bg-gradient-to-b from-gray-50/90 via-white to-gray-100/95 overflow-hidden relative">
+  <div class="absolute inset-0 bg-gradient-to-tr from-primary-50/40 via-transparent to-indigo-50/40 pointer-events-none backdrop-blur-[2px]"></div>
+  <div class="mx-auto max-w-7xl px-6 sm:px-8 lg:px-12 relative">
+    <div class="text-center space-y-8" data-aos="fade-up" data-aos-duration="800">
+      <span class="inline-block rounded-full bg-primary-100/95 px-6 py-2.5 text-sm sm:text-base font-semibold text-primary-800 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-primary-100/60 ring-1 ring-primary-100" data-aos="fade-up" data-aos-delay="200">Featured Products</span>
+      <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-gray-900 bg-clip-text text-transparent bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700" data-aos="fade-up" data-aos-delay="400">Our Products</h2>
+      <p class="mx-auto max-w-2xl text-base sm:text-lg text-gray-700 leading-relaxed font-medium" data-aos="fade-up" data-aos-delay="600">Imagination meets reality. Discover magic at PEHNAVA</p>
     </div>
 
-    <div class="mt-8 sm:mt-12 md:mt-16">
+    <div class="mt-8 sm:mt-12 md:mt-16 relative">
       {% if products %}
-      <div class="grid grid-cols-2 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4 lg:gap-8">
-        {% for product in products %}
-        <div class="group relative bg-white rounded-xl sm:rounded-2xl shadow-sm transition-all duration-300 hover:shadow-xl hover:-translate-y-1 flex flex-col h-full" data-aos="fade-up" data-aos-duration="800" data-aos-delay="{{ forloop.counter|multiply:100 }}">
-          <!-- Fixed aspect ratio container for the image -->
-          <div class="w-full pt-[100%] relative rounded-t-xl sm:rounded-t-2xl overflow-hidden bg-gray-50">
-            <img src="{{ product.photo.url }}" alt="{{ product.name }}" class="absolute inset-0 h-full w-full object-contain object-center transform transition-transform duration-500 group-hover:scale-105" loading="lazy">
-            <div class="absolute inset-0 bg-black opacity-0 transition-opacity duration-300 group-hover:opacity-10"></div>
-            <!-- Wishlist Heart Icon -->
-            <button class="absolute top-2 sm:top-4 right-2 sm:right-4 p-2 rounded-full bg-white/80 backdrop-blur-sm opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all duration-300 hover:bg-white hover:scale-110 hover:shadow-lg touch-manipulation">
-              <svg class="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 hover:text-red-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-              </svg>
-            </button>
-          </div>
-          <!-- Product info container with consistent heights -->
-          <div class="p-4 sm:p-6 flex-1 flex flex-col">
-            <div class="mb-2 sm:mb-3 h-12 sm:h-14 flex items-start">  <!-- Fixed height container for product name -->
-              <h3 class="text-sm sm:text-base font-medium text-gray-900 line-clamp-2">
-                <a href="{% url 'shop:product_detail' product.id %}" class="hover:text-primary-600 transition-colors">
-                  <span aria-hidden="true" class="absolute inset-0"></span>
-                  {{ product.name }}
-                </a>
-              </h3>
-            </div>
-            <div class="h-6 sm:h-8 mb-auto">  <!-- Fixed height container for price -->
-              <p class="text-base sm:text-lg font-bold text-primary-600">PKR {{ product.price }}</p>
-            </div>
-            <div class="flex items-center justify-between pt-3 sm:pt-4 border-t border-gray-100 mt-3 sm:mt-4">
-              <div class="flex items-center space-x-1 text-xs sm:text-sm text-gray-500">
-                <svg class="h-4 w-4 sm:h-5 sm:w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                </svg>
-                <span>4.5</span>
+      <div class="product-slider-container relative bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-2xl sm:rounded-3xl shadow-xl p-6 sm:p-8 md:p-10 lg:p-12 overflow-hidden touch-pan-y border border-gray-100/80">
+        <div class="absolute inset-0 bg-gradient-to-tr from-primary-50/30 via-transparent to-indigo-50/30 rounded-2xl sm:rounded-3xl pointer-events-none backdrop-blur-[1px]"></div>
+        <!-- Enhanced mobile-responsive slider -->
+        <div class="product-slider swiper overflow-visible -mx-2 sm:-mx-3">
+          <div class="swiper-wrapper">
+            {% for product in products %}
+            <div class="swiper-slide p-2 sm:p-3 w-full sm:w-1/2 md:w-1/3 lg:w-1/4">
+              <div class="product-card group relative flex flex-col h-[400px] sm:h-[450px] bg-gradient-to-br from-white via-white to-gray-50 rounded-xl sm:rounded-2xl shadow-lg hover:shadow-2xl transform transition-all duration-500 hover:-translate-y-2 active:scale-95 touch-manipulation border border-gray-100/80 hover:bg-gradient-to-br hover:from-primary-50 hover:via-white hover:to-primary-50" 
+                   data-aos="fade-up" data-aos-duration="800" data-aos-delay="{{ forloop.counter|multiply:100 }}">
+                  <!-- Hot Label -->
+                  
+                <!-- Fixed aspect ratio container for the image -->
+                <div class="w-full h-[250px] sm:h-[300px] relative rounded-t-xl sm:rounded-t-2xl overflow-hidden bg-gradient-to-br from-gray-50 to-white shadow-inner">
+                  <img src="{{ product.photo.url }}" alt="{{ product.name }}" 
+                       class="absolute inset-0 h-full w-full object-contain object-center p-4 transform transition-all duration-700 group-hover:scale-110 group-hover:rotate-1" 
+                       loading="lazy">
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
+                  
+                  <!-- Quick action buttons that appear on hover -->
+                  <div class="absolute bottom-0 left-0 right-0 flex items-center justify-center space-x-2 p-3 sm:p-4 translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 sm:touch-none">
+                    <a href="{% url 'shop:product_detail' product.id %}" 
+                       class="rounded-full bg-white/95 backdrop-blur-sm p-2.5 text-primary-600 shadow-lg transition-all duration-300 hover:bg-primary-600 hover:text-white hover:scale-105 transform">
+                      <span class="sr-only">View details</span>
+                      <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                      </svg>
+                    </a>
+                    <a href="{% url 'cart:add_to_cart' product.id %}" 
+                       class="rounded-full bg-white/95 backdrop-blur-sm p-2.5 text-primary-600 shadow-lg transition-all duration-300 hover:bg-primary-600 hover:text-white hover:scale-105 transform">
+                      <span class="sr-only">Add to cart</span>
+                      <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                      </svg>
+                    </a>
+                    <a class="rounded-full bg-white/95 backdrop-blur-sm p-2.5 text-gray-600 shadow-lg transition-all duration-300 hover:bg-red-500 hover:text-white hover:scale-105 transform">
+                      <span class="sr-only">Add to wishlist</span>
+                      <svg class="h-5 w-5" fill="{% if product.id in wishlist_products %}currentColor{% else %}none{% endif %}" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318 a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                      </svg>
+                    </a>
+                  </div>
+                  
+                  <!-- Sale badge if product is on sale -->
+                  {% if product.on_sale %}
+                  <div class="absolute top-2 left-2 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs font-bold px-3 py-2 rounded-full shadow-lg transform -rotate-3 transition-all duration-300 group-hover:rotate-3 group-hover:scale-110 group-hover:shadow-xl backdrop-blur-sm">
+                    <span class="flex items-center gap-1">
+                      <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 2a1 1 0 00-.894.553L7.382 6H4a1 1 0 000 2h2.618l-1.724 3.447A1 1 0 004 12.763V14a1 1 0 001 1h10a1 1 0 001-1v-1.237a1 1 0 00-.894-1.316L13.382 8H16a1 1 0 000-2h-3.382l-1.724-3.447A1 1 0 0010 2z" clip-rule="evenodd"/>
+                      </svg>
+                      SALE
+                    </span>
+                  </div>
+                  {% endif %}
+                </div>
+                
+                <!-- IMPROVED: Product info container with better handling of price display -->
+                <div class="p-4 sm:p-5 md:p-6 flex-1 flex flex-col bg-gradient-to-br from-white to-gray-50/80 rounded-b-xl sm:rounded-b-2xl">
+                  <!-- Product name with fixed height -->
+                  <div class="mb-3 sm:mb-4 h-10 sm:h-12 md:h-14 flex items-start">
+                    <h3 class="text-xs sm:text-sm md:text-base font-semibold text-gray-900 line-clamp-2 group-hover:text-primary-600 transition-colors duration-300">
+                      <a href="{% url 'shop:product_detail' product.id %}" class="hover:text-primary-600 transition-colors">
+                        <span aria-hidden="true" class="absolute inset-0"></span>
+                        {{ product.name }}
+                      </a>
+                    </h3>
+                  </div>
+                  
+                  <!-- IMPROVED: Price section with better overflow handling -->
+                  <div class="mb-auto">
+                    {% if product.on_sale %}
+                    <div class="flex flex-col items-start gap-1 mb-2">
+                      <p class="text-xs sm:text-sm text-gray-400 line-through">PKR {{ product.price |format_price  }}</p>
+                      <div class="flex flex-wrap items-center gap-2">
+                        <p class="text-sm sm:text-base font-bold text-primary-800 bg-primary-50 px-2 py-1 rounded-lg whitespace-nowrap">
+                          PKR {{ product.sale_price |format_price  }}
+                        </p>
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-red-100 text-red-800">
+                          -{{ product.sale_percentage }}%
+                        </span>
+                      </div>
+                    </div>
+                    {% else %}
+                    <p class="text-sm sm:text-base font-bold text-primary-800 bg-primary-50 px-2 py-1 rounded-lg inline-block mb-2">
+                      PKR {{ product.price |format_price }}
+                    </p>
+                    {% endif %}
+                  </div>
+                  
+                  <!-- Product badges in a scrollable container if needed -->
+                  <div class="flex gap-1 overflow-x-auto pb-2 hide-scrollbar">
+                    {% if product.on_sale %}
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 whitespace-nowrap">
+                      <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 2a1 1 0 00-.894.553L7.382 6H4a1 1 0 000 2h2.618l-1.724 3.447A1 1 0 004 12.763V14a1 1 0 001 1h10a1 1 0 001-1v-1.237a1 1 0 00-.894-1.316L13.382 8H16a1 1 0 000-2h-3.382l-1.724-3.447A1 1 0 0010 2z" clip-rule="evenodd"/>
+                      </svg>
+                      Sale
+                    </span>
+                    {% endif %}
+                    {% if product.is_new %}
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 whitespace-nowrap">
+                      <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 012.812-2.812z" clip-rule="evenodd"/>
+                      </svg>
+                      New
+                    </span>
+                    {% endif %}
+                    {% if product.is_bestseller %}
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 whitespace-nowrap">
+                      <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                      </svg>
+                      Best Seller
+                    </span>
+                    {% endif %}
+                  </div>
+                  
+                  <!-- Footer with ratings and category -->
+                  <div class="flex items-center justify-between pt-3 border-t border-gray-100/80 mt-3">
+                    <div class="flex items-center space-x-1 text-xs text-gray-500">
+                      <svg class="h-4 w-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                      </svg>
+                      <span>4.5</span>
+                    </div>
+                    <span class="text-xs font-medium text-primary-600 truncate max-w-[100px]">{{ product.category|title }}</span>
+                  </div>
+                </div>
               </div>
-              <div class="flex space-x-2">
-                <a href="{% url 'shop:product_detail' product.id %}" class="rounded-full bg-gray-100 p-1.5 sm:p-2 text-gray-600 transition-all duration-300 hover:bg-primary-100 hover:text-primary-600 hover:scale-110 touch-manipulation">
-                  <span class="sr-only">View details</span>
-                  <svg class="h-4 w-4 sm:h-5 sm:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                  </svg>
-                </a>
-                <a href="{% url 'cart:add_to_cart' product.id %}" class="rounded-full bg-gray-100 p-1.5 sm:p-2 text-gray-600 transition-all duration-300 hover:bg-primary-100 hover:text-primary-600 hover:scale-110 touch-manipulation">
-                  <span class="sr-only">Add to cart</span>
-                  <svg class="h-4 w-4 sm:h-5 sm:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
-                  </svg>
-                </a>
-              </div>
             </div>
+            {% endfor %}
           </div>
         </div>
-        {% endfor %}
+        
+        <!-- Navigation controls -->
+        <div class="swiper-pagination mt-8 flex justify-center"></div>
+        <button class="slider-nav-button slider-prev absolute top-1/2 -translate-y-1/2 -left-2 sm:-left-4 z-10 bg-white/90 backdrop-blur-sm rounded-full p-2 sm:p-3 shadow-lg transition-all duration-300 hover:bg-primary-50 hover:text-primary-600 hover:scale-110 focus:outline-none opacity-0 group-hover:opacity-100 transform -translate-x-4 group-hover:translate-x-0" aria-label="Previous slide">
+          <svg class="h-5 w-5 sm:h-6 sm:w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+          </svg>
+        </button>
+        <button class="slider-nav-button slider-next absolute top-1/2 -translate-y-1/2 -right-2 sm:-right-4 z-10 bg-white/90 backdrop-blur-sm rounded-full p-2 sm:p-3 shadow-lg transition-all duration-300 hover:bg-primary-50 hover:text-primary-600 hover:scale-110 focus:outline-none opacity-0 group-hover:opacity-100 transform translate-x-4 group-hover:translate-x-0" aria-label="Next slide">
+          <svg class="h-5 w-5 sm:h-6 sm:w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
+        </button>
       </div>
       {% else %}
       <div class="text-center py-12">
@@ -122,65 +229,241 @@
         <p class="text-gray-500">Check back later for new arrivals!</p>
       </div>
       {% endif %}
+      
+      <!-- View all products button -->
+      <div class="mt-12 text-center">
+        <a href="{% url 'shop:shop' %}" class="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-violet-600 via-primary-600 to-indigo-600 px-8 py-4 text-lg font-semibold text-white shadow-xl transform transition-all duration-300 hover:from-violet-700 hover:via-primary-700 hover:to-indigo-700 hover:scale-110 hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-primary-500 focus:ring-offset-2 relative overflow-hidden group">
+          <span class="relative z-10 flex items-center">
+            View All Products
+            <svg class="ml-2.5 h-6 w-6 transition-transform duration-300 group-hover:translate-x-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+            </svg>
+          </span>
+          <div class="absolute inset-0 bg-gradient-to-r from-violet-700 via-primary-700 to-indigo-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        </a>
+      </div>
     </div>
   </div>
+  
+  <!-- Add this custom CSS to hide scrollbars but still allow scrolling -->
+  <style>
+    .hide-scrollbar {
+      -ms-overflow-style: none;  /* IE and Edge */
+      scrollbar-width: none;  /* Firefox */
+    }
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;  /* Chrome, Safari and Opera */
+    }
+  </style>
 </section>
 
-<!--Sale of the Day-->
 
-{% comment %} <section class="ftco-section img" style="background-image: url({% static 'images/bg_3.jpg' %});">
-  <div class="container">
-    <div class="row justify-content-end">
-      <div class="col-md-6 heading-section ftco-animate deal-of-the-day ftco-animate">
-        <span class="subheading">Best Price For You</span>
-        <h2 class="mb-4">Deal of the day</h2>
-        <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia</p>
-        <h3><a href="#">Spinach</a></h3>
-        <span class="price">RS.10 <a href="#">now RS.5 only</a></span>
-        <div id="timer" class="d-flex mt-5">
-          <div class="time" id="days"></div>
-          <div class="time pl-3" id="hours"></div>
-          <div class="time pl-3" id="minutes"></div>
-          <div class="time pl-3" id="seconds"></div>
-        </div>
-      </div>
+<!--Hot trending Products-->
+<section class="py-16 sm:py-24 md:py-32 bg-gradient-to-b from-gray-50/90 via-white to-gray-100/95 overflow-hidden relative">
+  <div class="absolute inset-0 bg-gradient-to-tr from-primary-50/40 via-transparent to-indigo-50/40 pointer-events-none backdrop-blur-[2px]"></div>
+  <div class="mx-auto max-w-7xl px-6 sm:px-8 lg:px-12 relative">
+    <div class="text-center space-y-8" data-aos="fade-up" data-aos-duration="800">
+      <span class="inline-block rounded-full bg-primary-100/95 px-6 py-2.5 text-sm sm:text-base font-semibold text-primary-800 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-primary-100/60 ring-1 ring-primary-100" data-aos="fade-up" data-aos-delay="200">Hot Products</span>
+      <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-gray-900 bg-clip-text text-transparent bg-gradient-to-r from-gray-900 via-gray-800 to-gray-700" data-aos="fade-up" data-aos-delay="400">Trending Products</h2>
+      <p class="mx-auto max-w-2xl text-base sm:text-lg text-gray-700 leading-relaxed font-medium" data-aos="fade-up" data-aos-delay="600">Explore the Extraordinary – PEHNAVA, Where Magic Lives.</p>
     </div>
-  </div>
-</section> {% endcomment %}
 
-<!--Satisfied Customer-->
-
-{% comment %} <section class="ftco-section testimony-section">
-  <div class="container">
-    <div class="row justify-content-center mb-5 pb-3">
-      <div class="col-md-7 heading-section ftco-animate text-center">
-        <span class="subheading">Testimony</span>
-        <h2 class="mb-4">Our satisfied customer says</h2>
-        <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in</p>
-      </div>
-    </div>
-    <div class="row ftco-animate">
-      <div class="col-md-12">
-        <div class="carousel-testimony owl-carousel">
-          <div class="item">
-            <div class="testimony-wrap p-4 pb-5">
-              <div class="user-img mb-5" style="background-image: url({% static 'images/person_1.jpg' %})">
-                <span class="quote d-flex align-items-center justify-content-center">
-                  <i class="icon-quote-left"></i>
-                </span>
-              </div>
-              <div class="text text-center">
-                <p class="mb-5 pl-4 line">Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
-                <p class="name">Garreth Smith</p>
-                <span class="position">Marketing Manager</span>
+    <div class="mt-8 sm:mt-12 md:mt-16 relative">
+      {% if trending %}
+      <div class="product-slider-container relative bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-2xl sm:rounded-3xl shadow-xl p-6 sm:p-8 md:p-10 lg:p-12 overflow-hidden touch-pan-y border border-gray-100/80">
+        <div class="absolute inset-0 bg-gradient-to-tr from-primary-50/30 via-transparent to-indigo-50/30 rounded-2xl sm:rounded-3xl pointer-events-none backdrop-blur-[1px]"></div>
+        <!-- Enhanced mobile-responsive slider -->
+        <div class="product-slider swiper overflow-visible -mx-2 sm:-mx-3">
+          <div class="swiper-wrapper">
+            {% for product in trending %}
+            <div class="swiper-slide p-2 sm:p-3 w-full sm:w-1/2 md:w-1/3 lg:w-1/4">
+              <div class="product-card group relative flex flex-col h-[400px] sm:h-[450px] bg-gradient-to-br from-white via-white to-gray-50 rounded-xl sm:rounded-2xl shadow-lg hover:shadow-2xl transform transition-all duration-500 hover:-translate-y-2 active:scale-95 touch-manipulation border border-gray-100/80 hover:bg-gradient-to-br hover:from-primary-50 hover:via-white hover:to-primary-50" 
+                   data-aos="fade-up" data-aos-duration="800" data-aos-delay="{{ forloop.counter|multiply:100 }}">
+                  <!-- Hot Label -->
+                  <div class="absolute top-4 right-4 z-10">
+                    <div class="bg-gradient-to-r from-red-500 to-orange-500 text-white px-3 py-1 rounded-full text-sm font-semibold transform rotate-3 hover:rotate-0 transition-transform duration-300 shadow-lg hover:shadow-red-500/30 flex items-center space-x-1">
+                      <svg class="w-4 h-4 animate-pulse" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clip-rule="evenodd"></path>
+                      </svg>
+                      <span>HOT</span>
+                    </div>
+                  </div>
+                <!-- Fixed aspect ratio container for the image -->
+                <div class="w-full h-[250px] sm:h-[300px] relative rounded-t-xl sm:rounded-t-2xl overflow-hidden bg-gradient-to-br from-gray-50 to-white shadow-inner">
+                  <img src="{{ product.photo.url }}" alt="{{ product.name }}" 
+                       class="absolute inset-0 h-full w-full object-contain object-center p-4 transform transition-all duration-700 group-hover:scale-110 group-hover:rotate-1" 
+                       loading="lazy">
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
+                  
+                  <!-- Quick action buttons that appear on hover -->
+                  <div class="absolute bottom-0 left-0 right-0 flex items-center justify-center space-x-2 p-3 sm:p-4 translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 sm:touch-none">
+                    <a href="{% url 'shop:product_detail' product.id %}" 
+                       class="rounded-full bg-white/95 backdrop-blur-sm p-2.5 text-primary-600 shadow-lg transition-all duration-300 hover:bg-primary-600 hover:text-white hover:scale-105 transform">
+                      <span class="sr-only">View details</span>
+                      <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                      </svg>
+                    </a>
+                    <a href="{% url 'cart:add_to_cart' product.id %}" 
+                       class="rounded-full bg-white/95 backdrop-blur-sm p-2.5 text-primary-600 shadow-lg transition-all duration-300 hover:bg-primary-600 hover:text-white hover:scale-105 transform">
+                      <span class="sr-only">Add to cart</span>
+                      <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                      </svg>
+                    </a>
+                    <a class="rounded-full bg-white/95 backdrop-blur-sm p-2.5 text-gray-600 shadow-lg transition-all duration-300 hover:bg-red-500 hover:text-white hover:scale-105 transform">
+                      <span class="sr-only">Add to wishlist</span>
+                      <svg class="h-5 w-5" fill="{% if product.id in wishlist_products %}currentColor{% else %}none{% endif %}" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318 a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                      </svg>
+                    </a>
+                  </div>
+                  
+                  <!-- Sale badge if product is on sale -->
+                  {% if product.on_sale %}
+                  <div class="absolute top-2 left-2 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs font-bold px-3 py-2 rounded-full shadow-lg transform -rotate-3 transition-all duration-300 group-hover:rotate-3 group-hover:scale-110 group-hover:shadow-xl backdrop-blur-sm">
+                    <span class="flex items-center gap-1">
+                      <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 2a1 1 0 00-.894.553L7.382 6H4a1 1 0 000 2h2.618l-1.724 3.447A1 1 0 004 12.763V14a1 1 0 001 1h10a1 1 0 001-1v-1.237a1 1 0 00-.894-1.316L13.382 8H16a1 1 0 000-2h-3.382l-1.724-3.447A1 1 0 0010 2z" clip-rule="evenodd"/>
+                      </svg>
+                      SALE
+                    </span>
+                  </div>
+                  {% endif %}
+                </div>
+                
+                <!-- IMPROVED: Product info container with better handling of price display -->
+                <div class="p-4 sm:p-5 md:p-6 flex-1 flex flex-col bg-gradient-to-br from-white to-gray-50/80 rounded-b-xl sm:rounded-b-2xl">
+                  <!-- Product name with fixed height -->
+                  <div class="mb-3 sm:mb-4 h-10 sm:h-12 md:h-14 flex items-start">
+                    <h3 class="text-xs sm:text-sm md:text-base font-semibold text-gray-900 line-clamp-2 group-hover:text-primary-600 transition-colors duration-300">
+                      <a href="{% url 'shop:product_detail' product.id %}" class="hover:text-primary-600 transition-colors">
+                        <span aria-hidden="true" class="absolute inset-0"></span>
+                        {{ product.name }}
+                      </a>
+                    </h3>
+                  </div>
+                  
+                  <!-- IMPROVED: Price section with better overflow handling -->
+                  <div class="mb-auto">
+                    {% if product.on_sale %}
+                    <div class="flex flex-col items-start gap-1 mb-2">
+                      <p class="text-xs sm:text-sm text-gray-400 line-through">PKR {{ product.price |format_price  }}</p>
+                      <div class="flex flex-wrap items-center gap-2">
+                        <p class="text-sm sm:text-base font-bold text-primary-800 bg-primary-50 px-2 py-1 rounded-lg whitespace-nowrap">
+                          PKR {{ product.sale_price |format_price  }}
+                        </p>
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-red-100 text-red-800">
+                          -{{ product.sale_percentage }}%
+                        </span>
+                      </div>
+                    </div>
+                    {% else %}
+                    <p class="text-sm sm:text-base font-bold text-primary-800 bg-primary-50 px-2 py-1 rounded-lg inline-block mb-2">
+                      PKR {{ product.price |format_price }}
+                    </p>
+                    {% endif %}
+                  </div>
+                  
+                  <!-- Product badges in a scrollable container if needed -->
+                  <div class="flex gap-1 overflow-x-auto pb-2 hide-scrollbar">
+                    {% if product.on_sale %}
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 whitespace-nowrap">
+                      <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 2a1 1 0 00-.894.553L7.382 6H4a1 1 0 000 2h2.618l-1.724 3.447A1 1 0 004 12.763V14a1 1 0 001 1h10a1 1 0 001-1v-1.237a1 1 0 00-.894-1.316L13.382 8H16a1 1 0 000-2h-3.382l-1.724-3.447A1 1 0 0010 2z" clip-rule="evenodd"/>
+                      </svg>
+                      Sale
+                    </span>
+                    {% endif %}
+                    {% if product.is_new %}
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 whitespace-nowrap">
+                      <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 012.812-2.812z" clip-rule="evenodd"/>
+                      </svg>
+                      New
+                    </span>
+                    {% endif %}
+                    {% if product.is_bestseller %}
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 whitespace-nowrap">
+                      <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                      </svg>
+                      Best Seller
+                    </span>
+                    {% endif %}
+                  </div>
+                  
+                  <!-- Footer with ratings and category -->
+                  <div class="flex items-center justify-between pt-3 border-t border-gray-100/80 mt-3">
+                    <div class="flex items-center space-x-1 text-xs text-gray-500">
+                      <svg class="h-4 w-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                      </svg>
+                      <span>4.5</span>
+                    </div>
+                    <span class="text-xs font-medium text-primary-600 truncate max-w-[100px]">{{ product.category|title }}</span>
+                  </div>
+                </div>
               </div>
             </div>
+            {% endfor %}
           </div>
         </div>
+        
+        <!-- Navigation controls -->
+        <div class="swiper-pagination mt-8 flex justify-center"></div>
+        <button class="slider-nav-button slider-prev absolute top-1/2 -translate-y-1/2 -left-2 sm:-left-4 z-10 bg-white/90 backdrop-blur-sm rounded-full p-2 sm:p-3 shadow-lg transition-all duration-300 hover:bg-primary-50 hover:text-primary-600 hover:scale-110 focus:outline-none opacity-0 group-hover:opacity-100 transform -translate-x-4 group-hover:translate-x-0" aria-label="Previous slide">
+          <svg class="h-5 w-5 sm:h-6 sm:w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+          </svg>
+        </button>
+        <button class="slider-nav-button slider-next absolute top-1/2 -translate-y-1/2 -right-2 sm:-right-4 z-10 bg-white/90 backdrop-blur-sm rounded-full p-2 sm:p-3 shadow-lg transition-all duration-300 hover:bg-primary-50 hover:text-primary-600 hover:scale-110 focus:outline-none opacity-0 group-hover:opacity-100 transform translate-x-4 group-hover:translate-x-0" aria-label="Next slide">
+          <svg class="h-5 w-5 sm:h-6 sm:w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
+        </button>
+      </div>
+      {% else %}
+      <div class="text-center py-12">
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
+          <svg class="h-8 w-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
+          </svg>
+        </div>
+        <h2 class="text-2xl font-semibold text-gray-900 mb-2">No Products Available</h2>
+        <p class="text-gray-500">Check back later for new arrivals!</p>
+      </div>
+      {% endif %}
+      
+      <!-- View all products button -->
+      <div class="mt-12 text-center">
+        <a href="{% url 'shop:shop' %}" class="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-violet-600 via-primary-600 to-indigo-600 px-8 py-4 text-lg font-semibold text-white shadow-xl transform transition-all duration-300 hover:from-violet-700 hover:via-primary-700 hover:to-indigo-700 hover:scale-110 hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-primary-500 focus:ring-offset-2 relative overflow-hidden group">
+          <span class="relative z-10 flex items-center">
+            View All Products
+            <svg class="ml-2.5 h-6 w-6 transition-transform duration-300 group-hover:translate-x-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+            </svg>
+          </span>
+          <div class="absolute inset-0 bg-gradient-to-r from-violet-700 via-primary-700 to-indigo-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        </a>
       </div>
     </div>
   </div>
-</section> {% endcomment %}
+  
+  <!-- Add this custom CSS to hide scrollbars but still allow scrolling -->
+  <style>
+    .hide-scrollbar {
+      -ms-overflow-style: none;  /* IE and Edge */
+      scrollbar-width: none;  /* Firefox */
+    }
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;  /* Chrome, Safari and Opera */
+    }
+  </style>
+</section>
+
+
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>

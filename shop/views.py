@@ -2,10 +2,12 @@ from django.shortcuts import get_object_or_404, render
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .models import Category, Product
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 
 def shop_page(request):
     category = Category.objects.all()
     product_list = Product.objects.filter(is_draft=False).order_by('-id')
+    sale_products = Product.objects.filter(is_draft=False, on_sale=True, sale_percentage__gte=50).order_by('-sale_percentage')[:8]
     
     # Set pagination with 12 items per page
     paginator = Paginator(product_list, 12)
@@ -21,6 +23,7 @@ def shop_page(request):
     context = {
         'category': category,
         'products': products,
+        'sale_products': sale_products,
         'is_paginated': True if paginator.num_pages > 1 else False,
         'total_products': product_list.count()
     }
