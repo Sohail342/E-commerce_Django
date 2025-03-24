@@ -1,0 +1,227 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Advanced Analytics{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-100 p-4 sm:p-6 lg:p-8">
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">Advanced Analytics</h1>
+            <p class="mt-2 text-sm text-gray-600">Detailed insights and metrics for your e-commerce business</p>
+        </div>
+
+        <!-- Traffic Overview -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <!-- Daily Traffic -->
+            <div class="bg-white rounded-lg shadow-lg p-6 transform hover:scale-105 transition-all duration-300">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Today's Traffic</h3>
+                    <span class="text-sm text-gray-500">{{ daily_metrics.date|date:"d M Y" }}</span>
+                </div>
+                <div class="space-y-4">
+                    <div>
+                        <p class="text-sm text-gray-600">Total Visits</p>
+                        <p class="text-2xl font-bold text-blue-600">{{ daily_metrics.total_visits }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600">Unique Visitors</p>
+                        <p class="text-2xl font-bold text-green-600">{{ daily_metrics.unique_visitors }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Monthly Traffic -->
+            <div class="bg-white rounded-lg shadow-lg p-6 transform hover:scale-105 transition-all duration-300">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Monthly Overview</h3>
+                    <span class="text-sm text-gray-500">{{ monthly_metrics.month }}/{{ monthly_metrics.year }}</span>
+                </div>
+                <div class="space-y-4">
+                    <div>
+                        <p class="text-sm text-gray-600">Total Page Views</p>
+                        <p class="text-2xl font-bold text-purple-600">{{ monthly_metrics.total_page_views }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600">Avg. Session Duration</p>
+                        <p class="text-2xl font-bold text-indigo-600">{{ monthly_metrics.average_session_duration }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Conversion Metrics -->
+            <div class="bg-white rounded-lg shadow-lg p-6 transform hover:scale-105 transition-all duration-300">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Conversion Rates</h3>
+                <div class="space-y-4">
+                    <div>
+                        <p class="text-sm text-gray-600">Cart Conversion Rate</p>
+                        <div class="flex items-center">
+                            <p class="text-2xl font-bold text-orange-600">{{ cart_conversion_rate }}%</p>
+                            <span class="ml-2 text-sm {% if cart_conversion_trend > 0 %}text-green-500{% else %}text-red-500{% endif %}">
+                                {{ cart_conversion_trend }}%
+                            </span>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-600">Wishlist Conversion Rate</p>
+                        <div class="flex items-center">
+                            <p class="text-2xl font-bold text-pink-600">{{ wishlist_conversion_rate }}%</p>
+                            <span class="ml-2 text-sm {% if wishlist_conversion_trend > 0 %}text-green-500{% else %}text-red-500{% endif %}">
+                                {{ wishlist_conversion_trend }}%
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <!-- Traffic Trends Chart -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Traffic Trends</h3>
+                <canvas id="trafficTrendsChart" class="w-full h-64"></canvas>
+            </div>
+
+            <!-- Conversion Funnel Chart -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Conversion Funnel</h3>
+                <canvas id="conversionFunnelChart" class="w-full h-64"></canvas>
+            </div>
+        </div>
+
+        <!-- Detailed Analytics Tables -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Wishlist Analytics -->
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Wishlist Analytics</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Product</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Wishlists</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Conversions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                {% for item in wishlist_analytics %}
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ item.name }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.wishlist_count }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ item.conversion_rate }}%</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cart Analytics -->
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Cart Analytics</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Count</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Value</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                {% for stat in cart_analytics %}
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ stat.status }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ stat.count }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">PKR {{ stat.value|floatformat:2 }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js Script -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Traffic Trends Chart
+    const trafficCtx = document.getElementById('trafficTrendsChart').getContext('2d');
+    new Chart(trafficCtx, {
+        type: 'line',
+        data: {
+            labels: {{ traffic_dates|safe }},
+            datasets: [{
+                label: 'Total Visits',
+                data: {{ total_visits_data|safe }},
+                borderColor: 'rgb(59, 130, 246)',
+                tension: 0.4
+            }, {
+                label: 'Unique Visitors',
+                data: {{ unique_visitors_data|safe }},
+                borderColor: 'rgb(16, 185, 129)',
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // Conversion Funnel Chart
+    const funnelCtx = document.getElementById('conversionFunnelChart').getContext('2d');
+    new Chart(funnelCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Page Views', 'Add to Wishlist', 'Add to Cart', 'Purchases'],
+            datasets: [{
+                data: {{ funnel_data|safe }},
+                backgroundColor: [
+                    'rgba(59, 130, 246, 0.5)',
+                    'rgba(236, 72, 153, 0.5)',
+                    'rgba(245, 158, 11, 0.5)',
+                    'rgba(16, 185, 129, 0.5)'
+                ],
+                borderColor: [
+                    'rgb(59, 130, 246)',
+                    'rgb(236, 72, 153)',
+                    'rgb(245, 158, 11)',
+                    'rgb(16, 185, 129)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

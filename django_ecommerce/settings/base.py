@@ -38,11 +38,13 @@ INSTALLED_APPS = [
     'about',
     'shop',
     'cart',
+    'analytics',
     'base',
     'order',
     'account',
     'SendEmail',
     'wishlist',
+    'dashboard'
 ]
 
 MIDDLEWARE = [

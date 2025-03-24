@@ -7,25 +7,73 @@
 {% block extra_head %}
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 <style>
-  .password-strength-container { width: 100%; background-color: #f0f0f0; border-radius: 4px; }
-  .password-strength-bar { height: 5px; width: 0; transition: width 0.3s, background-color 0.3s; border-radius: 4px; }
-  .password-strength-bar.weak { background-color: #ff4444; }
-  .password-strength-bar.medium { background-color: #ffbb33; }
-  .password-strength-bar.strong { background-color: #00C851; }
-  .password-requirements { list-style: none; padding-left: 0; font-size: 0.9em; color: #666; }
-  .password-requirements li { margin: 5px 0; }
-  .password-requirements li.met { color: #00C851; }
-  .password-requirements li.met:before { content: '✓'; margin-right: 5px; }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+  }
+  .animate-shake { animation: shake 0.5s ease-in-out; }
+  .password-strength-container { @apply w-full bg-gray-100 rounded-full; }
+  .password-strength-bar { @apply h-2 w-0 transition-all duration-300 ease-in-out rounded-full; }
+  .password-strength-bar.weak { @apply bg-red-500; }
+  .password-strength-bar.medium { @apply bg-yellow-500; }
+  .password-strength-bar.strong { @apply bg-green-500; }
+  .password-requirements { @apply list-none pl-0 text-sm text-gray-600; }
+  .password-requirements li { @apply my-1; }
+  .password-requirements li.met { @apply text-green-600; }
+  .password-requirements li.met:before { content: '✓'; @apply mr-2; }
 </style>
 {% endblock %}
 
-    <section class="min-h-screen flex items-center bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8 animate-fade-in">
-      <div class="max-w-7xl mx-auto w-full">
-        <div class="flex flex-col md:flex-row items-center justify-between gap-8">
-          <div class="w-full md:w-1/2 max-w-md">
+<script>
+function togglePassword() {
+  const passwordInput = document.querySelector('input[name="password1"]');
+  const toggleIcon = document.getElementById('toggleIcon');
+  
+  if (passwordInput.type === 'password') {
+    passwordInput.type = 'text';
+    toggleIcon.classList.remove('fa-eye');
+    toggleIcon.classList.add('fa-eye-slash');
+  } else {
+    passwordInput.type = 'password';
+    toggleIcon.classList.remove('fa-eye-slash');
+    toggleIcon.classList.add('fa-eye');
+  }
+}
+
+function toggleConfirmPassword() {
+  const confirmPasswordInput = document.querySelector('input[name="password2"]');
+  const toggleConfirmIcon = document.getElementById('toggleConfirmIcon');
+  
+  if (confirmPasswordInput.type === 'password') {
+    confirmPasswordInput.type = 'text';
+    toggleConfirmIcon.classList.remove('fa-eye');
+    toggleConfirmIcon.classList.add('fa-eye-slash');
+  } else {
+    confirmPasswordInput.type = 'password';
+    toggleConfirmIcon.classList.remove('fa-eye-slash');
+    toggleConfirmIcon.classList.add('fa-eye');
+  }
+}
+</script>
+
+    <section class="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8 animate-fade-in">
+      <div class="w-full max-w-md">
+        <div class="flex flex-col items-center justify-center gap-8">
             <form class="bg-white shadow-xl rounded-2xl p-8 space-y-6 transform transition-all duration-300 hover:shadow-2xl hover:-translate-y-1" action="{% url 'account:signup' %}" method="post">
+              <div class="text-center space-y-4">
+                <img src="{% static 'images/logo.svg' %}" alt="Pehnava Logo" class="mx-auto h-20 w-auto">
+                <h2 class="text-3xl font-bold text-gray-900">Create Account</h2>
+              </div>
                 {% if form.non_field_errors %}
-                  <span class="text-danger mt-4 text-sm text-center">{{ form.non_field_errors.as_ul }}</span>
+                  <div class="p-3 mb-4 bg-red-50 border border-red-200 rounded-lg animate-shake">
+                    <div class="flex items-center justify-center space-x-2">
+                      <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                      </svg>
+                      <span class="text-red-600 text-sm font-medium">{{ form.non_field_errors.as_text|cut:"* "|linebreaksbr }}</span>
+                    </div>
+                  </div>
                 {% endif %}
                 {% csrf_token %}
 
@@ -34,21 +82,21 @@
                     <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
                     {{form.username|attr:"class:mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 sm:text-sm transition duration-200"}}
                     {% if form.username.errors %}
-                      <p class="mt-2 text-sm text-red-600">{{ form.username.errors }}</p>
+                      <p class="mt-2 text-sm text-red-600 animate-shake">{{ form.username.errors }}</p>
                     {% endif %}
                   </div>
                   <div class="relative">
                     <label for="first_name" class="block text-sm font-medium text-gray-700">First Name</label>
                     {{form.first_name|attr:"class:mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 sm:text-sm transition duration-200"}}
                     {% if form.first_name.errors %}
-                      <p class="mt-2 text-sm text-red-600">{{ form.first_name.errors }}</p>
+                      <p class="mt-2 text-sm text-red-600 animate-shake">{{ form.first_name.errors }}</p>
                     {% endif %}
                   </div>
                   <div class="relative">
                     <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
                     {{form.email|attr:"class:mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 sm:text-sm transition duration-200"}}
                     {% if form.email.errors %}
-                      <p class="mt-2 text-sm text-red-600">{{ form.email.errors }}</p>
+                      <p class="mt-2 text-sm text-red-600 animate-shake">{{ form.email.errors }}</p>
                     {% endif %}
                   </div>
                 </div>
@@ -69,21 +117,23 @@
                     <span id="strength-text" class="text-sm text-gray-600 mt-1 block"></span>
                   </div>
                   <ul class="space-y-2 text-sm text-gray-600">
-                    <li id="req-length" class="flex items-center transition-colors duration-200"><i class="fas fa-check-circle mr-2 opacity-0 transition-opacity duration-200"></i>At least 8 characters</li>
-                    <li id="req-uppercase" class="flex items-center transition-colors duration-200"><i class="fas fa-check-circle mr-2 opacity-0 transition-opacity duration-200"></i>At least one uppercase letter</li>
-                    <li id="req-lowercase" class="flex items-center transition-colors duration-200"><i class="fas fa-check-circle mr-2 opacity-0 transition-opacity duration-200"></i>At least one lowercase letter</li>
-                    <li id="req-numbers" class="flex items-center transition-colors duration-200"><i class="fas fa-check-circle mr-2 opacity-0 transition-opacity duration-200"></i>At least one number</li>
-                    <li id="req-special" class="flex items-center transition-colors duration-200"><i class="fas fa-check-circle mr-2 opacity-0 transition-opacity duration-200"></i>At least one special character</li>
                   </ul>
                   {% if form.password1.errors %}
-                    <p class="mt-2 text-sm text-red-600">{{ form.password1.errors }}</p>
+                    <p class="mt-2 text-sm text-red-600 animate-shake">{{ form.password1.errors }}</p>
                   {% endif %}
                 </div>
                 <div class="relative space-y-2">
                   <label for="password2" class="block text-sm font-medium text-gray-700">Confirm Password</label>
-                  {{form.password2 |attr:"class:mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 sm:text-sm transition duration-200"}}
+                  <div class="relative rounded-md shadow-sm">
+                    {{form.password2 |attr:"class:block w-full pr-10 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 sm:text-sm transition-all duration-200"}}
+                    <div class="absolute inset-y-0 right-0 flex items-center pr-3">
+                      <button type="button" onclick="toggleConfirmPassword()" class="text-gray-400 hover:text-gray-500 focus:outline-none focus:text-gray-500 transition duration-150 ease-in-out">
+                        <i id="toggleConfirmIcon" class="fas fa-eye"></i>
+                      </button>
+                    </div>
+                  </div>
                   {% if form.password2.errors %}
-                    <p class="mt-2 text-sm text-red-600">{{ form.password2.errors }}</p>
+                    <p class="mt-2 text-sm text-red-600 animate-shake">{{ form.password2.errors }}</p>
                   {% endif %}
                 </div>
                 <div class="relative space-y-2">
@@ -111,11 +161,40 @@
               
               </form>
             </div>
-            <div class="w-full md:w-1/2 flex items-center justify-center p-8 animate-slide-in">
-              <img src="{% static 'images/logo.svg' %}" alt="Pehnava Logo" class="w-full max-w-md h-auto object-contain transform transition-transform duration-500 hover:scale-105">
-            </div>
           </div>
         </div>
       </div>
     </section>
 {% endblock %}
+
+<script>
+function togglePassword() {
+  const passwordInput = document.querySelector('input[name="password1"]');
+  const toggleIcon = document.getElementById('toggleIcon');
+  
+  if (passwordInput.type === 'password') {
+    passwordInput.type = 'text';
+    toggleIcon.classList.remove('fa-eye');
+    toggleIcon.classList.add('fa-eye-slash');
+  } else {
+    passwordInput.type = 'password';
+    toggleIcon.classList.remove('fa-eye-slash');
+    toggleIcon.classList.add('fa-eye');
+  }
+}
+
+function toggleConfirmPassword() {
+  const confirmPasswordInput = document.querySelector('input[name="password2"]');
+  const toggleConfirmIcon = document.getElementById('toggleConfirmIcon');
+  
+  if (confirmPasswordInput.type === 'password') {
+    confirmPasswordInput.type = 'text';
+    toggleConfirmIcon.classList.remove('fa-eye');
+    toggleConfirmIcon.classList.add('fa-eye-slash');
+  } else {
+    confirmPasswordInput.type = 'password';
+    toggleConfirmIcon.classList.remove('fa-eye-slash');
+    toggleConfirmIcon.classList.add('fa-eye');
+  }
+}
+</script>
