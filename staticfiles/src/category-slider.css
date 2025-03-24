@@ -9,25 +9,43 @@
     @apply h-auto w-full;
   }
   
-  /* Navigation buttons with fixed positioning */
+  /* Navigation buttons with enhanced mobile responsiveness and animations */
   .slider-nav-button {
-    @apply absolute top-1/2 -translate-y-1/2 z-10 w-12 h-12 flex items-center justify-center
-           rounded-full bg-white/90 backdrop-blur-sm text-gray-800 shadow-lg hover:bg-white 
-           hover:text-primary-600 hover:scale-110 transition-all duration-300 opacity-0
-           transform hover:shadow-xl;
+    @apply absolute top-1/2 -translate-y-1/2 z-10
+           w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14
+           flex items-center justify-center
+           rounded-full bg-white/90 backdrop-blur-sm
+           text-gray-800 shadow-lg
+           transition-all duration-300 ease-out
+           opacity-0 touch-manipulation select-none
+           hover:bg-white hover:text-primary-600
+           hover:scale-110 hover:shadow-xl
+           active:scale-95 active:bg-gray-50
+           focus:outline-none focus:ring-2 focus:ring-primary-400 focus:ring-offset-2
+           transform cursor-pointer;
   }
   
   .slider-prev {
-    @apply -left-6 lg:left-4;
+    @apply -left-3 sm:-left-4 md:-left-5 lg:left-4
+           translate-x-full sm:translate-x-8;
   }
   
   .slider-next {
-    @apply -right-6 lg:right-4;
+    @apply -right-3 sm:-right-4 md:-right-5 lg:right-4
+           -translate-x-full sm:-translate-x-8;
   }
   
-  /* Category slider hover shows buttons */
-  .category-slider:hover .slider-nav-button {
-    @apply opacity-100;
+  /* Category slider hover/focus shows buttons with smooth transitions */
+  .category-slider:hover .slider-nav-button,
+  .category-slider:focus-within .slider-nav-button {
+    @apply opacity-100 translate-x-0;
+  }
+
+  /* Ensure buttons are always visible on touch devices */
+  @media (hover: none) {
+    .slider-nav-button {
+      @apply opacity-80 translate-x-0;
+    }
   }
   
   /* Pagination bullets custom styling */
@@ -36,10 +54,12 @@
   }
 
   .swiper-pagination-bullet {
-    @apply w-2.5 h-2.5 rounded-full bg-white/70 opacity-70 transition-all duration-300 cursor-pointer mx-1;
+    @apply w-2.5 h-2.5 rounded-full bg-white/70 opacity-70 
+           transition-all duration-300 ease-out cursor-pointer mx-1
+           hover:bg-white hover:opacity-90;
   }
   
   .swiper-pagination-bullet-active {
-    @apply bg-white opacity-100 w-8;
+    @apply bg-white opacity-100 w-8 hover:opacity-100;
   }
 }

@@ -34,13 +34,15 @@
           <div class="mt-4 flex items-center space-x-4">
             <div class="flex items-center">
               <div class="flex items-center">
-                {% for i in "12345" %}
-                <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                {% with ''|center:5 as range %}
+                {% for _ in range %}
+                <svg class="h-5 w-5 {% if forloop.counter <= product.rating %} text-yellow-400 {% else %} text-gray-300 {% endif %}" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                 </svg>
                 {% endfor %}
+                {% endwith %}
               </div>
-              <p class="ml-2 text-sm text-gray-500">(100 reviews)</p>
+              <p class="ml-2 text-sm text-gray-500">({{ product.rating|floatformat:1 }})</p>
             </div>
             <span class="text-gray-500">|</span>
             <p class="text-sm text-gray-500">500 Sold</p>
@@ -126,10 +128,14 @@
             <p class="mt-1 text-lg font-semibold text-primary-600">PKR {{ rel_product.price|format_price }}</p>
             <div class="mt-4 flex items-center justify-between">
               <div class="flex items-center">
-                <svg class="h-4 w-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                {% with ''|center:5 as range %}
+                {% for _ in range %}
+                <svg class="h-4 w-4 {% if forloop.counter <= rel_product.rating %} text-yellow-400 {% else %} text-gray-300 {% endif %}" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                 </svg>
-                <span class="ml-1 text-sm text-gray-500">4.5</span>
+                {% endfor %}
+                {% endwith %}
+                <span class="ml-2 text-sm text-gray-500">({{ rel_product.rating|floatformat:1 }})</span>
               </div>
               <a href="{% url 'shop:product_detail' rel_product.id %}" class="text-primary-600 hover:text-primary-700 transition-colors">
                 <span class="sr-only">View details for {{ rel_product.name }}</span>
