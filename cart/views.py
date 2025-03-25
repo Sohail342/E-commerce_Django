@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from .models import Product, Cart, CartItem
 from .cart_session import SessionCart
 from shop.models import Product
+from django.contrib import messages
 
 def get_cart(request):
     if request.user.is_authenticated:
@@ -95,5 +96,24 @@ def validate_quantity(request, product_id):
             'valid': False,
             'max_quantity': product.inventory
         })
+
+def buy_now(request, product_id, quantity=1):
+    # Clear any existing buy now session
+    if 'buy_now_product' in request.session:
+        del request.session['buy_now_product']
+    
+    product = get_object_or_404(Product, id=product_id)
+    
+    # Store buy now product in session
+    buy_now_data = {
+        'product_id': product.id,
+        'quantity': quantity,
+        'price': str(product.price)
+    }
+    request.session['buy_now_product'] = buy_now_data
+    
+    print("Buy now product stored in session:", request.session['buy_now_product'])
+    # Directly redirect to checkout without showing cart message
+    return redirect('order:checkout')
     
     

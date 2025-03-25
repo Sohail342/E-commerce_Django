@@ -98,4 +98,4 @@ document.addEventListener('DOMContentLoaded', function() {
   });
   
   updateSliderPosition();
-}));
+});

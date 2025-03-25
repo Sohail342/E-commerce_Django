@@ -4,17 +4,27 @@ from .models import Category, Product
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ['id', 'name', 'price', 'sale_price_display', 'category', 'inventory', 'status_display', 'date']
+    list_display = ['id', 'name', 'price', 'sale_price_display', 'category', 'inventory', 'status_display', 'sale_status', 'date']
     list_filter = ['category', 'is_draft', 'on_sale', 'trending']
     search_fields = ['name', 'details']
     readonly_fields = ['date']
     list_editable = ['price', 'inventory']
     list_per_page = 20
     
+    def sale_status(self, obj):
+        if not obj.on_sale:
+            return format_html('<span style="color: gray;">Not on sale</span>')
+        if obj.sale_end_date:
+            from django.utils import timezone
+            if obj.sale_end_date < timezone.now():
+                return format_html('<span style="color: red;">Sale ended</span>')
+            return format_html('<span style="color: green;">Sale ends: {}</span>', obj.sale_end_date.strftime('%Y-%m-%d %H:%M'))
+        return format_html('<span style="color: green;">On sale</span>')
+    
     def sale_price_display(self, obj):
         if obj.on_sale:
-            return format_html('<span style="color: green;">${}</span>', obj.sale_price)
-        return format_html('${}'.format(obj.price))
+            return format_html('<span style="color: green;">PKR {}</span>', obj.sale_price)
+        return format_html('PKR {}'.format(obj.price))
     sale_price_display.short_description = 'Sale Price'
     
     def status_display(self, obj):

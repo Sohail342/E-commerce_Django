@@ -5,22 +5,31 @@
 {% block content %}
 <section class="py-6 sm:py-12 md:py-16 bg-gray-50">
   <div class="container mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-12">
       <!-- Product Image Section -->
-      <div class="relative group" data-aos="fade-right" data-aos-duration="800">
-        <div class="aspect-square w-full rounded-xl sm:rounded-2xl overflow-hidden bg-white shadow-sm sm:shadow-md hover:shadow-lg transition-shadow duration-300">
-          <img src="{{ product.photo.url }}" alt="{{ product.name }}" class="w-full h-full object-contain transform transition-transform duration-500 group-hover:scale-105">
+      <div class="relative group w-full max-w-md mx-auto lg:mx-0" data-aos="fade-right" data-aos-duration="800">
+        <div class="aspect-square w-full max-w-md rounded-xl sm:rounded-2xl overflow-hidden bg-white shadow-md sm:shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
+          <div class="relative h-full w-full overflow-hidden">
+            <img src="{{ product.photo.url }}" alt="{{ product.name }}" class="w-full h-full object-contain transform transition-transform duration-500 group-hover:scale-110 p-4">
+            <div class="absolute inset-0 bg-gradient-to-t from-gray-50/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          </div>
         </div>
         {% if product.trending or product.on_sale %}
-        <div class="absolute top-4 left-4 flex flex-col space-y-2">
+        <div class="absolute top-4 left-4 flex flex-col space-y-2 z-10">
           {% if product.trending %}
-          <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gradient-to-r from-orange-400 to-red-500 text-white shadow-lg transform transition-transform hover:scale-105">
-            <i class="fas fa-fire mr-1"></i> Hot
+          <span class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-gradient-to-r from-orange-400 to-red-500 text-white shadow-lg transform transition-all duration-300 hover:scale-110 hover:shadow-orange-400/30">
+            <svg class="w-4 h-4 mr-1.5 animate-pulse" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clip-rule="evenodd"></path>
+            </svg>
+            <span>Hot</span>
           </span>
           {% endif %}
           {% if product.on_sale %}
-          <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-lg transform transition-transform hover:scale-105">
-            <i class="fas fa-tag mr-1"></i> Sale
+          <span class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-lg transform transition-all duration-300 hover:scale-110 hover:shadow-pink-400/30">
+            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+            </svg>
+            <span>Sale</span>
           </span>
           {% endif %}
         </div>
@@ -29,6 +38,21 @@
 
       <!-- Product Details Section -->
       <div class="flex flex-col space-y-4 sm:space-y-6" data-aos="fade-left" data-aos-duration="800" data-aos-delay="200">
+        {% if product.on_sale and product.sale_end_date %}
+        <!-- Countdown Timer Above Product Name -->
+        <div class="w-full">
+          <div class="flex items-center justify-between">
+            <span class="inline-flex items-center text-xs font-medium text-red-700 bg-red-50 px-2 py-0.5 rounded-md">
+              <svg class="h-3 w-3 text-red-500 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              Limited Time Offer
+            </span>
+          </div>
+          <div id="sale-countdown" data-end-date="{{ product.sale_end_date|date:'c' }}" class="w-full mt-2 transition-all duration-300 transform hover:scale-102 group">
+          </div>
+        </div>
+        {% endif %}
         <div>
           <h1 class="text-xl sm:text-3xl md:text-4xl font-bold text-gray-900 leading-tight">{{ product.name }}</h1>
           <div class="mt-4 flex items-center space-x-4">
@@ -49,25 +73,36 @@
           </div>
         </div>
 
-        <div class="flex flex-col sm:flex-row sm:items-baseline sm:space-x-3 space-y-2 sm:space-y-0">
+        <div class="flex flex-col sm:flex-row sm:items-baseline sm:space-x-3 space-y-2 sm:space-y-0 w-full">
           {% if product.on_sale %}
           <div class="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
-            <p class="text-3xl sm:text-4xl font-extrabold text-primary-800 bg-primary-50 px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl shadow-sm hover:shadow-md transition-all duration-300">PKR {{ product.sale_price|format_price }}</p>
+            <div class="relative">
+              <p class="text-2xl sm:text-3xl font-extrabold text-primary-800 bg-gradient-to-r from-primary-50 to-primary-100 px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl shadow-sm hover:shadow-md transition-all duration-300 border border-primary-200">PKR {{ product.sale_price|format_price }}</p>
+              <span class="absolute -top-3 -right-3 inline-flex items-center justify-center px-3 py-1 text-xs font-bold leading-none text-white transform rotate-3 bg-gradient-to-r from-red-500 to-pink-500 rounded-full shadow-lg">
+                SALE
+              </span>
+            </div>
             <div class="flex flex-row sm:flex-col items-center sm:items-start space-x-2 sm:space-x-0">
-              <span class="text-lg sm:text-xl text-gray-500 line-through">PKR {{ product.price|format_price }}</span>
-              <span class="text-base sm:text-lg font-medium text-green-600">-{{ product.sale_percentage }}% OFF</span>
+              <span class="text-base sm:text-lg text-gray-500 line-through">PKR {{ product.price|format_price }}</span>
+              <span class="text-sm sm:text-base font-medium text-green-600 bg-green-50 px-2 py-1 rounded-md">-{{ product.sale_percentage }}% OFF</span>
             </div>
           </div>
+          {% comment %} Countdown timer moved above product name {% endcomment %}
           {% else %}
-          <p class="text-3xl sm:text-4xl font-extrabold text-primary-800 bg-primary-50 px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl shadow-sm hover:shadow-md transition-all duration-300">PKR {{ product.price|format_price }}</p>
+          <p class="text-2xl sm:text-3xl font-extrabold text-primary-800 bg-primary-50 px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl shadow-sm hover:shadow-md transition-all duration-300">PKR {{ product.price|format_price }}</p>
           {% endif %}
+          {% if inventory > 0 %}
           <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 w-fit">In Stock: {{ inventory }}</span>
+          {% else %}
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 w-fit">Out of Stock</span>
+          {% endif %}
         </div>
 
-        <div class="prose prose-sm sm:prose text-gray-600 max-w-none">
+        <!-- Product Description -->
+        <div class="prose prose-sm sm:prose text-gray-600 max-w-none bg-white p-4 rounded-xl shadow-sm hover:shadow-md transition-all duration-300">
           <p>{{ product.details }}</p>
         </div>
-
+      
         <!-- Quantity Selector -->
         <div class="flex items-center space-x-3 sm:space-x-4">
           <label for="quantity" class="block text-sm font-medium text-gray-700">Quantity</label>
@@ -80,32 +115,86 @@
             <input type="text" id="quantity" name="quantity" class="w-16 text-center border-x border-gray-300 py-2 text-gray-900 focus:outline-none" value="1" min="1" max="{{inventory}}" readonly>
             <button type="button" class="quantity-right-plus p-2 text-gray-600 hover:text-primary-600 transition-colors" data-type="plus">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4L5 9z"/>
               </svg>
             </button>
           </div>
         </div>
 
         <!-- Action Buttons -->
-        <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 w-full">
-          <button id="add-to-cart" class="w-full sm:flex-1 sm:max-w-xs inline-flex justify-center items-center px-4 sm:px-6 py-3 text-base sm:text-lg font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transform hover:scale-102 active:scale-98 transition-all duration-300 group relative overflow-hidden">
+        <div class="flex flex-col space-y-3 sm:flex-row sm:space-y-0 sm:space-x-4 w-full">
+          {% if inventory > 0 %}
+          <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 w-full">
+            <button id="add-to-cart" class="flex-1 inline-flex justify-center items-center px-4 sm:px-6 py-4 sm:py-3 text-base sm:text-lg font-semibold text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transform hover:scale-102 active:scale-98 transition-all duration-300 group relative overflow-hidden">
+              <span class="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent group-hover:scale-x-100 scale-x-0 origin-left transition-transform duration-500"></span>
+              <svg class="-ml-1 mr-3 h-6 w-6 transition-transform duration-300 group-hover:rotate-12 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7A4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+              </svg>
+              <span class="relative">Add to Cart</span>
+              <span class="absolute inset-0 flex items-center justify-center bg-blue-700 opacity-0 transition-opacity duration-300" id="loading-state">
+                <svg class="animate-spin h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+              </span>
+            </button>
+            <a href="{% url 'cart:buy_now' product.id 1 %}" id="buy-now-btn" class="flex-1 inline-flex justify-center items-center px-4 sm:px-6 py-4 sm:py-3 text-base sm:text-lg font-semibold text-white bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transform hover:scale-102 active:scale-98 transition-all duration-300 group relative overflow-hidden">
+              <span class="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent group-hover:scale-x-100 scale-x-0 origin-left transition-transform duration-500"></span>
+              <svg class="-ml-1 mr-3 h-6 w-6 transition-transform duration-300 group-hover:rotate-12 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+              </svg>
+              <span class="relative">Buy Now</span>
+            </a>
+          </div>
+          {% else %}
+          <button class="toggle-wishlist w-full sm:flex-1 sm:max-w-xs inline-flex justify-center items-center px-4 sm:px-6 py-4 sm:py-3 text-base sm:text-lg font-semibold text-white bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transform hover:scale-102 active:scale-98 transition-all duration-300 group relative overflow-hidden" data-product-id="{{ product.id }}">
             <span class="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent group-hover:scale-x-100 scale-x-0 origin-left transition-transform duration-500"></span>
             <svg class="-ml-1 mr-3 h-6 w-6 transition-transform duration-300 group-hover:rotate-12 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
-            </svg>
-            <span class="relative">Add to Cart</span>
-            <span class="absolute inset-0 flex items-center justify-center bg-blue-700 opacity-0 transition-opacity duration-300" id="loading-state">
-              <svg class="animate-spin h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-            </span>
-          </button>
-          <button class="toggle-wishlist inline-flex justify-center items-center p-4 border-2 border-gray-300 rounded-xl text-gray-700 hover:border-primary-600 hover:text-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all duration-300 transform hover:scale-110 active:scale-95 {% if product.id in wishlist_products %}active border-primary-600 text-primary-600{% endif %}" data-product-id="{{ product.id }}">
-            <svg class="h-7 w-7 transition-transform duration-300 hover:scale-110" fill="{% if product.id in wishlist_products %}currentColor{% else %}none{% endif %}" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
             </svg>
+            <span class="relative">Add to Wishlist</span>
           </button>
+          {% endif %}
+          <div class="flex space-x-2 w-full sm:w-auto justify-end">
+            <button class="toggle-wishlist inline-flex justify-center items-center p-3 sm:p-4 border-2 border-gray-300 rounded-xl text-gray-700 hover:border-red-400 hover:text-red-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-400 transition-all duration-300 transform hover:scale-110 active:scale-95 bg-white {% if product.id in wishlist_products %}active border-red-400 text-red-500{% endif %}" data-product-id="{{ product.id }}">
+              <svg class="h-7 w-7 transition-transform duration-300 hover:scale-110" fill="{% if product.id in wishlist_products %}currentColor{% else %}none{% endif %}" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+              </svg>
+            </button>
+            <div class="relative" x-data="{ isOpen: false }">
+              <button @click="isOpen = !isOpen" class="inline-flex justify-center items-center p-3 sm:p-4 border-2 border-gray-300 rounded-xl text-gray-700 hover:border-blue-400 hover:text-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400 transition-all duration-300 transform hover:scale-110 active:scale-95 bg-white">
+                <svg class="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+                </svg>
+              </button>
+              <div x-show="isOpen" @click.away="isOpen = false" class="absolute right-0 bottom-full mb-2 w-48 bg-white rounded-xl shadow-lg py-2 z-50 border border-gray-100 transform transition-all duration-300 origin-bottom">
+                <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank" class="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors duration-200">
+                  <svg class="h-5 w-5 mr-3" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M18.77 7.46H14.5v-1.9c0-.9.6-1.1 1-1.1h3V.5h-4.33C10.24.5 9.5 3.44 9.5 5.32v2.15h-3v4h3v12h5v-12h3.85l.42-4z"/>
+                  </svg>
+                  Facebook
+                </a>
+                <a href="https://twitter.com/intent/tweet?text={{ product.name|urlencode }}&url={{ request.build_absolute_uri|urlencode }}" target="_blank" class="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-400 transition-colors duration-200">
+                  <svg class="h-5 w-5 mr-3" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M23.44 4.83c-.8.37-1.5.38-2.22.02.93-.56.98-.96 1.32-2.02-.88.52-1.86.9-2.9 1.1-.82-.88-2-1.43-3.3-1.43-2.5 0-4.55 2.04-4.55 4.54 0 .36.03.7.1 1.04-3.77-.2-7.12-2-9.36-4.75-.4.67-.6 1.45-.6 2.3 0 1.56.8 2.95 2 3.77-.74-.03-1.44-.23-2.05-.58v.06c0 2.2 1.56 4.03 3.64 4.44-.67.2-1.37.2-2.06.08.58 1.8 2.26 3.12 4.25 3.16C5.78 18.1 3.37 18.74 1 18.46c2 1.3 4.4 2.04 6.97 2.04 8.35 0 12.92-6.92 12.92-12.93 0-.2 0-.4-.02-.6.9-.63 1.96-1.22 2.56-2.14z"/>
+                  </svg>
+                  Twitter
+                </a>
+                <a href="https://api.whatsapp.com/send?text={{ product.name|urlencode }}%20{{ request.build_absolute_uri|urlencode }}" target="_blank" class="flex items-center px-4 py-2 text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors duration-200">
+                  <svg class="h-5 w-5 mr-3" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                  </svg>
+                  WhatsApp
+                </a>
+                <a href="mailto:?subject={{ product.name|urlencode }}&body={{ request.build_absolute_uri|urlencode }}" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors duration-200">
+                  <svg class="h-5 w-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                  </svg>
+                  Email
+                </a>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -172,8 +261,25 @@ document.addEventListener('DOMContentLoaded', function() {
         let maxValue = parseInt(quantityInput.getAttribute('max'));
         if (currentValue < maxValue) {
             quantityInput.value = parseInt(currentValue) + 1;
+            updateBuyNowUrl();
         }
     });
+
+    document.querySelector('.quantity-left-minus').addEventListener('click', function() {
+        let currentValue = parseInt(quantityInput.value);
+        let minValue = parseInt(quantityInput.getAttribute('min'));
+        if (currentValue > minValue) {
+            quantityInput.value = currentValue - 1;
+            updateBuyNowUrl();
+        }
+    });
+
+    function updateBuyNowUrl() {
+        const buyNowBtn = document.getElementById('buy-now-btn');
+        const quantity = document.getElementById('quantity').value;
+        const baseUrl = buyNowBtn.href.split('/quantity/')[0];
+        buyNowBtn.href = `${baseUrl}/quantity/${quantity}/`;
+    }
 
     // Enhanced Add to Cart functionality
     addToCartButton.addEventListener('click', function(e) {

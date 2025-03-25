@@ -135,12 +135,12 @@
     
             <!-- Product Grid -->
             <div class="w-full lg:w-3/4">
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4 md:gap-6">
                     {% if products %}
                     {% for product in products %}
-                    <div class="group bg-white rounded-xl shadow-sm hover:shadow-2xl overflow-hidden transform transition-all duration-300 ease-in-out hover:-translate-y-2 border border-gray-100 flex flex-col h-[28rem]">
+                    <div class="group bg-white rounded-xl shadow-md hover:shadow-2xl overflow-hidden transform transition-all duration-300 ease-in-out hover:-translate-y-2 border border-gray-100 flex flex-col h-auto md:h-[28rem]">
                         <!-- Fixed height/width image container with improved aspect ratio -->
-                        <div class="relative w-full h-56 overflow-hidden bg-gray-50 group-hover:bg-gray-100 transition-colors duration-300">
+                        <div class="relative w-full h-48 md:h-56 overflow-hidden bg-gray-50 group-hover:bg-gray-100 transition-colors duration-300">
                             <a href="{% url 'shop:product_detail' product.id %}" class="block w-full h-full">
                                 <img src="{{ product.photo.url }}" alt="{{ product.name }}" class="w-full h-full object-contain transform group-hover:scale-105 transition-transform duration-500 ease-out">                                
                             </a>
@@ -160,12 +160,6 @@
                                 </span>
                                 {% endif %}
                             </div>
-                            <!-- Wishlist Heart Icon -->
-                            <button class="absolute top-4 right-4 p-2 rounded-full bg-white/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-white hover:scale-110 hover:shadow-lg">
-                                <svg class="w-5 h-5 text-gray-600 hover:text-red-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-                                </svg>
-                            </button>
                         </div>
                         
                         <!-- Product Details with consistent spacing -->
@@ -181,22 +175,21 @@
                             <div class="mb-4">
                                 {% if product.on_sale %}
                                 <div class="flex items-center gap-2 flex-wrap">
-                                    <div class="text-primary-800 font-bold text-xl bg-gradient-to-r from-primary-50 to-primary-100 px-3 py-1.5 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 inline-flex items-center">
-                                        <span class="mr-1">PKR</span>
+                                    <div class="text-primary-800 font-bold text-xl bg-gradient-to-r from-primary-50 to-primary-100 px-2 py-1 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 inline-flex items-center">
+                                        <span class="mr-0.5">PKR</span>
                                         <span>{{ product.sale_price|format_price }}</span>
                                     </div>
                                     <div class="text-gray-500 line-through text-sm flex items-center">PKR {{ product.price|format_price }}</div>
-                                    <span class="text-red-600 text-sm font-semibold bg-red-50 px-2 py-0.5 rounded-full">-{{ product.sale_percentage }}%</span>
+                                    <span class="text-red-600 text-sm font-semibold bg-red-50 px-1.5 py-0.5 rounded-full">-{{ product.sale_percentage }}%</span>
                                 </div>
                                 {% else %}
-                                <div class="text-primary-800 font-bold text-xl bg-primary-50 px-3 py-1.5 rounded-lg shadow-sm hover:bg-primary-100 transition-all duration-300 inline-flex items-center">
-                                    <span class="mr-1">PKR</span>
+                                <div class="text-primary-800 font-bold text-xl bg-primary-50 px-2 py-1 rounded-lg shadow-sm hover:bg-primary-100 transition-all duration-300 inline-flex items-center">
+                                    <span class="mr-0.5">PKR</span>
                                     <span>{{ product.price|format_price }}</span>
                                 </div>
                                 {% endif %}
                             </div>
                             
-                            <!-- Buttons with improved styling -->
                             <!-- Rating Display -->
                             <div class="flex items-center mb-4">
                                 <div class="flex items-center">
@@ -211,15 +204,15 @@
                                 </div>
                             </div>
                             
-                            <div class="grid grid-cols-2 gap-3">
-                                <a href="{% url 'shop:product_detail' product.id %}" class="bg-blue-100 text-blue-800 py-2.5 px-4 rounded-lg text-center font-medium hover:bg-blue-200 transition-all duration-300 flex items-center justify-center group/btn shadow-sm hover:shadow-md">
-                                    <span>Details</span>
+                            <div class="grid grid-cols-2 gap-2 md:gap-3 mt-auto">
+                                <a href="{% url 'cart:buy_now'  product.id 1 %}" class="bg-gradient-to-r from-green-600 to-green-700 text-white py-3 px-3 rounded-lg text-center font-semibold hover:from-green-700 hover:to-green-800 transition-all duration-300 flex items-center justify-center group/btn shadow-lg hover:shadow-xl transform hover:scale-105">
+                                    <span class="text-sm md:text-base">Buy</span>
                                     <svg class="w-4 h-4 ml-1.5 transform group-hover/btn:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                                     </svg>
                                 </a>
-                                <a href="{% url 'cart:add_to_cart' product.id %}" class="bg-green-600 text-white py-2.5 px-4 rounded-lg text-center font-medium hover:bg-green-700 transition-all duration-300 flex items-center justify-center group/cart shadow-sm hover:shadow-md">
-                                    <span>Cart</span>
+                                <a href="{% url 'cart:add_to_cart' product.id %}" class="bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 px-3 rounded-lg text-center font-semibold hover:from-blue-700 hover:to-blue-800 transition-all duration-300 flex items-center justify-center group/cart shadow-md hover:shadow-lg">
+                                    <span class="text-sm md:text-base">Cart</span>
                                     <svg class="w-4 h-4 ml-1.5 transform group-hover/cart:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
                                     </svg>

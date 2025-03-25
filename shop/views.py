@@ -32,13 +32,21 @@ def shop_page(request):
 
 
 def product_detail(request, product_id):
-    product_details = Product.objects.get(id=product_id)
+    product_details = Product.objects.get(id=product_id, is_draft=False)
     ctg = Category.objects.get(name=product_details.category)
     invertory = product_details.inventory
+    
+    # Get related products from the same category, excluding current product
+    related_products = Product.objects.filter(
+        category=ctg,
+        is_draft=False
+    ).exclude(id=product_id).order_by('?')[:4]
+    
     context = {
         'product': product_details,
         'category': ctg,
         'inventory': invertory,
+        'related_products': related_products,
     }
     return render(request, 'shop/product-detail.html', context)
 
@@ -47,7 +55,7 @@ def product_detail(request, product_id):
 
 def category(request, category_name):
     category = get_object_or_404(Category, name=category_name)
-    product_list = Product.objects.filter(category=category)
+    product_list = Product.objects.filter(category=category, is_draft=False)
     
     # Set pagination with 12 items per page
     paginator = Paginator(product_list, 12)
