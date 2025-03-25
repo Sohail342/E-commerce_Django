@@ -69,7 +69,11 @@
               <p class="ml-2 text-sm text-gray-500">({{ product.rating|floatformat:1 }})</p>
             </div>
             <span class="text-gray-500">|</span>
-            <p class="text-sm text-gray-500">500 Sold</p>
+            {% if inventory > 0 %}
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 w-fit">In Stock: {{ inventory }}</span>
+            {% else %}
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 w-fit">Out of Stock</span>
+            {% endif %}
           </div>
         </div>
 
@@ -78,24 +82,22 @@
           <div class="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
             <div class="relative">
               <p class="text-2xl sm:text-3xl font-extrabold text-primary-800 bg-gradient-to-r from-primary-50 to-primary-100 px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl shadow-sm hover:shadow-md transition-all duration-300 border border-primary-200">PKR {{ product.sale_price|format_price }}</p>
-              <span class="absolute -top-3 -right-3 inline-flex items-center justify-center px-3 py-1 text-xs font-bold leading-none text-white transform rotate-3 bg-gradient-to-r from-red-500 to-pink-500 rounded-full shadow-lg">
-                SALE
+            </div>
+            <div class="flex flex-row sm:flex-col items-center sm:items-start gap-2">
+              <span class="text-base sm:text-lg text-gray-500 line-through transition-transform duration-300 hover:scale-105">
+                PKR {{ product.price|format_price }}
+              </span>
+              <span class="text-sm sm:text-base font-medium text-green-600 bg-green-100 px-3 py-1 rounded-md shadow-sm 
+                          hover:bg-green-200 transition-all duration-300 ease-in-out">
+                -{{ product.sale_percentage }}% OFF
               </span>
             </div>
-            <div class="flex flex-row sm:flex-col items-center sm:items-start space-x-2 sm:space-x-0">
-              <span class="text-base sm:text-lg text-gray-500 line-through">PKR {{ product.price|format_price }}</span>
-              <span class="text-sm sm:text-base font-medium text-green-600 bg-green-50 px-2 py-1 rounded-md">-{{ product.sale_percentage }}% OFF</span>
-            </div>
           </div>
-          {% comment %} Countdown timer moved above product name {% endcomment %}
+          
           {% else %}
           <p class="text-2xl sm:text-3xl font-extrabold text-primary-800 bg-primary-50 px-3 sm:px-4 py-2 rounded-lg sm:rounded-xl shadow-sm hover:shadow-md transition-all duration-300">PKR {{ product.price|format_price }}</p>
           {% endif %}
-          {% if inventory > 0 %}
-          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 w-fit">In Stock: {{ inventory }}</span>
-          {% else %}
-          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 w-fit">Out of Stock</span>
-          {% endif %}
+          
         </div>
 
         <!-- Product Description -->
@@ -203,7 +205,7 @@
     <div class="mt-16 sm:mt-24">
       <div class="text-center" data-aos="fade-up" data-aos-duration="800">
         <h2 class="text-2xl sm:text-3xl font-bold text-gray-900">Related Products</h2>
-        <p class="mt-4 text-gray-600">Discover more at Pehnava</p>
+        <p class="mt-4 text-gray-600">Discover more at Zevaristan</p>
       </div>
 
       <div class="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 sm:gap-6 lg:gap-8">

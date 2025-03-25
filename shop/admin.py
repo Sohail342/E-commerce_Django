@@ -4,7 +4,7 @@ from .models import Category, Product
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ['id', 'name', 'price', 'sale_price_display', 'category', 'inventory', 'status_display', 'sale_status', 'date']
+    list_display = ['id', 'name', 'price', 'sale_price_display', 'category', 'inventory', 'status_display', 'sale_status']
     list_filter = ['category', 'is_draft', 'on_sale', 'trending']
     search_fields = ['name', 'details']
     readonly_fields = ['date']

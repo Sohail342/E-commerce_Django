@@ -1,17 +1,18 @@
+{% load static tailwind_tags %}
 {% load static %}
 
 <head>
-  <title>Pehnava</title>
+  <title>Zevaristan</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <link rel="icon" type="image/svg+xml" href="{% static 'images/favicon.jpg' %}" sizes="any">
+  <link rel="icon" type="image/svg+xml" href="{% static 'images/favicon.svg' %}" sizes="any">
 
   <link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,500,600,700,800&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Lora:400,400i,700,700i&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css?family=Amatic+SC:400,700&display=swap" rel="stylesheet">
 
   <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  {% tailwind_css %}
   <!-- Heroicons -->
   <script src="https://unpkg.com/@heroicons/v2/outline"></script>
   <!-- Custom Styles -->
