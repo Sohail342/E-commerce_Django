@@ -76,8 +76,7 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Invalid price:', { unitPrice });
             return;
         }
-
-        console.log(`Unit Price: ${unitPrice}, Quantity: ${quantity}`);
+        
         const productId = itemContainer.dataset.productId;
 
         if (isNaN(quantity) || quantity < 1) {

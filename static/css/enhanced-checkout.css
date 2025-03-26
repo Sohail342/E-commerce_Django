@@ -69,7 +69,7 @@
 }
 
 .payment-method.selected {
-    @apply border-blue-500 bg-blue-50;
+    @apply border-blue-500 bg-gradient-to-r from-blue-50 to-white;
 }
 
 .order-summary {
@@ -137,6 +137,29 @@
 /* Form Validation Styles */
 .form-check-input:checked {
     @apply bg-blue-600 border-blue-600;
+}
+
+/* Radio Button Styles */
+input[type='radio'] {
+    @apply appearance-none h-5 w-5 rounded-full border-2 border-blue-500 transition-all duration-200;
+}
+
+input[type='radio']:checked {
+    @apply border-transparent bg-gradient-to-r from-indigo-600 to-purple-700;
+    background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3ccircle cx='8' cy='8' r='3'/%3e%3c/svg%3e");
+}
+
+input[type='radio']:focus {
+    @apply ring-2 ring-indigo-500 ring-offset-2;
+}
+
+/* Custom Radio Button Indicator */
+.radio-indicator {
+    @apply absolute inset-0 flex items-center justify-center pointer-events-none opacity-0 transition-opacity duration-200;
+}
+
+input[type='radio']:checked + .radio-indicator {
+    @apply opacity-100;
 }
 
 /* Modal Styles */
