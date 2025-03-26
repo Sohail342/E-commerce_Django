@@ -7,7 +7,7 @@ load_dotenv()
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 
-DEBUG = False
+DEBUG = True
 
 
 ALLOWED_HOSTS = ['.vercel.app/', 'e-commerce-django-nu.vercel.app/', "*"]
