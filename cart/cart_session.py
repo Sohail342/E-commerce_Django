@@ -13,7 +13,13 @@ class SessionCart:
     def add(self, product, quantity=1):
         product_id = str(product.id)
         if product_id not in self.cart:
-            self.cart[product_id] = {'quantity': 0, 'price': str(product.price)}
+            # Use sale_price if product is on sale, otherwise use regular price
+            price = product.sale_price if product.on_sale else product.price
+            self.cart[product_id] = {
+                'quantity': 0,
+                'price': str(price),
+                'selected': False
+            }
         self.cart[product_id]['quantity'] += quantity
         self.save()
 
@@ -39,7 +45,8 @@ class SessionCart:
     def get_total_price(self):
         total = Decimal('0.00')
         for item in self.cart.values():
-            total += Decimal(str(item['price'])) * Decimal(str(item['quantity']))
+            if item.get('selected', False):
+                total += Decimal(str(item['price'])) * Decimal(str(item['quantity']))
         return total.quantize(Decimal('0.01'))
 
     def get_total_items(self):
@@ -56,7 +63,14 @@ class SessionCart:
         for item in cart.values():
             item['price'] = Decimal(item['price'])
             item['total_price'] = item['price'] * item['quantity']
+            item['selected'] = item.get('selected', False)
             yield item
 
     def __len__(self):
         return sum(item['quantity'] for item in self.cart.values())
+        
+    def update_selection(self, product_id, selected):
+        product_id = str(product_id)
+        if product_id in self.cart:
+            self.cart[product_id]['selected'] = selected
+            self.save()

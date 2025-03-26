@@ -4,6 +4,7 @@ from .models import Product, Cart, CartItem
 from .cart_session import SessionCart
 from shop.models import Product
 from django.contrib import messages
+import json
 
 def get_cart(request):
     if request.user.is_authenticated:
@@ -97,6 +98,35 @@ def validate_quantity(request, product_id):
             'max_quantity': product.inventory
         })
 
+def update_selection(request, product_id):
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'Invalid request method'})
+    
+    try:
+        data = json.loads(request.body)
+        selected = data.get('selected', False)
+        quantity = data.get('quantity', 1)
+        
+        product = get_object_or_404(Product, id=product_id)
+        
+        if request.user.is_authenticated:
+            cart = get_object_or_404(Cart, user=request.user)
+            cart_item = get_object_or_404(CartItem, cart=cart, product=product)
+            cart_item.selected = selected
+            cart_item.quantity = quantity
+            cart_item.save()
+        else:
+            cart = SessionCart(request)
+            cart.update_selection(product_id, selected)
+            cart.update(product, quantity)
+        
+        return JsonResponse({'success': True})
+    except json.JSONDecodeError:
+        return JsonResponse({'success': False, 'error': 'Invalid JSON data'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+
 def buy_now(request, product_id, quantity=1):
     # Clear any existing buy now session
     if 'buy_now_product' in request.session:
@@ -104,11 +134,14 @@ def buy_now(request, product_id, quantity=1):
     
     product = get_object_or_404(Product, id=product_id)
     
+    # Calculate the correct price based on sale status
+    price = product.sale_price if product.on_sale else product.price
+    
     # Store buy now product in session
     buy_now_data = {
         'product_id': product.id,
         'quantity': quantity,
-        'price': str(product.price)
+        'price': str(price)
     }
     request.session['buy_now_product'] = buy_now_data
     

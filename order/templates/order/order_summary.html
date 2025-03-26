@@ -1,5 +1,6 @@
 {% extends 'base/base.html' %}
 {% load static %}
+{% load custom_filters %}
 
 {% block content %}
 <section class="min-h-screen py-12 bg-gradient-to-b from-gray-50 to-gray-100">
@@ -48,6 +49,13 @@
                                 <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 sm:p-5 hover:bg-blue-50/50 rounded-lg transition-all duration-200 border border-transparent hover:border-blue-100">
                                     <span class="flex items-center gap-3 text-gray-700 mb-2 sm:mb-0">
                                         <i class="fas fa-truck text-blue-500 text-lg sm:text-xl"></i>
+                                        <span class="font-medium text-sm sm:text-base">Sub Total</span>
+                                    </span>
+                                    <span class="font-semibold text-blue-600 text-base sm:text-lg">PKR {{subtotal |format_price}}</span>
+                                </div>
+                                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 sm:p-5 hover:bg-blue-50/50 rounded-lg transition-all duration-200 border border-transparent hover:border-blue-100">
+                                    <span class="flex items-center gap-3 text-gray-700 mb-2 sm:mb-0">
+                                        <i class="fas fa-truck text-blue-500 text-lg sm:text-xl"></i>
                                         <span class="font-medium text-sm sm:text-base">Delivery Charges</span>
                                     </span>
                                     <span class="font-semibold text-blue-600 text-base sm:text-lg">PKR 250</span>
@@ -58,7 +66,7 @@
                                             <i class="fas fa-calculator text-blue-600 text-xl sm:text-2xl"></i>
                                             <span class="font-bold text-lg sm:text-xl">Total</span>
                                         </span>
-                                        <span class="font-bold text-blue-600 text-xl sm:text-2xl">PKR {{ order.total_price }}</span>
+                                        <span class="font-bold text-blue-600 text-xl sm:text-2xl">PKR {{ order.total_price|format_price }}</span>
                                     </div>
                                 </div>
                             </div>

@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     const quantityInputs = document.querySelectorAll('input[type="number"]');
 
+    // Debounce function to limit how often a function is called
     function debounce(func, wait) {
         let timeout;
         return function executedFunction(...args) {
@@ -13,15 +14,68 @@ document.addEventListener('DOMContentLoaded', function() {
         };
     }
 
+    // Helper function to parse price text that may contain commas
+    function parsePrice(priceText) {
+        return parseFloat(priceText.replace('PKR ', '').replace(/,/g, ''));
+    }
+
+    // Format price consistently
+    function formatPrice(price) {
+        return `PKR ${price.toLocaleString('en-US', {minimumFractionDigits: 1, maximumFractionDigits: 1})}`;
+    }
+
+    // Format all prices on page load
+    function formatInitialPrices() {
+        document.querySelectorAll('.item-price').forEach(element => {
+            const price = parsePrice(element.textContent);
+            if (!isNaN(price)) {
+                element.textContent = formatPrice(price);
+            }
+        });
+        
+        // Also format the cart total
+        const totalElement = document.querySelector('.cart-total');
+        if (totalElement) {
+            const total = parsePrice(totalElement.textContent);
+            if (!isNaN(total)) {
+                totalElement.textContent = formatPrice(total);
+            }
+        }
+    }
+
     function updateItemPrice(quantityInput) {
         const itemContainer = quantityInput.closest('.cart-item');
-        // Get ALL price elements in this container, both mobile and desktop
         const priceElements = itemContainer.querySelectorAll('.item-price');
-        const isOnSale = itemContainer.querySelector('.text-green-600') !== null;
-        const unitPrice = isOnSale ? 
-            parseFloat(itemContainer.querySelector('.text-primary-600').textContent.replace('PKR ', '')) :
-            parseFloat(itemContainer.dataset.unitPrice);
-        const quantity = parseInt(quantityInput.value);
+        let unitPrice = 0;
+        
+        // Get unit price from data attribute first
+        if (itemContainer.dataset.unitPrice) {
+            unitPrice = parseFloat(itemContainer.dataset.unitPrice);
+        } else if (itemContainer.dataset.salePrice) {
+            unitPrice = parseFloat(itemContainer.dataset.salePrice);
+        }
+        
+        // Fallback to DOM elements if data attributes are not available
+        if (unitPrice === 0) {
+            const isOnSale = itemContainer.querySelector('.text-green-600') !== null;
+            if (isOnSale) {
+                const salePriceElement = itemContainer.querySelector('.text-primary-600');
+                if (salePriceElement) {
+                    unitPrice = parsePrice(salePriceElement.textContent);
+                }
+            } else {
+                const regularPriceElement = itemContainer.querySelector('.text-gray-500');
+                if (regularPriceElement) {
+                    unitPrice = parsePrice(regularPriceElement.textContent);
+                }
+            }
+        }
+        
+        const quantity = parseInt(quantityInput.value) || 1;
+        if (isNaN(unitPrice) || unitPrice <= 0) {
+            console.error('Invalid price:', { unitPrice });
+            return;
+        }
 
         console.log(`Unit Price: ${unitPrice}, Quantity: ${quantity}`);
         const productId = itemContainer.dataset.productId;
@@ -39,7 +93,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     console.log(`Total Price: ${totalPrice}`);
                     // Update ALL price elements
                     priceElements.forEach(element => {
-                        element.textContent = `PKR ${totalPrice.toFixed(1)}`;
+                        element.textContent = formatPrice(totalPrice);
                     });
                 } else {
                     createToast(`Maximum available quantity is ${data.max_quantity}`, 'warning');
@@ -47,7 +101,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const totalPrice = unitPrice * data.max_quantity;
                     // Update ALL price elements
                     priceElements.forEach(element => {
-                        element.textContent = `PKR ${totalPrice.toFixed(1)}`;
+                        element.textContent = formatPrice(totalPrice);
                     });
                 }
                 updateCartTotal();
@@ -58,26 +112,50 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function updateCartTotal() {
-        // Use a better selector to get only one price element per item
         const cartItems = document.querySelectorAll('.cart-item');
         let total = 0;
+        let anySelected = false;
     
         cartItems.forEach(item => {
-            // Get the first price element that's not in a hidden container
-            const priceElement = item.querySelector('.item-price');
-            if (priceElement) {
-                const priceText = priceElement.textContent.replace('PKR ', '');
-                const price = parseFloat(priceText);
-                if (!isNaN(price)) {
-                    total += price;
+            // Only include selected items in the total calculation
+            const checkbox = item.querySelector('input[type="checkbox"]');
+            if (checkbox && checkbox.checked) {
+                anySelected = true;
+                const quantity = parseInt(item.querySelector('input[type="number"]').value) || 1;
+                let unitPrice = 0;
+                
+                // Get unit price from data attributes first
+                if (item.dataset.salePrice) {
+                    unitPrice = parseFloat(item.dataset.salePrice);
+                } else if (item.dataset.unitPrice) {
+                    unitPrice = parseFloat(item.dataset.unitPrice);
+                }
+                
+                if (!isNaN(unitPrice) && unitPrice > 0) {
+                    total += unitPrice * quantity;
                 }
             }
         });
+
     
         const totalElement = document.querySelector('.cart-total');
         if (totalElement) {
-            totalElement.textContent = `PKR ${total.toFixed(1)}`;
+            totalElement.textContent = formatPrice(total);
         }
+        
+        // Enable/disable checkout button based on selection
+        const checkoutBtn = document.getElementById('checkout-btn');
+        if (checkoutBtn) {
+            if (anySelected && total > 0) {
+                checkoutBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                checkoutBtn.disabled = false;
+            } else {
+                checkoutBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                checkoutBtn.disabled = true;
+            }
+        }
+        
+        console.log(`Cart total updated: ${total}, Any selected: ${anySelected}`);
     }
 
     const debouncedUpdate = debounce(updateItemPrice, 300);
@@ -96,6 +174,10 @@ document.addEventListener('DOMContentLoaded', function() {
             if (mutation.type === 'attributes' && mutation.attributeName === 'value') {
                 const input = mutation.target;
                 debouncedUpdate(input);
+                // Also update selected items calculation when quantity changes via Alpine.js
+                if (typeof window.updateSelectedItems === 'function') {
+                    window.updateSelectedItems();
+                }
             }
         });
     });
@@ -119,9 +201,17 @@ document.addEventListener('DOMContentLoaded', function() {
             
             input.value = currentValue;
             input.dispatchEvent(new Event('change'));
+            updateCartTotal();
         });
     });
 
+    document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+        checkbox.addEventListener('change', () => updateCartTotal());
+    });
+
+    // Call this function to format prices on page load
+    formatInitialPrices();
+    
     // Initial total calculation
     updateCartTotal();
 });
