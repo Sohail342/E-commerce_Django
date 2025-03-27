@@ -139,7 +139,7 @@
 
             <!-- Product Grid -->
             <div class="w-full lg:w-3/4">
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4 md:gap-6">
+                <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-3 md:gap-6">
                     {% if products %}
                     {% for product in products %}
                     <div class="group bg-white rounded-xl shadow-md hover:shadow-2xl overflow-hidden transform transition-all duration-300 ease-in-out hover:-translate-y-2 border border-gray-100 flex flex-col h-auto md:h-[28rem]">
@@ -167,10 +167,10 @@
                         </div>
                         
                         <!-- Product Details with consistent spacing -->
-                        <div class="p-5 flex-grow flex flex-col justify-between">
+                        <div class="p-3 sm:p-5 flex-grow flex flex-col justify-between">
                             <!-- Title container with fixed height -->
                             <div class="mb-4">
-                                <h3 class="text-lg font-semibold line-clamp-2 h-14 group-hover:text-primary-600 transition-colors">
+                                <h3 class="text-sm sm:text-lg font-semibold line-clamp-2 h-10 sm:h-14 group-hover:text-primary-600 transition-colors">
                                     <a href="{% url 'shop:product_detail' product.id %}" class="text-gray-800 hover:text-primary-600 transition-colors">{{ product.name }}</a>
                                 </h3>
                             </div>
@@ -179,7 +179,7 @@
                             <div class="mb-4">
                                 {% if product.on_sale %}
                                 <div class="flex items-center gap-2 flex-wrap">
-                                    <div class="text-primary-800 font-bold text-xl bg-gradient-to-r from-primary-50 to-primary-100 px-2 py-1 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 inline-flex items-center">
+                                    <div class="text-primary-800 font-bold text-base sm:text-xl bg-gradient-to-r from-primary-50 to-primary-100 px-2 py-1 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 inline-flex items-center">
                                         <span class="mr-0.5">PKR</span>
                                         <span>{{ product.sale_price|format_price }}</span>
                                     </div>
