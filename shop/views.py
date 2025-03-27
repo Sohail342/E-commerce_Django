@@ -1,12 +1,21 @@
 from django.shortcuts import get_object_or_404, render
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .models import Category, Product
-from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 
 def shop_page(request):
     category = Category.objects.all()
-    product_list = Product.objects.filter(is_draft=False).order_by('-id')
+    product_list = Product.objects.filter(is_draft=False)
+    
+    # Handle price sorting
+    sort_by = request.GET.get('sort', None)
+    if sort_by == 'price_low_high':
+        product_list = product_list.order_by('price')
+    elif sort_by == 'price_high_low':
+        product_list = product_list.order_by('-price')
+    else:
+        product_list = product_list.order_by('-id')
+        
     sale_products = Product.objects.filter(is_draft=False, on_sale=True, sale_percentage__gte=50).order_by('-sale_percentage')[:8]
     
     # Set pagination with 12 items per page
@@ -55,7 +64,18 @@ def product_detail(request, product_id):
 
 def category(request, category_name):
     category = get_object_or_404(Category, name=category_name)
+    all_categories = Category.objects.all()
+    
     product_list = Product.objects.filter(category=category, is_draft=False)
+    
+    # Handle price sorting
+    sort_by = request.GET.get('sort', None)
+    if sort_by == 'price_low_high':
+        product_list = product_list.order_by('price')
+    elif sort_by == 'price_high_low':
+        product_list = product_list.order_by('-price')
+    else:
+        product_list = product_list.order_by('-id')
     
     # Set pagination with 12 items per page
     paginator = Paginator(product_list, 12)
@@ -70,6 +90,7 @@ def category(request, category_name):
     
     return render(request, "shop/category.html", {
         'category': category,
+        'all_categories': all_categories,
         'products': products,
         'is_paginated': True if paginator.num_pages > 1 else False
     })

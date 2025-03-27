@@ -4,6 +4,11 @@
 
 {% block extra_js %}
 <script src="{% static 'js/filter-sidebar.js' %}"></script>
+<script src="{% static 'js/real-time-search.js' %}"></script>
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/filter-animations.css' %}">
 {% endblock %}
 
 {% block extra_head %}
@@ -84,18 +89,43 @@
                     </button>
                     <!-- Search Bar -->
                     <div class="mb-6">
-                        <div class="relative">
-                            <input type="text" class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all bg-gray-50 hover:bg-white focus:bg-white" placeholder="Search products..." id="productSearch">
-                            <svg class="absolute right-3 top-2.5 h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="relative group">
+                            <input type="text" class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all bg-gray-50 hover:bg-white focus:bg-white shadow-sm hover:shadow-md" placeholder="Search products..." id="productSearch">
+                            <svg class="absolute right-3 top-2.5 h-5 w-5 text-gray-400 group-hover:text-primary-500 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                             </svg>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1 ml-1 hidden md:block">Type to filter products in real-time</p>
+                    </div>
+
+                    <!-- Sort Options -->
+                    <div class="mb-6 w-full">
+                        <div class="relative group">
+                            <label for="sortOptions" class="text-lg font-semibold">Sort Products</label>
+                            <div class="relative">
+                                <select id="sortOptions" onchange="window.location = this.value;" class="w-full appearance-none bg-white border border-gray-200 rounded-xl py-2.5 pl-4 pr-10 text-sm font-medium text-gray-700 cursor-pointer hover:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-500 transition-all shadow-sm hover:shadow-md">
+                                    <option value="?{% if request.GET.page %}page={{ request.GET.page }}{% endif %}" {% if not request.GET.sort %}selected{% endif %}>Sort by: Default</option>
+                                    <option value="?sort=price_low_high{% if request.GET.page %}&page={{ request.GET.page }}{% endif %}" {% if request.GET.sort == 'price_low_high' %}selected{% endif %}>Price: Low to High</option>
+                                    <option value="?sort=price_high_low{% if request.GET.page %}&page={{ request.GET.page }}{% endif %}" {% if request.GET.sort == 'price_high_low' %}selected{% endif %}>Price: High to Low</option>
+                                </select>
+                                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-primary-600 group-hover:text-primary-700 transition-all duration-300">
+                                    <svg class="w-5 h-5 transform group-hover:translate-y-0.5 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     
                     <!-- Categories -->
-                    <div class="mb-6">
-                        <h4 class="text-lg font-semibold mb-4">Categories</h4>
-                        <ul class="space-y-2">
+                    <div class="mb-6 filter-section">
+                        <div class="filter-heading flex justify-between items-center cursor-pointer mb-4">
+                            <h4 class="text-lg font-semibold">Categories</h4>
+                            <svg class="w-5 h-5 text-gray-500 chevron-icon transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </div>
+                        <ul class="space-y-2 filter-content">
                             <li><a href="#" class="text-primary-600 font-medium hover:text-primary-700 transition-colors">All</a></li>
                             {% for ctg in category %}
                             <li><a href="{% url 'shop:category' ctg.name %}" class="text-gray-600 hover:text-primary-600 transition-colors">{{ ctg.name }}</a></li>
@@ -104,9 +134,14 @@
                     </div>
                     
                     <!-- Price Range -->
-                    <div>
-                        <h4 class="text-lg font-semibold mb-4">Price Range</h4>
-                        <div class="space-y-6">
+                    <div class="filter-section">
+                        <div class="filter-heading flex justify-between items-center cursor-pointer mb-4">
+                            <h4 class="text-lg font-semibold">Price Range</h4>
+                            <svg class="w-5 h-5 text-gray-500 chevron-icon transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </div>
+                        <div class="space-y-6 filter-content">
                             <div class="relative pt-1">
                                 <input type="range" min="0" max="10000" value="0" 
                                     class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary-500/30 range-sm" 
@@ -135,25 +170,25 @@
     
             <!-- Product Grid -->
             <div class="w-full lg:w-3/4">
-                <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-3 md:gap-6">
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-2 md:gap-4">
                     {% if products %}
                     {% for product in products %}
-                    <div class="group bg-white rounded-xl shadow-md hover:shadow-2xl overflow-hidden transform transition-all duration-300 ease-in-out hover:-translate-y-2 border border-gray-100 flex flex-col h-auto md:h-[28rem]">
-                        <!-- Fixed height/width image container with improved aspect ratio -->
-                        <div class="relative w-full h-48 md:h-56 overflow-hidden bg-gray-50 group-hover:bg-gray-100 transition-colors duration-300">
-                            <a href="{% url 'shop:product_detail' product.id %}" class="block w-full h-full">
-                                <img src="{{ product.photo.url }}" alt="{{ product.name }}" class="w-full h-full object-contain transform group-hover:scale-105 transition-transform duration-500 ease-out">                                
+                    <div class="group bg-white rounded-lg shadow-sm hover:shadow-lg overflow-hidden transform transition-all duration-300 ease-in-out hover:-translate-y-1 border border-gray-100 flex flex-col h-auto md:h-[22rem]">
+                        <!-- Fixed height/width image container with consistent aspect ratio -->
+                        <div class="relative w-full h-36 md:h-40 overflow-hidden bg-gray-50 group-hover:bg-gray-100 transition-colors duration-300 flex items-center justify-center">
+                            <a href="{% url 'shop:product_detail' product.id %}" class="block w-full h-full flex items-center justify-center">
+                                <img src="{{ product.photo.url }}" alt="{{ product.name }}" class="w-4/5 h-4/5 object-contain transform group-hover:scale-105 transition-transform duration-500 ease-out">                                
                             </a>
                             <!-- Product Labels -->
-                            <div class="absolute top-4 left-4 flex flex-col gap-2">
+                            <div class="absolute top-2 left-2 flex flex-col gap-1">
                                 {% if product.on_sale %}
-                                <span class="px-3 py-1 bg-gradient-to-r from-red-500 to-pink-500 text-white text-sm font-semibold rounded-full shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-red-200/50">
+                                <span class="px-2 py-0.5 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs font-medium rounded-full shadow-sm transform transition-all duration-300 hover:scale-105 hover:shadow-red-200/50">
                                     Sale
                                 </span>
                                 {% endif %}
                                 {% if product.trending %}
-                                <span class="px-3 py-1 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-sm font-semibold rounded-full shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-orange-200/50 flex items-center gap-1">
-                                    <svg class="w-4 h-4 animate-pulse" fill="currentColor" viewBox="0 0 20 20">
+                                <span class="px-2 py-0.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-medium rounded-full shadow-sm transform transition-all duration-300 hover:scale-105 hover:shadow-orange-200/50 flex items-center gap-0.5">
+                                    <svg class="w-3 h-3 animate-pulse" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clip-rule="evenodd"/>
                                     </svg>
                                     Hot
@@ -163,27 +198,27 @@
                         </div>
                         
                         <!-- Product Details with consistent spacing -->
-                        <div class="p-3 sm:p-5 flex-grow flex flex-col justify-between">
+                        <div class="p-2 sm:p-3 flex-grow flex flex-col justify-between">
                             <!-- Title container with fixed height -->
-                            <div class="mb-4">
-                                <h3 class="text-sm sm:text-lg font-semibold line-clamp-2 h-10 sm:h-14 group-hover:text-primary-600 transition-colors">
+                            <div class="mb-2">
+                                <h3 class="text-xs sm:text-sm font-semibold line-clamp-2 h-8 sm:h-10 group-hover:text-primary-600 transition-colors">
                                     <a href="{% url 'shop:product_detail' product.id %}" class="text-gray-800 hover:text-primary-600 transition-colors">{{ product.name }}</a>
                                 </h3>
                             </div>
                             
                             <!-- Price with improved styling -->
-                            <div class="mb-4">
+                            <div class="mb-2">
                                 {% if product.on_sale %}
-                                <div class="flex items-center gap-2 flex-wrap">
-                                    <div class="text-primary-800 font-bold text-base sm:text-xl bg-gradient-to-r from-primary-50 to-primary-100 px-2 py-1 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 inline-flex items-center">
+                                <div class="flex items-center gap-1 flex-wrap">
+                                    <div class="text-primary-800 font-bold text-xs sm:text-sm bg-gradient-to-r from-primary-50 to-primary-100 px-1.5 py-0.5 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 inline-flex items-center">
                                         <span class="mr-0.5">PKR</span>
                                         <span>{{ product.sale_price|format_price }}</span>
                                     </div>
-                                    <div class="text-gray-500 line-through text-sm flex items-center">PKR {{ product.price|format_price }}</div>
-                                    <span class="text-red-600 text-sm font-semibold bg-red-50 px-1.5 py-0.5 rounded-full">-{{ product.sale_percentage }}%</span>
+                                    <div class="text-gray-500 line-through text-xs flex items-center">PKR {{ product.price|format_price }}</div>
+                                    <span class="text-red-600 text-xs font-semibold bg-red-50 px-1 py-0.5 rounded-full">-{{ product.sale_percentage }}%</span>
                                 </div>
                                 {% else %}
-                                <div class="text-primary-800 font-bold text-xl bg-primary-50 px-2 py-1 rounded-lg shadow-sm hover:bg-primary-100 transition-all duration-300 inline-flex items-center">
+                                <div class="text-primary-800 font-bold text-sm bg-primary-50 px-1.5 py-0.5 rounded-lg shadow-sm hover:bg-primary-100 transition-all duration-300 inline-flex items-center">
                                     <span class="mr-0.5">PKR</span>
                                     <span>{{ product.price|format_price }}</span>
                                 </div>
@@ -191,30 +226,24 @@
                             </div>
                             
                             <!-- Rating Display -->
-                            <div class="flex items-center mb-4">
+                            <div class="flex items-center mb-2">
                                 <div class="flex items-center">
                                     {% with ''|center:5 as range %}
                                     {% for _ in range %}
-                                    <svg class="w-5 h-5 {% if forloop.counter <= product.rating %} text-yellow-400 {% else %} text-gray-300 {% endif %}" fill="currentColor" viewBox="0 0 20 20">
+                                    <svg class="w-3 h-3 sm:w-4 sm:h-4 {% if forloop.counter <= product.rating %} text-yellow-400 {% else %} text-gray-300 {% endif %}" fill="currentColor" viewBox="0 0 20 20">
                                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                                     </svg>
                                     {% endfor %}
                                     {% endwith %}
-                                    <span class="ml-2 text-sm text-gray-600">({{ product.rating|floatformat:1 }})</span>
+                                    <span class="ml-1 text-xs text-gray-600">({{ product.rating|floatformat:1 }})</span>
                                 </div>
                             </div>
                             
-                            <div class="grid grid-cols-2 gap-1 sm:gap-2 md:gap-3 mt-auto">
-                                <a href="{% url 'cart:buy_now'  product.id 1 %}" class="bg-gradient-to-r from-green-600 to-green-700 text-white py-3 px-3 rounded-lg text-center font-semibold hover:from-green-700 hover:to-green-800 transition-all duration-300 flex items-center justify-center group/btn shadow-lg hover:shadow-xl transform hover:scale-105">
-                                    <span class="text-xs sm:text-sm md:text-base">Buy</span>
-                                    <svg class="w-4 h-4 ml-1.5 transform group-hover/btn:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                                    </svg>
-                                </a>
-                                <a href="{% url 'cart:add_to_cart' product.id %}" class="bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 px-3 rounded-lg text-center font-semibold hover:from-blue-700 hover:to-blue-800 transition-all duration-300 flex items-center justify-center group/cart shadow-md hover:shadow-lg">
-                                    <span class="text-xs sm:text-sm md:text-base">Cart</span>
-                                    <svg class="w-4 h-4 ml-1.5 transform group-hover/cart:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                            <div class="mt-auto">
+                                <a href="{% url 'shop:product_detail' product.id %}" class="w-full bg-gradient-to-r from-primary-600 to-primary-700 text-white py-1.5 px-2 rounded-md text-center font-medium hover:from-primary-700 hover:to-primary-800 transition-all duration-300 flex items-center justify-center shadow-sm hover:shadow-md">
+                                    <span class="text-xs">View Details</span>
+                                    <svg class="w-3 h-3 ml-1 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
                                     </svg>
                                 </a>
                             </div>
@@ -266,34 +295,34 @@
 </section>
 
 <!-- Sale Products Section -->
-<section class="py-12 bg-gradient-to-br from-red-50 via-white to-red-50/30">
+<section class="py-8 bg-gradient-to-br from-red-50 via-white to-red-50/30">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center space-y-4 mb-8">
+        <div class="text-center space-y-3 mb-6">
             <span class="inline-block rounded-full bg-red-100 px-5 py-2 text-sm font-semibold text-red-800 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-red-100/50">Hot Deals</span>
             <h2 class="text-3xl font-bold text-gray-900">50% Off or More</h2>
             <p class="text-gray-600">Grab these amazing deals before they're gone!</p>
         </div>
 
         {% if sale_products %}
-        <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-4">
             {% for product in sale_products %}
-            <div class="group relative bg-white rounded-xl shadow-lg overflow-hidden transform transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
-                <div class="absolute top-4 right-4 z-10">
-                    <span class="inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium bg-red-600 text-white">
+            <div class="group relative bg-white rounded-lg shadow-sm overflow-hidden transform transition-all duration-300 hover:-translate-y-1 hover:shadow-md">
+                <div class="absolute top-2 right-2 z-10">
+                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-600 text-white">
                         -{{ product.sale_percentage }}%
                     </span>
                 </div>
-                <div class="aspect-w-1 aspect-h-1 bg-gray-200 group-hover:opacity-75">
-                    <img src="{{ product.photo.url }}" alt="{{ product.name }}" class="w-full h-64 object-contain object-center">
+                <div class="bg-gray-50 group-hover:opacity-90 h-36 flex items-center justify-center">
+                    <img src="{{ product.photo.url }}" alt="{{ product.name }}" class="w-4/5 h-4/5 object-contain object-center">
                 </div>
-                <div class="p-4">
-                    <h3 class="text-sm font-medium text-gray-900">{{ product.name }}</h3>
-                    <div class="mt-2 flex items-center">
-                        <p class="text-lg font-bold text-red-600">PKR {{ product.sale_price |format_price  }}</p>
-                        <p class="ml-2 text-sm text-gray-500 line-through">PKR {{ product.price |format_price }}</p>
+                <div class="p-2 sm:p-3">
+                    <h3 class="text-xs sm:text-sm font-medium text-gray-900 line-clamp-2 h-8 sm:h-10">{{ product.name }}</h3>
+                    <div class="mt-1 flex items-center">
+                        <p class="text-sm font-bold text-red-600">PKR {{ product.sale_price |format_price  }}</p>
+                        <p class="ml-1 text-xs text-gray-500 line-through">PKR {{ product.price |format_price }}</p>
                     </div>
-                    <div class="mt-4">
-                        <a href="{% url 'shop:product_detail' product.id %}" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 w-full justify-center">
+                    <div class="mt-2">
+                        <a href="{% url 'shop:product_detail' product.id %}" class="inline-flex items-center px-3 py-1.5 border border-transparent rounded-md shadow-sm text-xs font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-red-500 w-full justify-center">
                             View Details
                         </a>
                     </div>
