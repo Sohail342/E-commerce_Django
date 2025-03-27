@@ -58,6 +58,36 @@ document.addEventListener('DOMContentLoaded', function() {
     maxPriceInput.addEventListener('input', updatePriceRange);
     minPriceInput.addEventListener('change', updatePriceRange);
     maxPriceInput.addEventListener('change', updatePriceRange);
+    
+    // Add event listeners to trigger search when price range changes
+    minPriceInput.addEventListener('change', function() {
+        // Trigger search function from real-time-search.js
+        if (typeof window.handleSearch === 'function') {
+            window.handleSearch();
+        } else {
+            console.error('handleSearch function not available');
+        }
+    });
+    
+    maxPriceInput.addEventListener('change', function() {
+        // Trigger search function from real-time-search.js
+        if (typeof window.handleSearch === 'function') {
+            window.handleSearch();
+        } else {
+            console.error('handleSearch function not available');
+        }
+    });
+    
+    // Also add input event listeners for smoother experience
+    minPriceInput.addEventListener('input', function() {
+        // Update the display value immediately
+        if (minPriceValue) minPriceValue.textContent = this.value;
+    });
+    
+    maxPriceInput.addEventListener('input', function() {
+        // Update the display value immediately
+        if (maxPriceValue) maxPriceValue.textContent = this.value;
+    });
 
     // Initialize price range values
     updatePriceRange();

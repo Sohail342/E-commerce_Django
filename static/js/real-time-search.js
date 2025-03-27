@@ -1,3 +1,16 @@
+// Debounce function to limit how often a function can be called
+function debounce(func, wait) {
+    let timeout;
+    return function() {
+        const context = this;
+        const args = arguments;
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+            func.apply(context, args);
+        }, wait);
+    };
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('productSearch');
     const searchContainer = searchInput?.parentElement;
@@ -6,6 +19,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const searchResultsContainer = document.createElement('div');
     let searchTimeout = null;
     let currentSearchTerm = '';
+    let lastSearchResults = [];
+    let isSearching = false;
     
     // Skip if search input doesn't exist
     if (!searchInput) return;
@@ -36,16 +51,32 @@ document.addEventListener('DOMContentLoaded', function() {
     // Try to add class immediately
     let productItemsFound = addProductItemClass();
     
-    // If no products found initially, try again after a short delay
-    if (!productItemsFound) {
-        setTimeout(() => {
+    // Always set up search after DOM is fully loaded
+    // This ensures the search functionality is properly initialized
+    setTimeout(() => {
+        // Try again to find product items if not found initially
+        if (!productItemsFound) {
             productItemsFound = addProductItemClass();
-            // Setup search functionality
-            setupSearch();
-        }, 300);
-    } else {
-        // Setup search functionality if products were found immediately
+        }
+        // Setup search functionality
         setupSearch();
+    }, 300);
+    
+    // Function to set up search functionality
+    function setupSearch() {
+        // Add input event listener to search field
+        searchInput.addEventListener('input', debounce(() => {
+            handleSearch();
+        }, 300));
+        
+        // Show clear button when search has text
+        searchInput.addEventListener('input', function() {
+            if (this.value.trim() !== '') {
+                searchClearButton.classList.remove('hidden');
+            } else {
+                searchClearButton.classList.add('hidden');
+            }
+        });
     }
     
     // Enhance search field UI
@@ -128,7 +159,59 @@ document.addEventListener('DOMContentLoaded', function() {
         searchContainer.appendChild(searchResultsContainer);
     }
     
-    // Function to fetch products from API
+    // Create a cache for search results to improve performance
+    const searchCache = new Map();
+    
+    // Function to update product display based on search results
+    function updateProductDisplay(products) {
+        const productItems = document.querySelectorAll('.product-item');
+        const noResultsMessage = document.getElementById('noResultsMessage');
+        
+        // If no products found, show no results message
+        if (products.length === 0) {
+            productItems.forEach(item => {
+                item.style.display = 'none';
+            });
+            if (noResultsMessage) {
+                noResultsMessage.classList.remove('hidden');
+            }
+            return;
+        }
+        
+        // Hide no results message if we have products
+        if (noResultsMessage) {
+            noResultsMessage.classList.add('hidden');
+        }
+        
+        // Create a map of product IDs for quick lookup
+        const productIds = new Set(products.map(p => p.id));
+        
+        // Show/hide products based on search results
+        productItems.forEach(item => {
+            // Try to get product ID from various attributes
+            const link = item.querySelector('a[href*="product_detail"]');
+            let productId = null;
+            
+            if (link) {
+                const hrefMatch = link.getAttribute('href').match(/product_detail\/(\d+)/);
+                if (hrefMatch && hrefMatch[1]) {
+                    productId = parseInt(hrefMatch[1]);
+                }
+            }
+            
+            // If we found a product ID, check if it's in our results
+            if (productId !== null) {
+                if (productIds.has(productId)) {
+                    item.style.display = '';
+                    item.classList.add('animate-fadeIn');
+                } else {
+                    item.style.display = 'none';
+                }
+            }
+        });
+    }
+    
+    // Enhanced function to fetch products from API with better error handling and performance
     async function fetchProducts(query, minPrice = null, maxPrice = null) {
         try {
             // Build query parameters
@@ -136,55 +219,239 @@ document.addEventListener('DOMContentLoaded', function() {
             if (query) params.append('q', query);
             if (minPrice) params.append('min_price', minPrice);
             if (maxPrice) params.append('max_price', maxPrice);
+            params.append('_', Date.now()); // Prevent caching
             
-            const response = await fetch(`/shop/api/search?${params.toString()}`);
-            if (!response.ok) throw new Error('Network response was not ok');
-            return await response.json();
+            // Get category ID if we're on a category page
+            const categoryMatch = window.location.pathname.match(/\/category\/([^/]+)/);
+            if (categoryMatch && categoryMatch[1]) {
+                // We're on a category page, but we don't have the ID directly
+                // The API will handle filtering by name if needed
+                params.append('category_name', categoryMatch[1]);
+            }
+            
+            // Create a cache key based on the search parameters
+            const cacheKey = params.toString();
+            
+            // Check if we have a cached result for this query
+            if (searchCache.has(cacheKey)) {
+                console.log('Using cached search results');
+                return searchCache.get(cacheKey);
+            }
+            
+            // Adaptive timeout based on network conditions
+            let timeoutDuration = 8000; // Default 8 seconds
+            
+            // Adjust timeout based on network conditions if available
+            if (navigator.connection) {
+                const connectionType = navigator.connection.effectiveType;
+                // Adjust timeout based on connection quality
+                if (connectionType === '4g') {
+                    timeoutDuration = 5000; // 5 seconds for fast connections
+                } else if (connectionType === '3g') {
+                    timeoutDuration = 10000; // 10 seconds for medium connections
+                } else if (connectionType === '2g' || connectionType === 'slow-2g') {
+                    timeoutDuration = 15000; // 15 seconds for slow connections
+                }
+                console.log(`Network type: ${connectionType}, timeout: ${timeoutDuration}ms`);
+            }
+            
+            // Add a timeout to the fetch request to prevent hanging
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), timeoutDuration);
+            
+            // Add request timestamp for performance tracking
+            const requestStartTime = performance.now();
+            
+            const response = await fetch(`/shop/api/search?${params.toString()}`, {
+                signal: controller.signal,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            
+            // Calculate request duration for performance monitoring
+            const requestDuration = performance.now() - requestStartTime;
+            console.log(`Search request completed in ${requestDuration.toFixed(2)}ms`);
+            
+            clearTimeout(timeoutId);
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Server error: ${response.status} - ${errorText || response.statusText}`);
+            }
+            
+            const data = await response.json();
+            
+            // Validate the response data structure
+            if (!data || typeof data !== 'object') {
+                throw new Error('Invalid response format from server');
+            }
+            
+            // Cache the results (limit cache size to prevent memory issues)
+            if (searchCache.size > 20) {
+                // Remove oldest entry if cache gets too large
+                const firstKey = searchCache.keys().next().value;
+                searchCache.delete(firstKey);
+            }
+            searchCache.set(cacheKey, data);
+            
+            return data;
         } catch (error) {
             console.error('Error fetching products:', error);
-            return { products: [], count: 0 };
+            
+            // Enhanced error handling with more specific messages
+            if (error.name === 'AbortError') {
+                // Request was aborted (timeout)
+                console.warn('Search request timed out');
+                return { 
+                    products: [], 
+                    count: 0, 
+                    error: 'Search request timed out. The server is taking too long to respond. Please try again later.'
+                };
+            } else if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+                // Network error
+                return { 
+                    products: [], 
+                    count: 0, 
+                    error: 'Network connection error. Please check your internet connection and try again.'
+                };
+            } else if (error.message.includes('Server error')) {
+                // Server returned an error status
+                return { 
+                    products: [], 
+                    count: 0, 
+                    error: error.message
+                };
+            } else if (error.message.includes('Invalid response format')) {
+                // Invalid JSON or unexpected response format
+                return { 
+                    products: [], 
+                    count: 0, 
+                    error: 'The server returned an invalid response. Please try again later.'
+                };
+            } else {
+                // Other unexpected errors
+                return { 
+                    products: [], 
+                    count: 0, 
+                    error: 'An unexpected error occurred while searching. Please try again later.'
+                };
+            }
+        }
         }
     }
     
-    // Function to render search results
-    function renderSearchResults(results) {
+    // Enhanced function to render search results with better visual feedback
+    function renderSearchResults(results, errorMessage = null) {
         if (!searchResultsContainer) return;
         
-        // Clear previous results
-        searchResultsContainer.innerHTML = '';
+        // Clear previous results with a smooth fade-out effect
+        searchResultsContainer.classList.add('search-results-exit-active');
         
-        if (results.length === 0) {
-            const noResults = document.createElement('div');
-            noResults.className = 'p-4 text-center text-gray-500';
-            noResults.textContent = 'No products found';
-            searchResultsContainer.appendChild(noResults);
-            return;
-        }
+        // Use setTimeout to wait for animation to complete before updating content
+        setTimeout(() => {
+            searchResultsContainer.innerHTML = '';
+            searchResultsContainer.classList.remove('search-results-exit-active');
+            searchResultsContainer.classList.add('search-results-enter');
+            
+            // Handle error state with improved visual feedback
+            if (errorMessage) {
+                const errorContainer = document.createElement('div');
+                errorContainer.className = 'p-6 text-center';
+                errorContainer.innerHTML = `
+                    <svg class="w-12 h-12 mx-auto text-red-400 mb-3 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                    </svg>
+                    <p class="text-red-500 font-medium">Search Error</p>
+                    <p class="text-sm text-gray-600 mt-1">${errorMessage}</p>
+                    <button class="mt-3 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors text-sm focus:ring-2 focus:ring-primary-300 focus:ring-offset-2" id="retrySearch">Try Again</button>
+                `;
+                searchResultsContainer.appendChild(errorContainer);
+                
+                // Add retry button functionality with improved feedback
+                const retryButton = document.getElementById('retrySearch');
+                if (retryButton) {
+                    retryButton.addEventListener('click', () => {
+                        retryButton.innerHTML = `
+                            <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Retrying...
+                        `;
+                        retryButton.disabled = true;
+                        setTimeout(() => handleSearch(), 300); // Small delay for better UX
+                    });
+                }
+                
+                // Complete the animation
+                setTimeout(() => {
+                    searchResultsContainer.classList.remove('search-results-enter');
+                    searchResultsContainer.classList.add('search-results-enter-active');
+                }, 10);
+                
+                return;
+            }
+            
+            // Handle empty results with improved visual feedback
+            if (!results || results.length === 0) {
+                const noResults = document.createElement('div');
+                noResults.className = 'p-6 text-center';
+                noResults.innerHTML = `
+                    <svg class="w-12 h-12 mx-auto text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <p class="text-gray-500">No products found</p>
+                    <p class="text-xs text-gray-400 mt-1">Try a different search term</p>
+                    <p class="text-xs text-gray-400 mt-3">Suggestions:</p>
+                    <ul class="text-xs text-gray-500 mt-1 space-y-1">
+                        <li>• Check for spelling errors</li>
+                        <li>• Try more general keywords</li>
+                        <li>• Try different keywords</li>
+                    </ul>
+                `;
+                searchResultsContainer.appendChild(noResults);
+                
+                // Complete the animation
+                setTimeout(() => {
+                    searchResultsContainer.classList.remove('search-results-enter');
+                    searchResultsContainer.classList.add('search-results-enter-active');
+                }, 10);
+                
+                return;
+            }
         
-        // Create results list
+        // Create results list with improved styling
         const resultsList = document.createElement('ul');
         resultsList.className = 'divide-y divide-gray-100';
         
+        // Add header with result count
+        const header = document.createElement('div');
+        header.className = 'px-4 py-2 bg-gray-50 text-xs font-medium text-gray-500 sticky top-0 z-10';
+        header.textContent = `${results.length} product${results.length !== 1 ? 's' : ''} found`;
+        searchResultsContainer.appendChild(header);
+        
         results.forEach(product => {
             const item = document.createElement('li');
-            item.className = 'hover:bg-gray-50 transition-colors duration-150';
+            item.className = 'hover:bg-gray-50 transition-all duration-200';
             
             const link = document.createElement('a');
             link.href = product.url;
             link.className = 'flex items-center p-3 group';
             
-            // Product image
+            // Product image with improved styling
             const imgContainer = document.createElement('div');
-            imgContainer.className = 'w-12 h-12 bg-gray-100 rounded-md flex-shrink-0 overflow-hidden mr-3';
+            imgContainer.className = 'w-14 h-14 bg-gray-100 rounded-md flex-shrink-0 overflow-hidden mr-3 border border-gray-200 p-1';
             
             if (product.image_url) {
                 const img = document.createElement('img');
                 img.src = product.image_url;
                 img.alt = product.name;
                 img.className = 'w-full h-full object-contain group-hover:scale-110 transition-transform duration-300';
+                img.loading = 'lazy'; // Lazy load images for better performance
                 imgContainer.appendChild(img);
             } else {
-                // Placeholder if no image
+                // Improved placeholder if no image
                 imgContainer.innerHTML = `
                     <div class="w-full h-full flex items-center justify-center text-gray-400">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -194,20 +461,65 @@ document.addEventListener('DOMContentLoaded', function() {
                 `;
             }
             
-            // Product details
+            // Product details with improved styling
             const details = document.createElement('div');
             details.className = 'flex-grow';
             
             const name = document.createElement('div');
-            name.className = 'text-sm font-medium text-gray-900 group-hover:text-primary-600 transition-colors';
+            name.className = 'text-sm font-medium text-gray-900 group-hover:text-primary-600 transition-colors line-clamp-1';
             name.textContent = product.name;
             
-            const price = document.createElement('div');
-            price.className = 'text-sm text-gray-600';
-            price.textContent = `PKR ${product.price}`;
+            // Price display with sale price if available
+            const priceContainer = document.createElement('div');
+            priceContainer.className = 'flex items-center gap-2 mt-0.5';
+            
+            if (product.on_sale && product.sale_price) {
+                const originalPrice = document.createElement('span');
+                originalPrice.className = 'text-xs text-gray-500 line-through';
+                originalPrice.textContent = `PKR ${product.price}`;
+                
+                const salePrice = document.createElement('span');
+                salePrice.className = 'text-sm font-medium text-red-600';
+                salePrice.textContent = `PKR ${product.sale_price}`;
+                
+                priceContainer.appendChild(salePrice);
+                priceContainer.appendChild(originalPrice);
+            } else {
+                const price = document.createElement('span');
+                price.className = 'text-sm text-gray-600';
+                price.textContent = `PKR ${product.price}`;
+                priceContainer.appendChild(price);
+            }
             
             details.appendChild(name);
-            details.appendChild(price);
+            details.appendChild(priceContainer);
+            
+            // Add badges for trending or on sale
+            if (product.trending || product.on_sale) {
+                const badgeContainer = document.createElement('div');
+                badgeContainer.className = 'flex gap-1 mt-1';
+                
+                if (product.trending) {
+                    const trendingBadge = document.createElement('span');
+                    trendingBadge.className = 'px-1.5 py-0.5 bg-amber-100 text-amber-800 rounded text-xs font-medium flex items-center';
+                    trendingBadge.innerHTML = `
+                        <svg class="w-3 h-3 mr-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clip-rule="evenodd"/>
+                        </svg>
+                        Hot
+                    `;
+                    badgeContainer.appendChild(trendingBadge);
+                }
+                
+                if (product.on_sale) {
+                    const saleBadge = document.createElement('span');
+                    saleBadge.className = 'px-1.5 py-0.5 bg-red-100 text-red-800 rounded text-xs font-medium';
+                    saleBadge.textContent = 'Sale';
+                    badgeContainer.appendChild(saleBadge);
+                }
+                
+                details.appendChild(badgeContainer);
+            }
             
             // Arrow icon
             const arrow = document.createElement('div');
@@ -228,167 +540,90 @@ document.addEventListener('DOMContentLoaded', function() {
         searchResultsContainer.appendChild(resultsList);
     }
     
-    // Function to handle search
-    async function handleSearch() {
+    // Enhanced function to handle search with better user feedback
+    // Expose the function to the global scope so it can be called from filter-sidebar.js
+    window.handleSearch = async function() {
         const searchTerm = searchInput.value.trim();
         const minPrice = document.getElementById('minPrice')?.value;
         const maxPrice = document.getElementById('maxPrice')?.value;
         
-        // Show search status
+        // Track search performance
+        const searchStartTime = performance.now();
+        
+        // Don't search again if the term hasn't changed and we're not forcing a refresh
+        if (searchTerm === currentSearchTerm && isSearching) {
+            return;
+        }
+        
+        // Track previous search term for comparison
+        const previousSearchTerm = currentSearchTerm;
+        currentSearchTerm = searchTerm;
+        isSearching = true;
+        
+        // Show search status with typing animation and improved feedback
         const searchStatus = document.getElementById('searchStatus');
         if (searchStatus) {
             if (searchTerm.length > 0) {
                 searchStatus.classList.remove('hidden');
-                searchStatus.textContent = `Searching for "${searchTerm}"...`;
+                // Show different message based on search term length for better UX
+                if (searchTerm.length < 3) {
+                    searchStatus.innerHTML = `<span class="inline-block text-amber-600">Type at least 3 characters for better results</span>`;
+                } else {
+                    searchStatus.innerHTML = `<span class="inline-block animate-pulse">Searching for "${searchTerm}"...</span>`;
+                }
             } else {
                 searchStatus.classList.add('hidden');
             }
         }
         
-        // Show loading indicator and hide search icon
+        // Enhanced loading indicator with animation
         searchIcon.classList.add('opacity-0');
         loadingIndicator.classList.remove('hidden');
-        
-        // Show clear button if there's text
-        if (searchTerm.length > 0) {
-            searchClearButton.classList.remove('hidden');
-            searchContainer.classList.add('bg-white', 'shadow-md');
-            searchContainer.classList.remove('bg-gray-50', 'shadow-sm');
-        } else {
-            searchClearButton.classList.add('hidden');
-            searchContainer.classList.remove('bg-white', 'shadow-md');
-            searchContainer.classList.add('bg-gray-50', 'shadow-sm');
-        }
-        
-        // If search term is empty, hide results and reset UI
-        if (searchTerm.length === 0) {
-            searchResultsContainer.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
-            loadingIndicator.classList.add('hidden');
-            searchIcon.classList.remove('opacity-0');
-            
-            // Show all products in the grid
-            const productItems = document.querySelectorAll('.product-item');
-            productItems.forEach(item => {
-                item.classList.remove('hidden', 'opacity-0');
-                item.classList.add('opacity-100');
-            });
-            
-            noResultsMessage.classList.add('hidden');
-            return;
-        }
+        loadingIndicator.classList.add('animate-spin');
         
         try {
-            // Fetch products from API
+            // Fetch products with current search parameters
             const data = await fetchProducts(searchTerm, minPrice, maxPrice);
             
-            // Update search status
-            if (searchStatus) {
-                searchStatus.textContent = `Found ${data.count} product(s) matching "${searchTerm}"`;
-            }
-            
-            // Render results in dropdown
-            renderSearchResults(data.products);
-            
-            // Show dropdown with animation
-            if (data.products.length > 0) {
-                searchResultsContainer.classList.remove('opacity-0', 'scale-95', 'pointer-events-none');
-                searchResultsContainer.classList.add('opacity-100', 'scale-100');
-            } else {
-                searchResultsContainer.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
-                noResultsMessage.classList.remove('hidden');
-                noResultsMessage.textContent = `No products found matching "${searchTerm}"`;
-            }
-            
-            // Update product grid if we're on the shop or category page
-            const productGrid = document.querySelector('.grid.grid-cols-2');
-            if (productGrid) {
-                const productItems = document.querySelectorAll('.product-item');
+            // Update product display with search results
+            if (data.products) {
+                // Filter products in the DOM
+                updateProductDisplay(data.products);
                 
-                // If no search results, show message in grid
-                if (data.products.length === 0) {
-                    productItems.forEach(item => {
-                        item.classList.add('opacity-0');
-                        setTimeout(() => {
-                            item.classList.add('hidden');
-                        }, 200);
-                    });
-                } else {
-                    // Filter grid items based on search results
-                    const productIds = data.products.map(p => p.id);
-                    
-                    productItems.forEach(item => {
-                        // Try to extract product ID from the item
-                        const link = item.querySelector('a[href*="/product/"]');
-                        if (!link) return;
-                        
-                        const href = link.getAttribute('href');
-                        const idMatch = href.match(/\/product\/([0-9]+)/);
-                        if (!idMatch) return;
-                        
-                        const productId = parseInt(idMatch[1]);
-                        const isVisible = productIds.includes(productId);
-                        
-                        // Apply transition for smooth filtering
-                        if (isVisible) {
-                            item.classList.remove('hidden');
-                            item.classList.remove('opacity-0');
-                            item.classList.add('opacity-100');
-                        } else {
-                            item.classList.add('opacity-0');
-                            setTimeout(() => {
-                                item.classList.add('hidden');
-                            }, 200);
-                        }
-                    });
+                // Show dropdown with results if we're showing search results
+                if (searchTerm.length > 0) {
+                    renderSearchResults(data.products);
+                    searchResultsContainer.classList.remove('opacity-0', 'scale-95', 'pointer-events-none');
+                    searchResultsContainer.classList.add('opacity-100', 'scale-100');
                 }
+            } else if (data.error) {
+                renderSearchResults([], data.error_message || 'An error occurred during search');
             }
+            
+            // Calculate and log search performance
+            const searchEndTime = performance.now();
+            console.log(`Search completed in ${(searchEndTime - searchStartTime).toFixed(2)}ms`);
+            
         } catch (error) {
             console.error('Search error:', error);
+            renderSearchResults([], 'An unexpected error occurred');
         } finally {
-            // Hide loading indicator and show search icon again
-            loadingIndicator.classList.add('hidden');
+            // Reset UI state
             searchIcon.classList.remove('opacity-0');
+            loadingIndicator.classList.add('hidden');
+            loadingIndicator.classList.remove('animate-spin');
+            isSearching = false;
         }
-    }
+    };
     
-    // Debounce function to limit how often handleSearch runs
-    function debounce(func, wait) {
-        let timeout;
-        return function() {
-            const context = this;
-            const args = arguments;
-            clearTimeout(timeout);
-            timeout = setTimeout(() => {
-                func.apply(context, args);
-            }, wait);
-        };
-    }
-    
-    // Setup search functionality
-    function setupSearch() {
-        // Add transition styles to product items
-        const productItems = document.querySelectorAll('.product-item');
-        productItems.forEach(item => {
-            item.style.transition = 'opacity 300ms ease-in-out, transform 300ms ease-in-out';
-        });
-        
-        // Create debounced search function
-        const debouncedSearch = debounce(handleSearch, 300);
-        
-        // Add event listeners
-        searchInput.addEventListener('input', debouncedSearch);
-        searchInput.addEventListener('keyup', function(e) {
-            // Immediate search on Enter key
-            if (e.key === 'Enter') {
-                if (searchTimeout) clearTimeout(searchTimeout);
-                handleSearch();
-            }
-            
-            // Close dropdown on Escape key
-            if (e.key === 'Escape') {
-                searchResultsContainer.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
-            }
-        });
+    // Handle keyboard events for search
+    searchInput.addEventListener('keydown', function(e) {
+        // Close dropdown on Escape key
+        if (e.key === 'Escape') {
+            searchResultsContainer.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
+        }
+    });
+        }
         
         // Clear search functionality
         searchClearButton.addEventListener('click', function() {
@@ -442,6 +677,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const minPriceValue = document.getElementById('minPriceValue');
         const maxPriceValue = document.getElementById('maxPriceValue');
         
+        // Create a debounced search function to avoid too many API calls
+        const debouncedSearch = debounce(handleSearch, 300);
+        
         if (minPriceSlider && maxPriceSlider) {
             // Update price display and trigger search on slider change
             minPriceSlider.addEventListener('input', function() {
@@ -450,7 +688,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     maxPriceSlider.value = this.value;
                     if (maxPriceValue) maxPriceValue.textContent = this.value;
                 }
+                // Ensure search is performed with current price range values
                 debouncedSearch();
+            });
+            
+            minPriceSlider.addEventListener('change', function() {
+                // Also trigger search on slider release for better UX
+                handleSearch();
             });
             
             maxPriceSlider.addEventListener('input', function() {
@@ -459,7 +703,13 @@ document.addEventListener('DOMContentLoaded', function() {
                     minPriceSlider.value = this.value;
                     if (minPriceValue) minPriceValue.textContent = this.value;
                 }
+                // Ensure search is performed with current price range values
                 debouncedSearch();
+            });
+            
+            maxPriceSlider.addEventListener('change', function() {
+                // Also trigger search on slider release for better UX
+                handleSearch();
             });
         }
     }

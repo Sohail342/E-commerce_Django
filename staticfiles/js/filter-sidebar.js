@@ -58,6 +58,21 @@ document.addEventListener('DOMContentLoaded', function() {
     maxPriceInput.addEventListener('input', updatePriceRange);
     minPriceInput.addEventListener('change', updatePriceRange);
     maxPriceInput.addEventListener('change', updatePriceRange);
+    
+    // Add event listeners to trigger search when price range changes
+    minPriceInput.addEventListener('change', function() {
+        // Trigger search function from real-time-search.js
+        if (typeof handleSearch === 'function') {
+            handleSearch();
+        }
+    });
+    
+    maxPriceInput.addEventListener('change', function() {
+        // Trigger search function from real-time-search.js
+        if (typeof handleSearch === 'function') {
+            handleSearch();
+        }
+    });
 
     // Initialize price range values
     updatePriceRange();
