@@ -4,17 +4,29 @@
 
 {% block extra_js %}
 <script src="{% static 'js/filter-sidebar.js' %}"></script>
-<script src="{% static 'js/real-time-search.js' %}"></script>
 {% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/filter-animations.css' %}">
-<link rel="stylesheet" href="{% static 'css/search-animations.css' %}">
 {% endblock %}
 
 {% block extra_head %}
 <style>
     /* Custom range slider styles */
+    .price-range-container {
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        background: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .price-range-values {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+    }
+    
     input[type="range"] {
         -webkit-appearance: none;
         appearance: none;
@@ -22,6 +34,7 @@
         border-radius: 8px;
         background: #e5e7eb;
         outline: none;
+        width: 100%;
     }
 
     input[type="range"]::-webkit-slider-thumb {
@@ -127,7 +140,7 @@
                             </svg>
                         </div>
                         <ul class="space-y-2 filter-content">
-                            <li><a href="#" class="text-primary-600 font-medium hover:text-primary-700 transition-colors">All</a></li>
+                            <li><a href="{% url 'shop:shop' %}" class="text-primary-600 font-medium hover:text-primary-700 transition-colors">All</a></li>
                             {% for ctg in category %}
                             <li><a href="{% url 'shop:category' ctg.name %}" class="text-gray-600 hover:text-primary-600 transition-colors">{{ ctg.name }}</a></li>
                             {% endfor %}

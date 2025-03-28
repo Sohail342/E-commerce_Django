@@ -4,17 +4,29 @@
 
 {% block extra_js %}
 <script src="{% static 'js/filter-sidebar.js' %}"></script>
-<script src="{% static 'js/real-time-search.js' %}"></script>
 {% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/filter-animations.css' %}">
-<link rel="stylesheet" href="{% static 'css/search-animations.css' %}">
 {% endblock %}
 
 {% block extra_head %}
 <style>
     /* Custom range slider styles */
+    .price-range-container {
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        background: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .price-range-values {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+    }
+    
     input[type="range"] {
         -webkit-appearance: none;
         appearance: none;
@@ -22,6 +34,7 @@
         border-radius: 8px;
         background: #e5e7eb;
         outline: none;
+        width: 100%;
     }
 
     input[type="range"]::-webkit-slider-thumb {
@@ -98,10 +111,21 @@
                     <div class="mb-6">
                         <div class="relative group">
                             <input type="text" class="w-full pl-10 pr-10 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all bg-gray-50 hover:bg-white focus:bg-white shadow-sm hover:shadow-md" placeholder="Search products..." id="productSearch" autocomplete="off">
-                            <!-- Search icon will be added by JavaScript -->
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="h-5 w-5 text-gray-400 group-hover:text-primary-500 transition-colors" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                                <button id="clearSearch" class="text-gray-400 hover:text-gray-600 focus:outline-none hidden">
+                                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
                         <p class="text-xs text-gray-500 mt-1 ml-1 hidden md:block">Type to filter products in real-time</p>
-                        <div class="mt-1 ml-1 text-xs text-primary-500 font-medium hidden" id="searchStatus">Searching...</div>
+                        <div class="mt-1 ml-1 text-xs text-primary-500 font-medium hidden" id="searchStatus">Searching with Elasticsearch...</div>
                     </div>
 
                     <!-- Sort Options -->

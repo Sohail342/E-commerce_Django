@@ -158,8 +158,8 @@
           </button>
           {% endif %}
           <div class="flex space-x-2 w-full sm:w-auto justify-end">
-            <button class="toggle-wishlist inline-flex justify-center items-center p-3 sm:p-4 border-2 border-gray-300 rounded-xl text-gray-700 hover:border-red-400 hover:text-red-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-400 transition-all duration-300 transform hover:scale-110 active:scale-95 bg-white {% if product.id in wishlist_products %}active border-red-400 text-red-500{% endif %}" data-product-id="{{ product.id }}">
-              <svg class="h-7 w-7 transition-transform duration-300 hover:scale-110" fill="{% if product.id in wishlist_products %}currentColor{% else %}none{% endif %}" stroke="currentColor" viewBox="0 0 24 24">
+            <button class="toggle-wishlist inline-flex justify-center items-center p-3 sm:p-4 border-2 border-gray-300 rounded-xl text-gray-700 hover:border-red-400 hover:text-red-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-400 transition-all duration-300 transform hover:scale-110 active:scale-95 bg-white {% if product.id in wishlist_products or product.id in request.session.wishlist %}active border-red-400 text-red-500{% endif %}" data-product-id="{{ product.id }}">
+              <svg class="h-7 w-7 transition-transform duration-300 hover:scale-110" fill="{% if product.id in wishlist_products or product.id in request.session.wishlist %}currentColor{% else %}none{% endif %}" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
               </svg>
             </button>

@@ -62,20 +62,69 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add event listeners to trigger search when price range changes
     minPriceInput.addEventListener('change', function() {
         // Trigger search function from real-time-search.js
-        if (typeof handleSearch === 'function') {
-            handleSearch();
+        if (typeof window.handleSearch === 'function') {
+            // Add visual feedback
+            minPriceInput.classList.add('ring-2', 'ring-primary-500');
+            setTimeout(() => {
+                minPriceInput.classList.remove('ring-2', 'ring-primary-500');
+            }, 500);
+            window.handleSearch();
+        } else {
+            console.error('handleSearch function not available');
         }
     });
     
     maxPriceInput.addEventListener('change', function() {
         // Trigger search function from real-time-search.js
-        if (typeof handleSearch === 'function') {
-            handleSearch();
+        if (typeof window.handleSearch === 'function') {
+            // Add visual feedback
+            maxPriceInput.classList.add('ring-2', 'ring-primary-500');
+            setTimeout(() => {
+                maxPriceInput.classList.remove('ring-2', 'ring-primary-500');
+            }, 500);
+            window.handleSearch();
+        } else {
+            console.error('handleSearch function not available');
         }
+    });
+    
+    // Also trigger search when sort options change
+    if (sortOptions) {
+        sortOptions.addEventListener('change', function() {
+            if (typeof window.handleSearch === 'function') {
+                window.handleSearch();
+            }
+        });
+    }
+    
+    // Also add input event listeners for smoother experience
+    minPriceInput.addEventListener('input', function() {
+        // Update the display value immediately
+        if (minPriceValue) minPriceValue.textContent = this.value;
+    });
+    
+    maxPriceInput.addEventListener('input', function() {
+        // Update the display value immediately
+        if (maxPriceValue) maxPriceValue.textContent = this.value;
     });
 
     // Initialize price range values
     updatePriceRange();
+
+    // Handle category filter clicks
+    document.querySelectorAll('.category-filter').forEach(filter => {
+        filter.addEventListener('click', function(e) {
+            e.preventDefault();
+            // Remove active class from all filters
+            document.querySelectorAll('.category-filter').forEach(f => f.classList.remove('active'));
+            // Add active class to clicked filter
+            this.classList.add('active');
+            // Trigger search with new category
+            if (typeof window.handleSearch === 'function') {
+                window.handleSearch();
+            }
+        });
+    });
     
     // Enhanced collapsible filter sections with smooth animations
     filterHeadings.forEach(heading => {
