@@ -194,9 +194,9 @@ JAZZMIN_SETTINGS = {
     "site_header": "Zevaristan",
 
     # Title on the brand (19 chars max) (defaults to current_admin_site.site_header if absent or None)
-    "site_brand": "",
+    "site_brand": "Admin",
 
-    "site_logo": "images/logo.svg",
+    "site_logo": "images/favicon.svg",
     "login_logo": "images/logo.svg",
     "site_icon": "images/favicon.svg",
     "site_logo_classes": "img-circle",
