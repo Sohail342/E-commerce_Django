@@ -191,7 +191,7 @@ JAZZMIN_SETTINGS = {
     "site_title": "Zevaristan  Admin",
 
     # Title on the login screen (19 chars max) (defaults to current_admin_site.site_header if absent or None)
-    "site_header": "Zevaristan",
+    "site_header": "",
 
     # Title on the brand (19 chars max) (defaults to current_admin_site.site_header if absent or None)
     "site_brand": "Zevaristan",
