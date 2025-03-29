@@ -1,0 +1,247 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Sales Analytics{% endblock %}
+
+{% block extra_head %}
+<script src="{% static 'js/analytics-dashboard.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-100 p-4 sm:p-6 lg:p-8">
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">Sales Analytics</h1>
+            <p class="mt-2 text-sm text-gray-600">Comprehensive sales performance metrics and trends</p>
+        </div>
+
+        <!-- Sales Overview Metrics -->
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
+            <!-- Total Sales -->
+            <div class="bg-white rounded-lg shadow-lg p-6 transform hover:scale-105 transition-all duration-300 metric-card">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-lg font-semibold text-gray-900">Total Sales</h3>
+                    <svg class="h-8 w-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <p class="text-2xl font-bold text-blue-600">PKR {{ total_sales|floatformat:2 }}</p>
+                <p class="text-xs text-gray-500 mt-1.5">All time</p>
+            </div>
+
+            <!-- Today's Sales -->
+            <div class="bg-white rounded-lg shadow-lg p-6 transform hover:scale-105 transition-all duration-300 metric-card">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-lg font-semibold text-gray-900">Today</h3>
+                    <svg class="h-8 w-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                </div>
+                <p class="text-2xl font-bold text-green-600">PKR {{ today_sales|floatformat:2 }}</p>
+                <p class="text-xs text-gray-500 mt-1.5">{{ today|date:"d M Y" }}</p>
+            </div>
+
+            <!-- Weekly Sales -->
+            <div class="bg-white rounded-lg shadow-lg p-6 transform hover:scale-105 transition-all duration-300 metric-card">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-lg font-semibold text-gray-900">This Week</h3>
+                    <svg class="h-8 w-8 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                </div>
+                <p class="text-2xl font-bold text-indigo-600">PKR {{ weekly_sales|floatformat:2 }}</p>
+                <p class="text-xs text-gray-500 mt-1.5">Last 7 days</p>
+            </div>
+
+            <!-- Monthly Sales -->
+            <div class="bg-white rounded-lg shadow-lg p-6 transform hover:scale-105 transition-all duration-300 metric-card">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-lg font-semibold text-gray-900">This Month</h3>
+                    <svg class="h-8 w-8 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                </div>
+                <p class="text-2xl font-bold text-purple-600">PKR {{ monthly_sales|floatformat:2 }}</p>
+                <p class="text-xs text-gray-500 mt-1.5">{{ current_month_name }}</p>
+            </div>
+
+            <!-- Yearly Sales -->
+            <div class="bg-white rounded-lg shadow-lg p-6 transform hover:scale-105 transition-all duration-300 metric-card">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-lg font-semibold text-gray-900">This Year</h3>
+                    <svg class="h-8 w-8 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                </div>
+                <p class="text-2xl font-bold text-pink-600">PKR {{ yearly_sales|floatformat:2 }}</p>
+                <p class="text-xs text-gray-500 mt-1.5">{{ current_year }}</p>
+            </div>
+        </div>
+
+        <!-- Sales Growth Metrics -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <!-- Monthly Growth -->
+            <div class="bg-white rounded-lg shadow-lg p-6 transform hover:scale-105 transition-all duration-300">
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Monthly Growth</h3>
+                <div class="flex items-center">
+                    <p class="text-2xl font-bold {% if monthly_growth >= 0 %}text-green-600{% else %}text-red-600{% endif %}">{{ monthly_growth|floatformat:2 }}%</p>
+                    <span class="ml-2">
+                        {% if monthly_growth >= 0 %}
+                        <svg class="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                        </svg>
+                        {% else %}
+                        <svg class="h-5 w-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0v-8m0 8l-8-8-4 4-6-6" />
+                        </svg>
+                        {% endif %}
+                    </span>
+                </div>
+                <p class="text-xs text-gray-500 mt-1.5">vs. Previous Month</p>
+            </div>
+
+            <!-- Weekly Growth -->
+            <div class="bg-white rounded-lg shadow-lg p-6 transform hover:scale-105 transition-all duration-300">
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Weekly Growth</h3>
+                <div class="flex items-center">
+                    <p class="text-2xl font-bold {% if weekly_growth >= 0 %}text-green-600{% else %}text-red-600{% endif %}">{{ weekly_growth|floatformat:2 }}%</p>
+                    <span class="ml-2">
+                        {% if weekly_growth >= 0 %}
+                        <svg class="h-5 w-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                        </svg>
+                        {% else %}
+                        <svg class="h-5 w-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h8m0 0v-8m0 8l-8-8-4 4-6-6" />
+                        </svg>
+                        {% endif %}
+                    </span>
+                </div>
+                <p class="text-xs text-gray-500 mt-1.5">vs. Previous Week</p>
+            </div>
+
+            <!-- Average Order Value -->
+            <div class="bg-white rounded-lg shadow-lg p-6 transform hover:scale-105 transition-all duration-300">
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Average Order Value</h3>
+                <div class="flex items-center">
+                    <p class="text-2xl font-bold text-blue-600">PKR {{ average_order_value|floatformat:2 }}</p>
+                    <span class="ml-2 text-xs font-semibold {% if aov_growth >= 0 %}text-green-500{% else %}text-red-500{% endif %}">
+                        {{ aov_growth|floatformat:2 }}%
+                    </span>
+                </div>
+                <p class="text-xs text-gray-500 mt-1.5">vs. Previous Period</p>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <!-- Monthly Sales Chart -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Monthly Sales Trend</h3>
+                <canvas id="monthlySalesChart" class="w-full h-64"></canvas>
+            </div>
+
+            <!-- Weekly Sales Chart -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Weekly Sales Breakdown</h3>
+                <canvas id="weeklySalesChart" class="w-full h-64"></canvas>
+            </div>
+        </div>
+
+        <!-- Detailed Sales Analytics Tables -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Top Selling Products -->
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Top Selling Products</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200 analytics-table">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Product</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Units Sold</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Revenue</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                {% for product in top_selling_products %}
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ product.name }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ product.units_sold }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">PKR {{ product.revenue|floatformat:2 }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sales by Category -->
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Sales by Category</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200 analytics-table">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Category</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Products</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Revenue</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                {% for category in sales_by_category %}
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ category.name }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ category.product_count }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">PKR {{ category.revenue|floatformat:2 }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Orders Section -->
+        <div class="mt-8">
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Recent Orders</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200 analytics-table">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Order ID</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Amount</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                {% for order in recent_orders %}
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">#{{ order.order_number }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ order.user }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ order.created_at|date:"d M Y" }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">PKR {{ order.total_price|floatformat:2 }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                        <span class="px-2 py-1 text-xs font-semibold rounded-full
+                                            {% if order.status == 'Completed' %}bg-green-100 text-green-800
+                                            {% elif order.status == 'Processing' %}bg-blue-100 text-blue-800
+                                            {% elif order.status == 'Pending' %}bg-yellow-100 text-yellow-800
+                                            {% else %}bg-gray-100 text-gray-800{% endif %}">{{ order.status }}</span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+{% endblock %}

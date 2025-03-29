@@ -1,0 +1,282 @@
+{% extends 'dashboard/base_dashboard.html' %}
+{% load static %}
+
+{% block title %}Customer Analytics{% endblock %}
+
+{% block extra_head %}
+<script src="{% static 'js/analytics-dashboard.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-100 p-4 sm:p-6 lg:p-8">
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">Customer Analytics</h1>
+            <p class="mt-2 text-sm text-gray-600">Detailed insights about your customer base and purchasing behavior</p>
+        </div>
+
+        <!-- Customer Overview Metrics -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <!-- Total Customers -->
+            <div class="bg-white rounded-lg shadow-lg p-6 transform hover:scale-105 transition-all duration-300 metric-card">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-lg font-semibold text-gray-900">Total Customers</h3>
+                    <svg class="h-8 w-8 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                </div>
+                <p class="text-3xl font-bold text-blue-600">{{ total_customers }}</p>
+                <p class="text-sm text-gray-500 mt-1">Registered accounts</p>
+            </div>
+
+            <!-- New Customers -->
+            <div class="bg-white rounded-lg shadow-lg p-6 transform hover:scale-105 transition-all duration-300 metric-card">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-lg font-semibold text-gray-900">New Customers</h3>
+                    <svg class="h-8 w-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                    </svg>
+                </div>
+                <p class="text-3xl font-bold text-green-600">{{ new_customers_count }}</p>
+                <p class="text-sm text-gray-500 mt-1">Last 30 days</p>
+            </div>
+
+            <!-- Active Customers -->
+            <div class="bg-white rounded-lg shadow-lg p-6 transform hover:scale-105 transition-all duration-300 metric-card">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-lg font-semibold text-gray-900">Active Customers</h3>
+                    <svg class="h-8 w-8 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <p class="text-3xl font-bold text-purple-600">{{ active_customers_count }}</p>
+                <p class="text-sm text-gray-500 mt-1">Purchased in last 90 days</p>
+            </div>
+
+            <!-- Average Customer Value -->
+            <div class="bg-white rounded-lg shadow-lg p-6 transform hover:scale-105 transition-all duration-300 metric-card">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-lg font-semibold text-gray-900">Avg. Customer Value</h3>
+                    <svg class="h-8 w-8 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <p class="text-3xl font-bold text-pink-600">PKR {{ avg_customer_value|floatformat:2 }}</p>
+                <p class="text-sm text-gray-500 mt-1">Lifetime value</p>
+            </div>
+        </div>
+
+        <!-- Customer Retention Metrics -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <!-- Repeat Purchase Rate -->
+            <div class="bg-white rounded-lg shadow-lg p-6 transform hover:scale-105 transition-all duration-300">
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Repeat Purchase Rate</h3>
+                <div class="flex items-center">
+                    <p class="text-3xl font-bold text-indigo-600">{{ repeat_purchase_rate|floatformat:2 }}%</p>
+                    <span class="ml-2 text-sm {% if repeat_purchase_trend > 0 %}text-green-500{% else %}text-red-500{% endif %}">
+                        {{ repeat_purchase_trend|floatformat:2 }}%
+                    </span>
+                </div>
+                <p class="text-sm text-gray-500 mt-1">vs. Previous Period</p>
+            </div>
+
+            <!-- Customer Retention Rate -->
+            <div class="bg-white rounded-lg shadow-lg p-6 transform hover:scale-105 transition-all duration-300">
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Retention Rate</h3>
+                <div class="flex items-center">
+                    <p class="text-3xl font-bold text-teal-600">{{ retention_rate|floatformat:2 }}%</p>
+                    <span class="ml-2 text-sm {% if retention_trend > 0 %}text-green-500{% else %}text-red-500{% endif %}">
+                        {{ retention_trend|floatformat:2 }}%
+                    </span>
+                </div>
+                <p class="text-sm text-gray-500 mt-1">vs. Previous Period</p>
+            </div>
+
+            <!-- Average Orders Per Customer -->
+            <div class="bg-white rounded-lg shadow-lg p-6 transform hover:scale-105 transition-all duration-300">
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Avg. Orders Per Customer</h3>
+                <div class="flex items-center">
+                    <p class="text-3xl font-bold text-orange-600">{{ avg_orders_per_customer|floatformat:2 }}</p>
+                    <span class="ml-2 text-sm {% if orders_per_customer_trend > 0 %}text-green-500{% else %}text-red-500{% endif %}">
+                        {{ orders_per_customer_trend|floatformat:2 }}%
+                    </span>
+                </div>
+                <p class="text-sm text-gray-500 mt-1">vs. Previous Period</p>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <!-- Customer Growth Chart -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Customer Growth</h3>
+                <canvas id="customerGrowthChart" class="w-full h-64"></canvas>
+            </div>
+
+            <!-- Customer Segments Chart -->
+            <div class="bg-white rounded-lg shadow-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Customer Segments</h3>
+                <canvas id="customerSegmentsChart" class="w-full h-64"></canvas>
+            </div>
+        </div>
+
+        <!-- Detailed Customer Analytics Tables -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Top Customers by Value -->
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Top Customers by Value</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200 analytics-table">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Orders</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total Spent</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                {% for customer in top_customers_by_value %}
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ customer.name }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ customer.order_count }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">PKR {{ customer.total_spent|floatformat:2 }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Customers by Order Frequency -->
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Top Customers by Frequency</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200 analytics-table">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Orders</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Last Purchase</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                {% for customer in top_customers_by_frequency %}
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ customer.name }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ customer.order_count }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ customer.last_purchase|date:"d M Y" }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Customers Section -->
+        <div class="mt-8">
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                <div class="p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Recent Customers</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200 analytics-table">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Joined</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Orders</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total Spent</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                {% for customer in recent_customers %}
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ customer.name }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ customer.joined|date:"d M Y" }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ customer.order_count }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">PKR {{ customer.total_spent|floatformat:2 }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js Script -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Customer Growth Chart
+    const growthCtx = document.getElementById('customerGrowthChart').getContext('2d');
+    new Chart(growthCtx, {
+        type: 'line',
+        data: {
+            labels: {{ customer_growth_dates|safe }},
+            datasets: [{
+                label: 'New Customers',
+                data: {{ customer_growth_data|safe }},
+                borderColor: 'rgb(79, 70, 229)',
+                backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // Customer Segments Chart
+    const segmentsCtx = document.getElementById('customerSegmentsChart').getContext('2d');
+    new Chart(segmentsCtx, {
+        type: 'doughnut',
+        data: {
+            labels: {{ customer_segments_labels|safe }},
+            datasets: [{
+                data: {{ customer_segments_data|safe }},
+                backgroundColor: [
+                    'rgba(59, 130, 246, 0.7)',
+                    'rgba(16, 185, 129, 0.7)',
+                    'rgba(249, 115, 22, 0.7)',
+                    'rgba(139, 92, 246, 0.7)',
+                    'rgba(236, 72, 153, 0.7)'
+                ],
+                borderColor: [
+                    'rgb(59, 130, 246)',
+                    'rgb(16, 185, 129)',
+                    'rgb(249, 115, 22)',
+                    'rgb(139, 92, 246)',
+                    'rgb(236, 72, 153)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'right'
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

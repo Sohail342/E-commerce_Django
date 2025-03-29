@@ -228,11 +228,7 @@ JAZZMIN_SETTINGS = {
         {"app": "books"},
     ],
 
-      # Additional links to include in the user menu on the top right ("app" url type is not allowed)
-    "usermenu_links": [
-        {"name": "Support", "url": "https://github.com/farridav/django-jazzmin/issues", "new_window": True},
-        
-    ],
+  
 
     "order_with_respect_to": ["shop", "shop.Product", "order", "order.Order", "contact", "auth"],
 

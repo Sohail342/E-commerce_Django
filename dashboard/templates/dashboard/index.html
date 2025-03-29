@@ -1,5 +1,6 @@
 {% extends 'dashboard/base_dashboard.html' %}
 {% load static %}
+{% load custom_filters %}
 
 {% block title %}Analytics Dashboard{% endblock %}
 
@@ -10,18 +11,12 @@
         <div class="mb-8">
             <h1 class="text-3xl font-bold text-gray-900">Dashboard</h1>
             <p class="mt-2 text-sm text-gray-600">Analytics and insights for your e-commerce store</p>
-            <div class="mt-4 flex space-x-4">
-                <a href="{% url 'dashboard:analytics' %}?section=overview" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">Overview Analytics</a>
-                <a href="{% url 'dashboard:analytics' %}?section=sales" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors">Sales Analytics</a>
-                <a href="{% url 'dashboard:analytics' %}?section=products" class="px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors">Product Analytics</a>
-                <a href="{% url 'dashboard:analytics' %}?section=customers" class="px-4 py-2 bg-orange-600 text-white rounded-md hover:bg-orange-700 transition-colors">Customer Analytics</a>
-            </div>
         </div>
 
         <!-- Stats Overview -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             <!-- Total Sales -->
-            <div class="bg-white rounded-lg shadow-lg p-6 transform hover:scale-105 transition-all duration-300 hover:shadow-xl border border-gray-100">
+            <div class="bg-white rounded-lg shadow-lg p-5 transform hover:scale-105 transition-all duration-300 hover:shadow-xl border border-gray-100">
                 <div class="flex items-center">
                     <div class="p-3 rounded-full bg-blue-100">
                         <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -30,13 +25,48 @@
                     </div>
                     <div class="ml-4">
                         <p class="text-sm font-medium text-gray-600">Total Sales</p>
-                        <p class="text-2xl font-semibold text-gray-900">PKR {{ total_sales|floatformat:2 }}</p>
+                        <p class="text-xl font-semibold text-gray-900">PKR {{ total_sales|floatformat:2 }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Monthly Sales -->
+            <div class="bg-white rounded-lg shadow-lg p-5 transform hover:scale-105 transition-all duration-300 hover:shadow-xl border border-gray-100">
+                <div class="flex items-center">
+                    <div class="p-3 rounded-full bg-amber-100">
+                        <svg class="w-6 h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">This Month's Sales</p>
+                        <p class="text-xl font-semibold text-gray-900">PKR {{ monthly_sales_total|floatformat:2 }}</p>
+                        <div class="flex items-center mt-1">
+                            {% if percentage_change > 0 %}
+                            <span class="text-xs font-medium text-green-600 flex items-center">
+                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+                                </svg>
+                                {{ percentage_change|floatformat:1 }}%
+                            </span>
+                            {% elif percentage_change < 0 %}
+                            <span class="text-xs font-medium text-red-600 flex items-center">
+                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                                {{ percentage_change|floatformat:1|abs }}%
+                            </span>
+                            {% else %}
+                            <span class="text-xs font-medium text-gray-500">No change</span>
+                            {% endif %}
+                            <span class="text-xs text-gray-500 ml-1">vs last month</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Total Orders -->
-            <div class="bg-white rounded-lg shadow-lg p-6 transform hover:scale-105 transition-all duration-300 hover:shadow-xl border border-gray-100">
+            <div class="bg-white rounded-lg shadow-lg p-5 transform hover:scale-105 transition-all duration-300 hover:shadow-xl border border-gray-100">
                 <div class="flex items-center">
                     <div class="p-3 rounded-full bg-green-100">
                         <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -45,13 +75,13 @@
                     </div>
                     <div class="ml-4">
                         <p class="text-sm font-medium text-gray-600">Total Orders</p>
-                        <p class="text-2xl font-semibold text-gray-900">{{ total_orders }}</p>
+                        <p class="text-xl font-semibold text-gray-900">{{ total_orders }}</p>
                     </div>
                 </div>
             </div>
 
             <!-- Total Customers -->
-            <div class="bg-white rounded-lg shadow-lg p-6 transform hover:scale-105 transition-all duration-300 hover:shadow-xl border border-gray-100">
+            <div class="bg-white rounded-lg shadow-lg p-5 transform hover:scale-105 transition-all duration-300 hover:shadow-xl border border-gray-100">
                 <div class="flex items-center">
                     <div class="p-3 rounded-full bg-purple-100">
                         <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -60,7 +90,7 @@
                     </div>
                     <div class="ml-4">
                         <p class="text-sm font-medium text-gray-600">Total Customers</p>
-                        <p class="text-2xl font-semibold text-gray-900">{{ total_customers }}</p>
+                        <p class="text-xl font-semibold text-gray-900">{{ total_customers }}</p>
                     </div>
                 </div>
             </div>

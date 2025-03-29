@@ -56,3 +56,13 @@ def subtract(value, arg):
         return Decimal(str(value)) - Decimal(str(arg))
     except (ValueError, TypeError):
         return ''
+
+@register.filter
+def abs(value):
+    """Returns the absolute value"""
+    try:
+        return abs(float(value))
+    except (ValueError, TypeError):
+        return 0
+
+       

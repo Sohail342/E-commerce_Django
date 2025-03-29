@@ -240,7 +240,7 @@
 
     <!-- Enhanced grid with 2 products per row on mobile -->
     <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6 md:gap-8">
-      {% for product in products %}
+      {% for product in trending %}
       <div class="group relative bg-white rounded-xl sm:rounded-2xl shadow-lg hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 border border-gray-100/80 overflow-hidden" data-aos="fade-up" data-aos-delay="{{ forloop.counter|multiply:100 }}">
         <!-- Product image container with optimized height for mobile -->
         <div class="w-full overflow-hidden bg-gray-50 relative" style="aspect-ratio: 4/3;">

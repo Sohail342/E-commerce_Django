@@ -39,6 +39,8 @@ class PageView(models.Model):
     session_start = models.DateTimeField(auto_now_add=True)
     session_end = models.DateTimeField(null=True, blank=True)
     session_duration = models.DurationField(null=True, blank=True)
+    page_type = models.CharField(max_length=50, null=True, blank=True)
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True, blank=True, related_name='pageview')
     
     def save(self, *args, **kwargs):
         if self.session_end:

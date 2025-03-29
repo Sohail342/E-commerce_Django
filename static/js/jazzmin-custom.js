@@ -1,9 +1,32 @@
 /**
- * Custom JavaScript for Jazzmin Admin Panel
- * Enhances the admin interface with additional functionality
+ * Custom JavaScript for Jazzmin Admin Panel - Modern E-commerce Edition
+ * Enhances the admin interface with modern e-commerce functionality, animations,
+ * and improved user experience features
+ * Version 2.0 - Enhanced UI and Performance
  */
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Initialize performance tracking
+    console.time('Jazzmin Admin UI Initialization');
+    
+    // Fix for app names not displaying
+    const fixAppNames = function() {
+        // Target all app names and section headers
+        const appNames = document.querySelectorAll('.app-name, .section-header, .section-title, .app-title, h2.section, .dashboard h2');
+        
+        // Make sure they're visible
+        appNames.forEach(element => {
+            element.style.display = 'block';
+            element.style.visibility = 'visible';
+            element.style.opacity = '1';
+        });
+    };
+    
+    // Call the function to fix app names
+    fixAppNames();
+    
+    // Add modern UI enhancements
+    enhanceAdminUI();
     // Replace profile icon with logout button in admin navbar
     function addLogoutButtonToNavbar() {
         const navbar = document.querySelector('.navbar-nav.ml-auto');
@@ -72,26 +95,60 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Call the function to add logout button
     addLogoutButtonToNavbar();
-    // Add animations to dashboard cards with different effects
+    // Enhanced animations to dashboard cards with different effects
     const dashboardCards = document.querySelectorAll('.card, .dashboard-widget');
     dashboardCards.forEach((card, index) => {
-        // Alternate between different animation types
-        const animationClasses = ['fade-in', 'slide-in-right', 'scale-in'];
+        // Alternate between different animation types for visual variety
+        const animationClasses = ['fade-in', 'slide-in-right', 'slide-in-left', 'scale-in', 'bounce-in'];
         const animationClass = animationClasses[index % animationClasses.length];
         card.classList.add(animationClass);
         card.style.animationDelay = `${index * 0.1}s`;
+        
+        // Add data attribute for analytics tracking
+        card.setAttribute('data-card-index', index);
+        card.setAttribute('data-animation-type', animationClass);
     });
     
-    // Add subtle hover effect to all cards
+    // Add enhanced hover effects to all cards with smooth transitions
     dashboardCards.forEach(card => {
         card.addEventListener('mouseenter', function() {
-            this.style.transform = 'translateY(-5px)';
-            this.style.boxShadow = '0 10px 20px rgba(0, 0, 0, 0.15)';
+            this.style.transform = 'translateY(-8px)';
+            this.style.boxShadow = '0 15px 30px rgba(0, 0, 0, 0.15), 0 8px 15px rgba(0, 0, 0, 0.08)';
+            this.style.borderColor = 'var(--accent-color)';
+            
+            // Add subtle glow effect
+            this.style.transition = 'all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1)';
+            
+            // Highlight card header if exists
+            const cardHeader = this.querySelector('.card-header');
+            if (cardHeader) {
+                cardHeader.style.backgroundColor = 'var(--light-accent)';
+                cardHeader.style.color = 'var(--primary-color)';
+            }
         });
         
         card.addEventListener('mouseleave', function() {
             this.style.transform = '';
             this.style.boxShadow = '';
+            this.style.borderColor = '';
+            
+            // Reset card header if exists
+            const cardHeader = this.querySelector('.card-header');
+            if (cardHeader) {
+                cardHeader.style.backgroundColor = '';
+                cardHeader.style.color = '';
+            }
+        });
+        
+        // Add click effect
+        card.addEventListener('mousedown', function() {
+            this.style.transform = 'translateY(-2px)';
+            this.style.boxShadow = '0 5px 10px rgba(0, 0, 0, 0.1)';
+        });
+        
+        card.addEventListener('mouseup', function() {
+            this.style.transform = 'translateY(-8px)';
+            this.style.boxShadow = '0 15px 30px rgba(0, 0, 0, 0.15), 0 8px 15px rgba(0, 0, 0, 0.08)';
         });
     });
     
@@ -197,6 +254,128 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // Add analytics dashboard enhancements
+    function enhanceAnalyticsDashboard() {
+        // Check if we're on the analytics page
+        if (window.location.href.includes('/dashboard/analytics/')) {
+            console.log('Enhancing analytics dashboard...');
+            
+            // Fix website visits display issues
+            const trafficTrendsChart = document.getElementById('trafficTrendsChart');
+            const conversionFunnelChart = document.getElementById('conversionFunnelChart');
+            
+            if (trafficTrendsChart && window.Chart) {
+                // Add loading indicator
+                const loadingOverlay = document.createElement('div');
+                loadingOverlay.className = 'chart-loading-overlay';
+                loadingOverlay.innerHTML = '<div class="spinner"></div><p>Loading chart data...</p>';
+                trafficTrendsChart.parentNode.appendChild(loadingOverlay);
+                
+                // Refresh chart data after a short delay
+                setTimeout(() => {
+                    // Remove loading overlay
+                    loadingOverlay.remove();
+                    
+                    // If chart data is empty or undefined, show a message
+                    const chartInstance = Chart.getChart(trafficTrendsChart);
+                    if (chartInstance && (!chartInstance.data.datasets[0].data || chartInstance.data.datasets[0].data.length === 0)) {
+                        // Create a message element
+                        const noDataMessage = document.createElement('div');
+                        noDataMessage.className = 'no-data-message';
+                        noDataMessage.innerHTML = '<p>No website visits data available for the selected period. Data will appear here once visitors browse your site.</p>';
+                        trafficTrendsChart.parentNode.appendChild(noDataMessage);
+                        
+                        // Style the message
+                        noDataMessage.style.textAlign = 'center';
+                        noDataMessage.style.padding = '2rem';
+                        noDataMessage.style.color = 'var(--muted-text)';
+                        noDataMessage.style.backgroundColor = 'var(--light-accent)';
+                        noDataMessage.style.borderRadius = 'var(--border-radius)';
+                        noDataMessage.style.marginTop = '1rem';
+                    }
+                }, 1000);
+            }
+            
+            // Add refresh button to analytics cards
+            const analyticsCards = document.querySelectorAll('.bg-white.rounded-lg.shadow-lg');
+            analyticsCards.forEach(card => {
+                const refreshButton = document.createElement('button');
+                refreshButton.className = 'refresh-data-btn';
+                refreshButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2v1z"/><path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466z"/></svg>';
+                refreshButton.style.position = 'absolute';
+                refreshButton.style.top = '12px';
+                refreshButton.style.right = '12px';
+                refreshButton.style.background = 'none';
+                refreshButton.style.border = 'none';
+                refreshButton.style.color = 'var(--muted-text)';
+                refreshButton.style.cursor = 'pointer';
+                refreshButton.style.transition = 'transform 0.3s ease';
+                
+                refreshButton.addEventListener('mouseenter', function() {
+                    this.style.transform = 'rotate(180deg)';
+                    this.style.color = 'var(--primary-color)';
+                });
+                
+                refreshButton.addEventListener('mouseleave', function() {
+                    this.style.transform = 'rotate(0)';
+                    this.style.color = 'var(--muted-text)';
+                });
+                
+                refreshButton.addEventListener('click', function() {
+                    // Add spinning animation
+                    this.style.animation = 'spin 1s linear infinite';
+                    
+                    // Simulate data refresh
+                    setTimeout(() => {
+                        this.style.animation = '';
+                        window.location.reload();
+                    }, 1000);
+                });
+                
+                // Make sure card has position relative for absolute positioning of the button
+                card.style.position = 'relative';
+                card.appendChild(refreshButton);
+            });
+            
+            // Add CSS for animations
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+                
+                .chart-loading-overlay {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    background-color: rgba(255, 255, 255, 0.8);
+                    border-radius: var(--border-radius);
+                    z-index: 10;
+                }
+                
+                .spinner {
+                    width: 40px;
+                    height: 40px;
+                    border: 4px solid rgba(0, 0, 0, 0.1);
+                    border-radius: 50%;
+                    border-top-color: var(--primary-color);
+                    animation: spin 1s linear infinite;
+                }
+            `;
+            document.head.appendChild(style);
+        }
+    }
+    
+    // Call the function to enhance analytics dashboard
+    enhanceAnalyticsDashboard();
+    
     // Add search box enhancement
     const searchBox = document.querySelector('input[name="q"]');
     if (searchBox) {
