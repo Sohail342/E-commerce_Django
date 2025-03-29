@@ -4,15 +4,13 @@
   <!-- header files -->
   {% include 'base/header.html' %}
   <!-- header files -->
-  <script src="{% static 'js/category-slider.js' %}"></script>
-  <script src="{% static 'js/product-slider.js' %}"></script>
+  
+  {% block extra_css %}{% endblock %}
+  
   <script src="{% static 'js/toast.js' %}"></script>
-  <script src="{% static 'js/wishlist.js' %}"></script>
-  <script src="{% static 'js/countdown-timer.js' %}"></script>
-  <script src="{% static 'js/filter-sidebar.js' %}"></script>
-  <link rel="stylesheet" href="{% static 'src/category-slider.css' %}">
-  <link rel="stylesheet" href="{% static 'src/product-slider.css' %}">
   <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  {% block extra_js %}{% endblock %}
+  
   <body class="h-full">
 
     <!-- header and nav start-->

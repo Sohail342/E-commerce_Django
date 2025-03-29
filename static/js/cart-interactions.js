@@ -43,30 +43,87 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    function updateItemPrice(quantityInput) {
+    // Create loading overlay for cart items with minimum display time
+function createLoadingOverlay(element) {
+    const overlay = document.createElement('div');
+    overlay.classList.add('loading-overlay');
+    overlay.innerHTML = `
+        <div class="loading-spinner">
+            <svg class="animate-spin h-5 w-5 text-primary-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+        </div>
+    `;
+    element.style.position = 'relative';
+    element.appendChild(overlay);
+    
+    // Set the start time to track minimum display duration
+    overlay.startTime = Date.now();
+    return overlay;
+}
+
+// Add CSS for loading overlay
+const style = document.createElement('style');
+style.textContent = `
+    .loading-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(255, 255, 255, 0.7);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10;
+        border-radius: 0.5rem;
+    }
+    .loading-spinner {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 2rem;
+        width: 2rem;
+    }
+`;
+document.head.appendChild(style);
+
+function updateItemPrice(quantityInput) {
         const itemContainer = quantityInput.closest('.cart-item');
         const priceElements = itemContainer.querySelectorAll('.item-price');
+
         let unitPrice = 0;
+        let priceToUse = 0;
         
-        // Get unit price from data attribute first
-        if (itemContainer.dataset.unitPrice) {
-            unitPrice = parseFloat(itemContainer.dataset.unitPrice);
-        } else if (itemContainer.dataset.salePrice) {
+        // Show loading overlay
+        const overlay = createLoadingOverlay(itemContainer);
+        
+        // Check if product is on sale first
+        const isOnSale = itemContainer.querySelector('.text-green-600') !== null;
+        
+        // Get unit price from data attribute first - prioritize sale price if on sale
+        if (isOnSale && itemContainer.dataset.salePrice) {
             unitPrice = parseFloat(itemContainer.dataset.salePrice);
+            priceToUse = unitPrice; // Set priceToUse to sale price immediately
+        } else if (itemContainer.dataset.unitPrice) {
+            unitPrice = parseFloat(itemContainer.dataset.unitPrice);
+            priceToUse = unitPrice;
         }
         
         // Fallback to DOM elements if data attributes are not available
         if (unitPrice === 0) {
-            const isOnSale = itemContainer.querySelector('.text-green-600') !== null;
             if (isOnSale) {
                 const salePriceElement = itemContainer.querySelector('.text-primary-600');
                 if (salePriceElement) {
                     unitPrice = parsePrice(salePriceElement.textContent);
+                    priceToUse = unitPrice; // Set priceToUse to sale price immediately
                 }
             } else {
                 const regularPriceElement = itemContainer.querySelector('.text-gray-500');
                 if (regularPriceElement) {
                     unitPrice = parsePrice(regularPriceElement.textContent);
+                    priceToUse = unitPrice;
                 }
             }
         }
@@ -74,6 +131,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const quantity = parseInt(quantityInput.value) || 1;
         if (isNaN(unitPrice) || unitPrice <= 0) {
             console.error('Invalid price:', { unitPrice });
+            overlay.remove();
             return;
         }
         
@@ -81,14 +139,27 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (isNaN(quantity) || quantity < 1) {
             quantityInput.value = 1;
+            overlay.remove();
             return;
+        }
+        
+        // Check if quantity exceeds max inventory and update increase button state
+        const maxInventory = parseInt(quantityInput.getAttribute('max')) || 1;
+        const increaseBtn = itemContainer.querySelector('.quantity-btn.increase');
+        if (quantity >= maxInventory && increaseBtn) {
+            increaseBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        } else if (increaseBtn) {
+            increaseBtn.classList.remove('opacity-50', 'cursor-not-allowed');
         }
 
         fetch(`/cart/validate_quantity/${productId}/?quantity=${quantity}`)
             .then(response => response.json())
             .then(data => {
                 if (data.valid) {
-                    const totalPrice = unitPrice * quantity;
+                    // Always use the priceToUse that was determined earlier
+                    const totalPrice = priceToUse * quantity;
+                    console.log(`Unit Price: ${unitPrice}`);
+                    console.log(`Quantity: ${quantity}`);
                     console.log(`Total Price: ${totalPrice}`);
                     // Update ALL price elements
                     priceElements.forEach(element => {
@@ -97,16 +168,40 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else {
                     createToast(`Maximum available quantity is ${data.max_quantity}`, 'warning');
                     quantityInput.value = data.max_quantity;
-                    const totalPrice = unitPrice * data.max_quantity;
+                    // Always use the priceToUse that was determined earlier
+                    const totalPrice = priceToUse * data.max_quantity;
                     // Update ALL price elements
                     priceElements.forEach(element => {
                         element.textContent = formatPrice(totalPrice);
                     });
                 }
                 updateCartTotal();
+                
+                // Ensure loading overlay stays visible for at least 2-3 seconds
+                const elapsedTime = Date.now() - overlay.startTime;
+                const minDisplayTime = 500; // 0.5 seconds minimum display time
+                
+                if (elapsedTime < minDisplayTime) {
+                    setTimeout(() => {
+                        overlay.remove();
+                    }, minDisplayTime - elapsedTime);
+                } else {
+                    overlay.remove();
+                }
             })
             .catch(error => {
                 console.error('Error:', error);
+                // Ensure loading overlay stays visible for at least 2 seconds even on error
+                const elapsedTime = Date.now() - overlay.startTime;
+                const minDisplayTime = 2000;
+                
+                if (elapsedTime < minDisplayTime) {
+                    setTimeout(() => {
+                        overlay.remove();
+                    }, minDisplayTime - elapsedTime);
+                } else {
+                    overlay.remove();
+                }
             });
     }
 
@@ -124,7 +219,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 let unitPrice = 0;
                 
                 // Get unit price from data attributes first
-                if (item.dataset.salePrice) {
+                // Check if product is on sale first
+                const isOnSale = item.querySelector('.text-green-600') !== null;
+                if (isOnSale && item.dataset.salePrice) {
                     unitPrice = parseFloat(item.dataset.salePrice);
                 } else if (item.dataset.unitPrice) {
                     unitPrice = parseFloat(item.dataset.unitPrice);
@@ -135,6 +232,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         });
+        
 
     
         const totalElement = document.querySelector('.cart-total');
@@ -160,9 +258,25 @@ document.addEventListener('DOMContentLoaded', function() {
     const debouncedUpdate = debounce(updateItemPrice, 300);
 
     quantityInputs.forEach(input => {
-        input.addEventListener('change', () => debouncedUpdate(input));
+        input.addEventListener('change', () => {
+            // Get max inventory from the input's max attribute
+            const maxInventory = parseInt(input.getAttribute('max')) || 1;
+            // Ensure value doesn't exceed max inventory
+            if (parseInt(input.value) > maxInventory) {
+                input.value = maxInventory;
+                createToast(`Maximum available quantity is ${maxInventory}`, 'warning');
+            }
+            debouncedUpdate(input);
+        });
         input.addEventListener('input', () => {
+            // Enforce min value of 1
             if (input.value < 1) input.value = 1;
+            
+            // Enforce max value based on inventory
+            const maxInventory = parseInt(input.getAttribute('max')) || 1;
+            if (parseInt(input.value) > maxInventory) {
+                input.value = maxInventory;
+            }
             debouncedUpdate(input);
         });
     });
@@ -191,16 +305,72 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             const input = button.parentElement.querySelector('input');
             let currentValue = parseInt(input.value) || 1;
+            const maxInventory = parseInt(input.getAttribute('max')) || 1;
+            const itemContainer = button.closest('.cart-item');
+            const productId = itemContainer ? itemContainer.dataset.productId : null;
 
             if (button.classList.contains('decrease')) {
                 currentValue = Math.max(1, currentValue - 1);
+                input.value = currentValue;
+                input.dispatchEvent(new Event('change'));
+                updateCartTotal();
             } else if (button.classList.contains('increase')) {
-                currentValue += 1;
+                // Don't allow immediate increase if at max inventory from attribute
+                if (currentValue >= maxInventory) {
+                    createToast(`Maximum available quantity is ${maxInventory}`, 'warning');
+                    // Disable the increase button visually when at max inventory
+                    button.classList.add('opacity-50', 'cursor-not-allowed');
+                    return;
+                }
+                // Re-enable the button if not at max inventory
+                button.classList.remove('opacity-50', 'cursor-not-allowed');
+                
+                // Show loading overlay while validating quantity
+                const overlay = createLoadingOverlay(itemContainer);
+                
+                // Validate with server before increasing
+                if (productId) {
+                    fetch(`/cart/validate_quantity/${productId}/?quantity=${currentValue + 1}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            // Ensure loading overlay stays visible for at least 2 seconds
+                            const elapsedTime = Date.now() - overlay.startTime;
+                            const minDisplayTime = 2000;
+                            
+                            setTimeout(() => {
+                                if (data.valid) {
+                                    currentValue += 1;
+                                    input.value = currentValue;
+                                    input.dispatchEvent(new Event('change'));
+                                    updateCartTotal();
+                                } else {
+                                    createToast(`Maximum available quantity is ${data.max_quantity}`, 'warning');
+                                }
+                                overlay.remove();
+                            }, Math.max(0, minDisplayTime - elapsedTime));
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            // Remove loading overlay after minimum display time
+                            const elapsedTime = Date.now() - overlay.startTime;
+                            const minDisplayTime = 2000;
+                            
+                            setTimeout(() => {
+                                overlay.remove();
+                                createToast('Error validating quantity', 'error');
+                            }, Math.max(0, minDisplayTime - elapsedTime));
+                        });
+                } else {
+                    // Fallback to client-side validation if productId not available
+                    setTimeout(() => {
+                        currentValue += 1;
+                        input.value = currentValue;
+                        input.dispatchEvent(new Event('change'));
+                        updateCartTotal();
+                        overlay.remove();
+                    }, 2000); // Show loader for 2 seconds
+                }
             }
-            
-            input.value = currentValue;
-            input.dispatchEvent(new Event('change'));
-            updateCartTotal();
         });
     });
 

@@ -1,0 +1,77 @@
+/* Search and filter transition effects */
+
+/* Product item transition effects */
+.product-item {
+    transition: opacity 300ms ease-out, transform 300ms ease-out;
+}
+
+/* Search status indicator pulse animation */
+@keyframes searchPulse {
+    0% { opacity: 0.7; }
+    50% { opacity: 1; }
+    100% { opacity: 0.7; }
+}
+
+#searchStatus {
+    animation: searchPulse 1.5s infinite ease-in-out;
+}
+
+/* Clear search button hover effect */
+#clearSearch:hover svg {
+    transform: scale(1.1);
+    transition: transform 150ms ease-out;
+}
+
+/* Filter section hover effects */
+.filter-section:hover .filter-heading {
+    color: var(--color-primary-600);
+    transition: color 150ms ease-out;
+}
+
+/* Price range slider enhanced styles */
+input[type="range"]::-webkit-slider-thumb {
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    transition: box-shadow 300ms ease, transform 300ms ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+    box-shadow: 0 0 0 5px rgba(79, 70, 229, 0.2);
+    transform: scale(1.1);
+}
+
+input[type="range"]::-webkit-slider-thumb:active {
+    box-shadow: 0 0 0 8px rgba(79, 70, 229, 0.3);
+    transform: scale(1.2);
+}
+
+/* Staggered animation for search results */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.search-transition {
+    animation: fadeInUp 300ms ease-out;
+    animation-fill-mode: both;
+}
+
+/* No results message animation */
+.no-results {
+    transition: opacity 300ms ease-out;
+}
+
+/* Filter badge hover effects */
+.filter-badge {
+    transition: all 200ms ease;
+}
+
+.filter-badge:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}

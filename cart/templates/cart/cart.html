@@ -6,6 +6,11 @@
 <link rel="stylesheet" href="{% static 'css/cart-checkbox.css' %}">
 {% endblock %}
 
+{% block extra_js %}
+<script src="{% static 'js/cart-interactions.js' %}"></script>
+{% endblock %}
+
+
 {% block content %}
 {% csrf_token %}
 <section class="py-16">
@@ -111,9 +116,10 @@
                                                @change="updateSelectedItems()"
                                                class="w-12 sm:w-16 border-0 text-center focus:ring-0 text-sm sm:text-base font-medium px-0" 
                                                min="1" 
-                                               max="{{item.product.inventory}}">
+                                               max="{{item.product.inventory}}"
+                                               >
                                         <button class="p-2 sm:p-3 text-gray-600 hover:text-primary-600 transition-all duration-200 quantity-btn increase touch-manipulation active:bg-gray-100 min-w-[40px] sm:min-w-[48px] hover:bg-gray-50 rounded-r-lg" 
-                                                @click="quantity+1; updateSelectedItems()">
+                                                @click="quantity + 1; updateSelectedItems()">
                                             <svg class="h-4 w-4 sm:h-5 sm:w-5 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
                                             </svg>
@@ -126,7 +132,7 @@
                                             {% if item.product.on_sale %}
                                             PKR {{ item.product.sale_price|multiply:item.quantity|format_price }}
                                             {% else %}
-                                            PKR {{ item.total_price|format_price }}
+                                            PKR {{ item.product.price|multiply:item.quantity|format_price }}
                                             {% endif %}
                                         </span>
                                         <button onclick="window.location.href='{% url 'cart:clear_cart' item.product.id %}'" 
@@ -146,7 +152,7 @@
                                     {% if item.product.on_sale %}
                                     PKR {{ item.product.sale_price|multiply:item.quantity|format_price }}
                                     {% else %}
-                                    PKR {{ item.total_price|format_price }}
+                                    PKR {{ item.product.price|multiply:item.quantity|format_price }}
                                     {% endif %}
                                 </span>
                                 <button onclick="window.location.href='{% url 'cart:clear_cart' item.product.id %}'" class="text-sm text-red-600 hover:text-red-700 transition-colors">
@@ -187,157 +193,4 @@
     </div>
 </section>
 
-{% block extra_js %}
-<script src="{% static 'js/cart-interactions.js' %}"></script>
-<script>
-    // Add this script to handle selected items calculation
-    document.addEventListener('DOMContentLoaded', function() {
-        // Initialize with zero total and disable checkout
-        const totalElement = document.querySelector('.cart-total');
-        const checkoutBtn = document.getElementById('checkout-btn');
-        if (totalElement) {
-            totalElement.textContent = 'PKR 0.0';
-        }
-        if (checkoutBtn) {
-            checkoutBtn.disabled = true;
-            checkoutBtn.addEventListener('click', function(e) {
-                if (this.disabled) {
-                    e.preventDefault();
-                    return false;
-                }
-            });
-        }
-        
-        // Function to update total based on selected items
-        window.updateSelectedItems = function() {
-            let total = 0;
-            const checkoutBtn = document.getElementById('checkout-btn');
-            let anySelected = false;
-            
-            const cartItems = document.querySelectorAll('.cart-item');
-            cartItems.forEach(item => {
-                const checkbox = item.querySelector('input[type="checkbox"]');
-                const productId = item.dataset.productId;
-                const quantityInput = item.querySelector('input[type="number"]');
-                const quantity = parseInt(quantityInput.value);
-                
-                if (checkbox.checked) {
-                    anySelected = true;
-                    const unitPrice = item.dataset.salePrice ? parseFloat(item.dataset.salePrice) : parseFloat(item.dataset.unitPrice);
-                    total += quantity * unitPrice;
-                    
-                    fetch(`/cart/update_selection/${productId}/`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-                        },
-                        body: JSON.stringify({
-                            selected: true,
-                            quantity: quantity
-                        })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            item.classList.add('selected');
-                        }
-                    })
-                    .catch(error => console.error('Error:', error));
-                } else {
-                    fetch(`/cart/update_selection/${productId}/`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-                        },
-                        body: JSON.stringify({
-                            selected: false,
-                            quantity: quantity
-                        })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            item.classList.remove('selected');
-                        }
-                    })
-                    .catch(error => console.error('Error:', error));
-                }
-            });
-            
-            // Update total display
-            const totalElement = document.querySelector('.cart-total');
-            if (totalElement) {
-                totalElement.textContent = `PKR ${total.toFixed(2)}`;
-            }
-            
-            // Enable/disable checkout button based on selection
-            if (checkoutBtn) {
-                checkoutBtn.disabled = !anySelected;
-            }
-        };
-        
-        // Add sticky checkout functionality for mobile
-        if (window.innerWidth < 1024) { // Only on mobile and tablet
-            const checkoutContainer = document.getElementById('checkout-container');
-            const checkoutSummary = document.getElementById('checkout-summary');
-            const productsContainer = document.querySelector('.flex-grow');
-            
-            if (checkoutContainer && checkoutSummary && productsContainer) {
-                // Set initial styles
-                checkoutContainer.style.position = 'fixed';
-                checkoutContainer.style.bottom = '0';
-                checkoutContainer.style.left = '0';
-                checkoutContainer.style.right = '0';
-                
-                // Add padding to the bottom of the page to prevent content from being hidden behind the checkout
-                const paddingBottom = checkoutSummary.offsetHeight;
-                document.body.style.paddingBottom = `${paddingBottom}px`;
-                
-                // Keep the checkout button visible as long as products are visible
-                function updateCheckoutPosition() {
-                    const productsRect = productsContainer.getBoundingClientRect();
-                    const productsBottom = productsRect.bottom;
-                    const windowHeight = window.innerHeight;
-                    
-                    // If the bottom of products container is still visible on screen
-                    // or if we haven't scrolled past the products section
-                    if (productsBottom > checkoutSummary.offsetHeight) {
-                        // Keep checkout fixed at bottom
-                        checkoutContainer.style.position = 'fixed';
-                        checkoutContainer.style.bottom = '0';
-                        checkoutContainer.style.top = 'auto';
-                        checkoutContainer.style.transform = 'translateY(0)';
-                    } else {
-                        // Products section has scrolled up out of view
-                        // Position checkout at the bottom of products container
-                        checkoutContainer.style.position = 'absolute';
-                        checkoutContainer.style.bottom = 'auto';
-                        checkoutContainer.style.top = (productsContainer.offsetHeight) + 'px';
-                        checkoutContainer.style.transform = 'translateY(0)';
-                    }
-                    
-                    lastScrollY = window.scrollY;
-                }
-                
-                // Track scroll position
-                let lastScrollY = window.scrollY;
-                
-                // Run on scroll and resize
-                window.addEventListener('scroll', updateCheckoutPosition);
-                window.addEventListener('resize', () => {
-                    // Update padding when window is resized
-                    const paddingBottom = checkoutSummary.offsetHeight;
-                    document.body.style.paddingBottom = `${paddingBottom}px`;
-                    updateCheckoutPosition();
-                });
-                
-                // Run once on load
-                updateCheckoutPosition();
-            }
-        }
-    });
-</script>
-{% endblock %}
 {% endblock %}

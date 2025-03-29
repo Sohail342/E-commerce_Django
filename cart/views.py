@@ -144,8 +144,6 @@ def buy_now(request, product_id, quantity=1):
         'price': str(price)
     }
     request.session['buy_now_product'] = buy_now_data
-    
-    print("Buy now product stored in session:", request.session['buy_now_product'])
     # Directly redirect to checkout without showing cart message
     return redirect('order:checkout')
     

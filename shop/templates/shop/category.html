@@ -4,10 +4,14 @@
 
 {% block extra_js %}
 <script src="{% static 'js/filter-sidebar.js' %}"></script>
+<script src="{% static 'js/category-slider.js' %}"></script>
+<script src="{% static 'js/real-time-search.js' %}"></script>
 {% endblock %}
 
 {% block extra_css %}
+<link rel="stylesheet" href="{% static 'src/category-slider.css' %}">
 <link rel="stylesheet" href="{% static 'css/filter-animations.css' %}">
+<link rel="stylesheet" href="{% static 'css/search-transitions.css' %}">
 {% endblock %}
 
 {% block extra_head %}
@@ -268,21 +272,28 @@
                                     <span class="ml-1 text-xs text-gray-600">({{ product.rating|floatformat:1 }})</span>
                                 </div>
                             </div>
-                            
-                            <div class="mt-auto">
-                                <a href="{% url 'shop:product_detail' product.id %}" class="w-full bg-gradient-to-r from-primary-600 to-primary-700 text-white py-1.5 px-2 rounded-md text-center font-medium hover:from-primary-700 hover:to-primary-800 transition-all duration-300 flex items-center justify-center shadow-sm hover:shadow-md">
-                                    <span class="text-xs">View Details</span>
-                                    <svg class="w-3 h-3 ml-1 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
-                                    </svg>
-                                </a>
-                            </div>
                         </div>
                     </div>
                     {% endfor %}
                     {% else %}
                     <div class="col-span-full text-center py-8 text-gray-500">No products found</div>
                     {% endif %}
+                    <!-- No results message for search filtering -->
+                    <div class="col-span-full text-center py-8 hidden no-results">
+                        <div class="flex flex-col items-center justify-center space-y-4">
+                            <svg class="w-16 h-16 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15.5 15.5l-3-3m0 0l-3 3m3-3v9m0-9V6.2m0 0V6m0 .2A9 9 0 1021 12a9 9 0 00-9-9z" />
+                            </svg>
+                            <h3 class="text-lg font-medium text-gray-900">No matching products found</h3>
+                            <p class="text-gray-500 max-w-md">We couldn't find any products that match your search criteria. Try adjusting your filters or search term.</p>
+                            <button id="resetFilters" class="mt-2 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                                <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                </svg>
+                                Reset Filters
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

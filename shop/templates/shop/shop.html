@@ -4,10 +4,14 @@
 
 {% block extra_js %}
 <script src="{% static 'js/filter-sidebar.js' %}"></script>
+<script src="{% static 'js/real-time-search.js' %}"></script>
+<script src="{% static 'js/product-slider.js' %}"></script>
 {% endblock %}
 
 {% block extra_css %}
+<link rel="stylesheet" href="{% static 'src/product-slider.css' %}">
 <link rel="stylesheet" href="{% static 'css/filter-animations.css' %}">
+<link rel="stylesheet" href="{% static 'css/search-transitions.css' %}">
 {% endblock %}
 
 {% block extra_head %}
@@ -104,12 +108,22 @@
                     <!-- Search Bar -->
                     <div class="mb-6">
                         <div class="relative group">
-                            <input type="text" class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all bg-gray-50 hover:bg-white focus:bg-white shadow-sm hover:shadow-md" placeholder="Search products..." id="productSearch">
-                            <svg class="absolute right-3 top-2.5 h-5 w-5 text-gray-400 group-hover:text-primary-500 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                            </svg>
+                            <input type="text" class="w-full pl-10 pr-10 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all bg-gray-50 hover:bg-white focus:bg-white shadow-sm hover:shadow-md" placeholder="Search products..." id="productSearch" autocomplete="off">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="h-5 w-5 text-gray-400 group-hover:text-primary-500 transition-colors" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                                <button id="clearSearch" class="text-gray-400 hover:text-gray-600 focus:outline-none hidden">
+                                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
-                        <p class="text-xs text-gray-500 mt-1 ml-1 hidden md:block">Type to filter products</p>
+                        <p class="text-xs text-gray-500 mt-1 ml-1 hidden md:block">Type to filter products in real-time</p>
+                        <div class="mt-1 ml-1 text-xs text-primary-500 font-medium hidden" id="searchStatus">Searching products...</div>
                     </div>
 
                     <!-- Sort Options -->
@@ -267,6 +281,22 @@
                     {% else %}
                     <div class="col-span-full text-center py-8 text-gray-500">No products found</div>
                     {% endif %}
+                    <!-- No results message for search filtering -->
+                    <div class="col-span-full text-center py-8 hidden no-results">
+                        <div class="flex flex-col items-center justify-center space-y-4">
+                            <svg class="w-16 h-16 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15.5 15.5l-3-3m0 0l-3 3m3-3v9m0-9V6.2m0 0V6m0 .2A9 9 0 1021 12a9 9 0 00-9-9z" />
+                            </svg>
+                            <h3 class="text-lg font-medium text-gray-900">No matching products found</h3>
+                            <p class="text-gray-500 max-w-md">We couldn't find any products that match your search criteria. Try adjusting your filters or search term.</p>
+                            <button id="resetFilters" class="mt-2 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                                <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                </svg>
+                                Reset Filters
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -328,18 +358,6 @@
                 </div>
                 <div class="bg-gray-50 group-hover:opacity-90 h-36 flex items-center justify-center">
                     <img src="{{ product.photo.url }}" alt="{{ product.name }}" class="w-4/5 h-4/5 object-contain object-center">
-                </div>
-                <div class="p-2 sm:p-3">
-                    <h3 class="text-xs sm:text-sm font-medium text-gray-900 line-clamp-2 h-8 sm:h-10">{{ product.name }}</h3>
-                    <div class="mt-1 flex items-center">
-                        <p class="text-sm font-bold text-red-600">PKR {{ product.sale_price |format_price  }}</p>
-                        <p class="ml-1 text-xs text-gray-500 line-through">PKR {{ product.price |format_price }}</p>
-                    </div>
-                    <div class="mt-2">
-                        <a href="{% url 'shop:product_detail' product.id %}" class="inline-flex items-center px-3 py-1.5 border border-transparent rounded-md shadow-sm text-xs font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-red-500 w-full justify-center">
-                            View Details
-                        </a>
-                    </div>
                 </div>
             </div>
             {% endfor %}

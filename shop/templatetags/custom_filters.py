@@ -30,9 +30,14 @@ def multiply(value, arg):
     """Multiplies the value by the argument"""
     try:
         from decimal import Decimal
-        return Decimal(str(value)) * Decimal(str(arg))
+        # Convert both value and arg to Decimal for precise calculation
+        decimal_value = Decimal(str(value))
+        decimal_arg = Decimal(str(arg))
+        # Perform multiplication and return the result
+        return decimal_value * decimal_arg
     except (ValueError, TypeError):
-        return ''
+        # Return a safe default value for invalid inputs
+        return '0.0'
 
 @register.filter
 def add(value, arg):

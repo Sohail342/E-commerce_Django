@@ -144,7 +144,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Karachi'
 
 USE_I18N = True
 
@@ -194,9 +194,9 @@ JAZZMIN_SETTINGS = {
     "site_header": "Zevaristan",
 
     # Title on the brand (19 chars max) (defaults to current_admin_site.site_header if absent or None)
-    "site_brand": "Zevaristan",
+    "site_brand": "Admin",
 
-    "site_logo": "images/logo.svg",
+    "site_logo": "images/favicon.svg",
     "login_logo": "images/logo.svg",
     "site_icon": "images/favicon.svg",
     "site_logo_classes": "img-circle",
@@ -211,5 +211,24 @@ JAZZMIN_SETTINGS = {
     "use_google_fonts_cdn": True,
     # Whether to show the UI customizer on the sidebar
     "show_ui_builder": True,
+
+     # Links to put along the top menu
+    "topmenu_links": [
+
+        # Url that gets reversed (Permissions can be added)
+        {"name": "Home",  "url": "admin:index", "permissions": ["auth.view_user"]},
+
+        # external url that opens in a new window (Permissions can be added)
+        {"name": "Insights", "url": "dashboard:index", "permissions": ["auth.view_user"]},
+
+        # model admin to link to (Permissions checked against model)
+        {"model": "auth.User"},
+
+        # App with dropdown menu to all its models pages (Permissions checked against models)
+        {"app": "books"},
+    ],
+
+    "custom_css": "css/jazzmin-custom.css",
+    "custom_js": "js/jazzmin-custom.js",
  
 }

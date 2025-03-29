@@ -2,6 +2,10 @@
 {% load static %}
 {% load custom_filters %}
 
+{% block extra_js %}
+<script src="{% static 'js/wishlist.js' %}"></script> 
+{% endblock %}
+
 {% block content %}
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
     <div class="mb-6 sm:mb-10">
@@ -127,9 +131,6 @@
     {% endif %}
 </div>
 
-{% block extra_css %}{% endblock %}
-
-{% block extra_js %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const removeButtons = document.querySelectorAll('.remove-from-wishlist');
@@ -221,5 +222,5 @@
         }
     });
 </script>
-{% endblock %}
+
 {% endblock %}

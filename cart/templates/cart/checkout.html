@@ -2,6 +2,10 @@
 {% load static %}
 {% load custom_filters %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/enhanced-checkout.css' %}">
+{% endblock %}
+
 {% block content %}
 <link rel="stylesheet" href="{% static 'css/enhanced-checkout.css' %}">
 <section class="bg-gray-50 py-12">
