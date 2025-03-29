@@ -23,6 +23,7 @@ class Product(models.Model):
     date = models.DateTimeField(auto_now_add=True)
     inventory = models.IntegerField(default=1)
     on_sale = models.BooleanField(default=False)
+    is_new = models.BooleanField(default=False)
     trending = models.BooleanField(default=False)
     sale_percentage = models.DecimalField(max_digits=5, decimal_places=2, default=0)
     sale_start_date = models.DateTimeField(null=True, blank=True)
