@@ -1,21 +1,59 @@
-from re import sub
-from django.shortcuts import render, redirect
+from decimal import Decimal
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.utils import timezone
+from django.db import transaction
 from cart.models import Cart, CartItem
-from django.shortcuts import get_object_or_404
 from order.models import Order, OrderItem
 from django.contrib.auth.models import User
 from SendEmail.views import send_email
 from cart.views import get_cart
 from shop.models import Product
 from cart.cart_session import SessionCart
+from typing import Union, List, Dict, Any
+
+def calculate_order_totals(items: List[Union[CartItem, Dict[str, Any]]], is_authenticated: bool) -> tuple:
+    """Calculate subtotal, total savings and total for order items."""
+    if is_authenticated:
+        subtotal = sum((item.product.sale_price if item.product.on_sale else item.product.price) * item.quantity for item in items)
+        total_savings = sum((item.product.price - item.product.sale_price) * item.quantity for item in items if item.product.on_sale)
+    else:
+        subtotal = sum(Decimal(str(item['price'])) * item['quantity'] for item in items)
+        total_savings = sum((Decimal(str(item['product'].price)) - Decimal(str(item['price']))) * item['quantity'] for item in items if item['product'].on_sale)
+    
+    total = Decimal('250.00') + subtotal  # Add delivery charges
+    return subtotal, total_savings, total
+
+@transaction.atomic
+def create_order_items(order: Order, items: List[Union[CartItem, Dict[str, Any]]], is_authenticated: bool) -> None:
+    """Create order items and update product inventory."""
+    for item in items:
+        if is_authenticated:
+            product = item.product
+            quantity = item.quantity
+            price = product.sale_price if product.on_sale else product.price
+        else:
+            product = item['product']
+            quantity = item['quantity']
+            price = item['price']
+            
+        OrderItem.objects.create(
+            order=order,
+            product=product,
+            quantity=quantity,
+            price=price
+        )
+        
+        # Update inventory
+        product.inventory -= quantity
+        if product.inventory <= 0:
+            product.delete()
+        else:
+            product.save()
 
 def checkout(request):
     cart = get_cart(request)
-    total_savings = 0  # Initialize total_savings at the start
-    
-    # Check if this is a buy now checkout
+    total_savings = 0
     buy_now_product = request.session.get('buy_now_product')
     
     if 'buy_now_product' in request.session:
@@ -48,44 +86,27 @@ def checkout(request):
         payment_method = request.POST.get('payment_method')  
 
         if buy_now_product:
-            # Calculate total for buy now product
-            product = get_object_or_404(Product, id=buy_now_product['product_id'])
-            quantity = buy_now_product['quantity']
-            price = product.sale_price if product.on_sale else product.price
-            subtotal = price * quantity
-            total_savings = (product.price - product.sale_price) * quantity if product.on_sale else 0
-            total = 250 + subtotal  # Add delivery charges
-
-
-            # Create order for buy now product
-            order = Order(
-                user=request.user if request.user.is_authenticated else None,
-                total_price=total,
-                shipping_address=shipping_address,
-                payment_method=payment_method,
-                created_at=timezone.now(),
-                updated_at=timezone.now(),
-                is_paid=False
-            )
-            order.save()
-
-            # Create order item
-            OrderItem(
-                order=order,
-                product=product,
-                quantity=quantity,
-                price=price
-            ).save()
-
-            # Update inventory
-            product.inventory -= quantity
-            if product.inventory <= 0:
-                product.delete()
-            else:
-                product.save()
-
-            # Clear buy now session
-            del request.session['buy_now_product']
+            # Handle buy now product checkout
+            cart_items = [{'product': product, 'quantity': buy_now_product['quantity'], 'price': product.sale_price if product.on_sale else product.price}]
+            subtotal, total_savings, total = calculate_order_totals(cart_items, False)
+            
+            with transaction.atomic():
+                # Create order for buy now product
+                order = Order.objects.create(
+                    user=request.user if request.user.is_authenticated else None,
+                    total_price=total,
+                    shipping_address=shipping_address,
+                    payment_method=payment_method,
+                    created_at=timezone.now(),
+                    updated_at=timezone.now(),
+                    is_paid=False
+                )
+                
+                # Create order items and update inventory
+                create_order_items(order, cart_items, False)
+                
+                # Clear buy now session
+                del request.session['buy_now_product']
 
         elif request.user.is_authenticated:
             # Calculate totals for selected items only
@@ -93,82 +114,47 @@ def checkout(request):
             total_savings = sum((item.product.price - item.product.sale_price) * item.quantity for item in cart_items if item.product.on_sale)
             total = 250 + subtotal  # Add delivery charges to subtotal
             
-            # Create a new order for authenticated user
-            order = Order(
-                user=request.user,
-                cart=cart,
-                total_price=total,
-                shipping_address=shipping_address,
-                payment_method=payment_method,
-                created_at=timezone.now(),
-                updated_at=timezone.now(),
-                is_paid=False 
-            )
-            order.save()
-            
-            # Create order items
-            for item in cart_items:
-                # Use sale_price if product is on sale, otherwise use regular price
-                price = item.product.sale_price if item.product.on_sale else item.product.price
-                OrderItem(
-                    order=order,
-                    product=item.product,
-                    quantity=item.quantity,
-                    price=price,
-                ).save()
+            with transaction.atomic():
+                # Create a new order for authenticated user
+                order = Order.objects.create(
+                    user=request.user,
+                    cart=cart,
+                    total_price=total,
+                    shipping_address=shipping_address,
+                    payment_method=payment_method,
+                    created_at=timezone.now(),
+                    updated_at=timezone.now(),
+                    is_paid=False 
+                )
                 
-                # Decrease the product inventory
-                product = item.product
-                product.inventory -= item.quantity
-                if product.inventory <= 0:
-                    product.delete()
-                else:
-                    product.save()
-            
-            # Clear the cart
-            cart.items.all().delete()
+                # Create order items and update inventory
+                create_order_items(order, cart_items, True)
+                
+                # Clear the cart
+                cart.items.all().delete()
         else:
             # Handle guest user order
-            # Calculate totals for selected items only
-            from decimal import Decimal
-            subtotal = sum(Decimal(str(item['price'])) * item['quantity'] for item in cart_items)
-            total_savings = sum((Decimal(str(item['product'].price)) - Decimal(str(item['price']))) * item['quantity'] for item in cart_items if item['product'].on_sale)
-            total = Decimal('250.00') + subtotal  # Add delivery charges to subtotal
+            subtotal, total_savings, total = calculate_order_totals(cart_items, False)
             
-            # Create a new order for guest user
-            order = Order(
-                user=None,  # Guest user
-                total_price=total,
-                shipping_address=shipping_address,
-                payment_method=payment_method,
-                created_at=timezone.now(),
-                updated_at=timezone.now(),
-                is_paid=False 
-            )
-            order.save()
-            
-            # Create order items from selected items in session cart
-            for item in cart_items:
-                product = item['product']
-                quantity = item['quantity']
-                OrderItem(
-                    order=order,
-                    product=product,
-                    quantity=quantity,
-                    price=item['price'],
-                ).save()
+            with transaction.atomic():
+                # Create a new order for guest user
+                order = Order.objects.create(
+                    user=None,  # Guest user
+                    total_price=total,
+                    shipping_address=shipping_address,
+                    payment_method=payment_method,
+                    created_at=timezone.now(),
+                    updated_at=timezone.now(),
+                    is_paid=False 
+                )
                 
-                # Decrease the product inventory
-                product.inventory -= quantity
-                if product.inventory <= 0:
-                    product.delete()
-                else:
-                    product.save()
-            
-            # Clear the session cart and buy now product
-            cart.clear()
-            if 'buy_now_product' in request.session:
-                del request.session['buy_now_product']
+                # Create order items and update inventory
+                create_order_items(order, cart_items, False)
+                
+                # Clear the session cart
+                cart.clear()
+                if 'buy_now_product' in request.session:
+                    del request.session['buy_now_product']
         
         messages.success(request, 'Order placed successfully!')
         send_email(emailaddress, 'SendEmail/succefully_order.html') 
@@ -177,22 +163,14 @@ def checkout(request):
         if buy_now_product:
             # Calculate totals for buy now product
             product = get_object_or_404(Product, id=buy_now_product['product_id'])
-            quantity = buy_now_product['quantity']
-            price = product.sale_price if product.on_sale else product.price
-            subtotal = price * quantity
-            total_savings = (product.price - product.sale_price) * quantity if product.on_sale else 0
-            total = 250 + subtotal  # Add delivery charges
+            cart_items = [{'product': product, 'quantity': buy_now_product['quantity'], 'price': product.sale_price if product.on_sale else product.price}]
+            subtotal, total_savings, total = calculate_order_totals(cart_items, False)
         elif not cart_is_empty:
-            if request.user.is_authenticated:
-                subtotal = sum((item.product.sale_price if item.product.on_sale else item.product.price) * item.quantity for item in cart_items)
-                total_savings = sum((item.product.price - item.product.sale_price) * item.quantity for item in cart_items if item.product.on_sale)
-            else:
-                subtotal = sum((item['product'].sale_price if item['product'].on_sale else item['product'].price) * item['quantity'] for item in cart_items)
-                total_savings = sum((item['product'].price - item['product'].sale_price) * item['quantity'] for item in cart_items if item['product'].on_sale)
-            total = 250 + subtotal  # Add delivery charges
+            subtotal, total_savings, total = calculate_order_totals(cart_items, request.user.is_authenticated)
         else:
-            subtotal = 0
-            total = 250
+            subtotal = Decimal('0')
+            total_savings = Decimal('0')
+            total = Decimal('250.00')
 
     return render(request, 'cart/checkout.html', {
         'subtotal': subtotal,

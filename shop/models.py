@@ -1,7 +1,5 @@
 from django.db import models
 
-
-
 class Category(models.Model):
     name = models.CharField(max_length=30)
     cat_moto = models.CharField(max_length=30)

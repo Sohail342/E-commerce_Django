@@ -3,7 +3,6 @@ from django.http import JsonResponse
 from .models import Product, Cart, CartItem
 from .cart_session import SessionCart
 from shop.models import Product
-from django.contrib import messages
 import json
 
 def get_cart(request):
@@ -21,10 +20,17 @@ def add_to_cart(request, product_id):
         cart, created = Cart.objects.get_or_create(user=request.user)
         cart_item, item_created = CartItem.objects.get_or_create(cart=cart, product=product)
         
+        # Calculate total quantity (existing + new)
+        total_quantity = quantity
         if not item_created:
-            cart_item.quantity += quantity
-        else:
-            cart_item.quantity = quantity
+            total_quantity = cart_item.quantity + quantity
+        
+        # Check if total quantity exceeds inventory
+        if total_quantity > product.inventory:
+            total_quantity = product.inventory  # Limit total quantity to available inventory
+            
+        # Set the new quantity
+        cart_item.quantity = total_quantity
         cart_item.save()
     else:
         cart = SessionCart(request)

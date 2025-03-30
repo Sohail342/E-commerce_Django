@@ -20,7 +20,16 @@ class SessionCart:
                 'price': str(price),
                 'selected': False
             }
-        self.cart[product_id]['quantity'] += quantity
+        
+        # Calculate total quantity (existing + new)
+        total_quantity = self.cart[product_id]['quantity'] + quantity
+        
+        # Check if total quantity exceeds inventory
+        if total_quantity > product.inventory:
+            total_quantity = product.inventory  # Limit total quantity to available inventory
+            
+        # Set the new quantity
+        self.cart[product_id]['quantity'] = total_quantity
         self.save()
 
     def save(self):

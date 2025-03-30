@@ -1,0 +1,184 @@
+/* Enhanced Checkout Styles */
+.checkout-container {
+    @apply max-w-6xl mx-auto px-4 py-8;
+}
+
+.checkout-steps {
+    @apply flex justify-between items-center mb-8 px-4;
+}
+
+.checkout-step {
+    @apply flex flex-col items-center relative;
+}
+
+.checkout-step::after {
+    content: '';
+    @apply absolute w-full h-0.5 bg-gray-300 right-1/2 top-1/4 -z-10;
+}
+
+.checkout-step:last-child::after {
+    @apply hidden;
+}
+
+.step-number {
+    @apply w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-semibold transition-colors duration-300;
+}
+
+.checkout-step.active .step-number {
+    @apply bg-blue-600 text-white;
+}
+
+.step-title {
+    @apply text-sm font-medium mt-2 text-gray-600;
+}
+
+.checkout-step.active .step-title {
+    @apply text-blue-600;
+}
+
+.form-section {
+    @apply bg-white rounded-lg shadow-lg p-6 mb-8;
+}
+
+.form-group {
+    @apply mb-4;
+}
+
+.form-label {
+    @apply block text-sm font-medium text-gray-700 mb-1;
+}
+
+.form-control {
+    @apply w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200;
+}
+
+.form-control:hover {
+    @apply border-gray-400;
+}
+
+.invalid-feedback {
+    @apply text-red-600 text-sm mt-1;
+}
+
+.payment-methods {
+    @apply space-y-4;
+}
+
+.payment-method {
+    @apply p-4 border border-gray-200 rounded-lg hover:border-blue-500 transition-colors duration-200;
+}
+
+.payment-method.selected {
+    @apply border-blue-500 bg-gradient-to-r from-blue-50 to-white;
+}
+
+.order-summary {
+    @apply space-y-4 w-full;
+}
+
+.summary-item {
+    @apply flex flex-col sm:flex-row justify-between items-start sm:items-center text-gray-600 p-3 rounded-lg hover:bg-gray-50 transition-colors duration-200;
+}
+
+.summary-total {
+    @apply flex justify-between items-center text-lg font-semibold mt-6 pt-4 border-t border-gray-200;
+}
+
+.btn-checkout {
+    @apply w-full sm:max-w-md mx-auto py-3 px-6 text-white bg-blue-600 hover:bg-blue-700 rounded-md font-semibold transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-lg transform hover:-translate-y-0.5;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .checkout-steps {
+        @apply px-2;
+    }
+
+    .step-title {
+        @apply text-xs;
+    }
+
+    .form-section {
+        @apply p-3;
+    }
+
+    .row {
+        @apply space-y-3;
+    }
+
+    .summary-item {
+        @apply gap-2;
+    }
+
+    .order-summary {
+        @apply text-sm;
+    }
+}
+
+/* Animation */
+.animate-fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Empty Cart State */
+.empty-cart {
+    @apply text-center py-12;
+}
+
+.empty-cart h3 {
+    @apply text-2xl font-semibold text-gray-700 mb-4;
+}
+
+/* Form Validation Styles */
+.form-check-input:checked {
+    @apply bg-blue-600 border-blue-600;
+}
+
+/* Radio Button Styles */
+input[type='radio'] {
+    @apply appearance-none h-5 w-5 rounded-full border-2 border-blue-500 transition-all duration-200;
+}
+
+input[type='radio']:checked {
+    @apply border-transparent bg-gradient-to-r from-indigo-600 to-purple-700;
+    background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3ccircle cx='8' cy='8' r='3'/%3e%3c/svg%3e");
+}
+
+input[type='radio']:focus {
+    @apply ring-2 ring-indigo-500 ring-offset-2;
+}
+
+/* Custom Radio Button Indicator */
+.radio-indicator {
+    @apply absolute inset-0 flex items-center justify-center pointer-events-none opacity-0 transition-opacity duration-200;
+}
+
+input[type='radio']:checked + .radio-indicator {
+    @apply opacity-100;
+}
+
+/* Modal Styles */
+.modal-content {
+    @apply bg-white rounded-lg shadow-xl;
+}
+
+.modal-header {
+    @apply p-4 border-b border-gray-200;
+}
+
+.modal-body {
+    @apply p-4;
+}
+
+.modal-footer {
+    @apply p-4 border-t border-gray-200 flex justify-end space-x-2;
+}
+
+.confirmation-details {
+    @apply space-y-4 mt-4;
+}

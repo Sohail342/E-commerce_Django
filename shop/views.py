@@ -1,8 +1,8 @@
 from django.shortcuts import get_object_or_404, render
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .models import Category, Product
-from django.db.models import Q
-from django.http import JsonResponse
+
+
 
 def shop_page(request):
     category = Category.objects.all()

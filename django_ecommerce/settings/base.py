@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'tailwind',
     'theme',
+    'import_export',
     
     # Custum Apps
     'contact',
@@ -220,19 +221,18 @@ JAZZMIN_SETTINGS = {
 
         # external url that opens in a new window (Permissions can be added)
         {"name": "Insights", "url": "dashboard:index", "permissions": ["auth.view_user"]},
+        
 
         # model admin to link to (Permissions checked against model)
         {"model": "auth.User"},
 
         # App with dropdown menu to all its models pages (Permissions checked against models)
-        {"app": "books"},
+        {"app": "shop"},
+        {"app": "order"},
     ],
 
   
 
     "order_with_respect_to": ["shop", "shop.Product", "order", "order.Order", "contact", "auth"],
-
-    "custom_css": "css/jazzmin-custom.css",
-    "custom_js": "js/jazzmin-custom.js",
  
 }
