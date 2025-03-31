@@ -28,6 +28,9 @@ class Product(models.Model):
     sale_end_date = models.DateTimeField(null=True, blank=True)
     rating = models.DecimalField(max_digits=3, decimal_places=2, default=0.0)
 
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+
     @property
     def sale_price(self):
         if self.on_sale and self.sale_percentage > 0:

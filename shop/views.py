@@ -17,7 +17,7 @@ def shop_page(request):
     else:
         product_list = product_list.order_by('-id')
         
-    sale_products = Product.objects.filter(is_draft=False, on_sale=True, sale_percentage__gte=50).order_by('-sale_percentage')[:8]
+    sale_products = Product.objects.filter(is_draft=False, on_sale=True, sale_percentage__gte=50).order_by('-created_at')[:8]
     
     # Set pagination with 12 items per page
     paginator = Paginator(product_list, 12)

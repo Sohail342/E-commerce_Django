@@ -12,13 +12,20 @@ class SessionCart:
 
     def add(self, product, quantity=1):
         product_id = str(product.id)
+        
+        # For guest users, check if cart already contains a different product
+        # Automatically clear the cart and add the new product
+        if len(self.cart) > 0 and product_id not in self.cart:
+            # Clear the cart first
+            self.cart.clear()
+            
         if product_id not in self.cart:
             # Use sale_price if product is on sale, otherwise use regular price
             price = product.sale_price if product.on_sale else product.price
             self.cart[product_id] = {
                 'quantity': 0,
                 'price': str(price),
-                'selected': True  # Set selected to True by default
+                'selected': False  # Set selected to False by default so user must explicitly select items
             }
         
         # Calculate total quantity (existing + new)
@@ -31,6 +38,7 @@ class SessionCart:
         # Set the new quantity
         self.cart[product_id]['quantity'] = total_quantity
         self.save()
+        return {'needs_confirmation': False}
 
     def save(self):
         self.session.modified = True
@@ -54,8 +62,18 @@ class SessionCart:
     def get_total_price(self):
         total = Decimal('0.00')
         for item in self.cart.values():
-            if item.get('selected', False):
-                total += Decimal(str(item['price'])) * Decimal(str(item['quantity']))
+            # Only include items that are explicitly selected
+            # Handle case where selected might be stored as a string
+            selected = item.get('selected', False)
+            if isinstance(selected, str):
+                selected = selected.lower() == 'true'
+            
+            if selected:
+                # Ensure price is always a Decimal object
+                price = item['price'] if isinstance(item['price'], Decimal) else Decimal(str(item['price']))
+                # Convert quantity to Decimal
+                quantity = Decimal(str(item['quantity']))
+                total += price * quantity
         return total.quantize(Decimal('0.01'))
 
     def get_total_items(self):
@@ -70,9 +88,21 @@ class SessionCart:
             cart[str(product.id)]['product'] = product
 
         for item in cart.values():
-            item['price'] = Decimal(item['price'])
+            # Ensure price is always a Decimal object
+            if not isinstance(item['price'], Decimal):
+                item['price'] = Decimal(str(item['price']))
             item['total_price'] = item['price'] * item['quantity']
-            item['selected'] = item.get('selected', False)
+            
+            # Ensure selected status is always a boolean value
+            # Convert to boolean if it's a string representation
+            if 'selected' in item:
+                if isinstance(item['selected'], str):
+                    item['selected'] = item['selected'].lower() == 'true'
+                # Ensure it's a proper boolean even if it's another type
+                item['selected'] = bool(item['selected'])
+            else:
+                item['selected'] = False
+                
             yield item
 
     def __len__(self):
@@ -81,5 +111,8 @@ class SessionCart:
     def update_selection(self, product_id, selected):
         product_id = str(product_id)
         if product_id in self.cart:
-            self.cart[product_id]['selected'] = selected
+            # Ensure selected is always stored as a boolean value
+            if isinstance(selected, str):
+                selected = selected.lower() == 'true'
+            self.cart[product_id]['selected'] = bool(selected)
             self.save()

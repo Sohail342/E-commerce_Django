@@ -397,16 +397,24 @@ function updateItemPrice(quantityInput) {
         });
     });
 
-    document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-        checkbox.addEventListener('change', () => updateCartTotal());
-        // Ensure all checkboxes are unchecked initially to properly disable checkout button
-        checkbox.checked = false;
+    // Initialize checkboxes based on cart item's selected status
+    document.querySelectorAll('.cart-item').forEach(item => {
+        const checkbox = item.querySelector('input[type="checkbox"]');
+        if (checkbox) {
+            // Add change event listener
+            checkbox.addEventListener('change', () => updateCartTotal());
+            
+            // Check if this item has a 'selected' class or data attribute
+            const isSelected = item.classList.contains('selected') || 
+                              (item.dataset.selected === 'true');
+            
+            // Set the checkbox state based on the item's selection status
+            checkbox.checked = isSelected;
+        }
     });
-
-    // Ensure all checkboxes are unchecked initially
-    document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-        checkbox.checked = false;
-    });
+    
+    // Update cart total after initializing checkboxes
+    updateCartTotal();
     
     // Initialize Alpine.js binding for checkout button
     const checkoutBtn = document.getElementById('checkout-btn');

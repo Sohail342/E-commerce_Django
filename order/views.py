@@ -18,8 +18,8 @@ def calculate_order_totals(items: List[Union[CartItem, Dict[str, Any]]], is_auth
         subtotal = sum((item.product.sale_price if item.product.on_sale else item.product.price) * item.quantity for item in items)
         total_savings = sum((item.product.price - item.product.sale_price) * item.quantity for item in items if item.product.on_sale)
     else:
-        subtotal = sum(Decimal(str(item['price'])) * item['quantity'] for item in items)
-        total_savings = sum((Decimal(str(item['product'].price)) - Decimal(str(item['price']))) * item['quantity'] for item in items if item['product'].on_sale)
+        subtotal = sum((item['price'] if isinstance(item['price'], Decimal) else Decimal(str(item['price']))) * Decimal(str(item['quantity'])) for item in items)
+        total_savings = sum(((Decimal(str(item['product'].price)) - (item['price'] if isinstance(item['price'], Decimal) else Decimal(str(item['price'])))) * Decimal(str(item['quantity']))) for item in items if item['product'].on_sale)
     
     total = Decimal('250.00') + subtotal  # Add delivery charges
     return subtotal, total_savings, total
@@ -70,7 +70,16 @@ def checkout(request):
         else:
             # For guest users, get only selected items from session cart
             # Filter items based on their selection status
-            cart_items = [item for item in cart if item.get('selected', False)]
+            # Ensure we're only including items that are explicitly marked as selected
+            # Convert string 'true'/'false' to boolean if needed
+            cart_items = []
+            for item in cart:
+                selected = item.get('selected', False)
+                # Handle case where selected might be stored as a string
+                if isinstance(selected, str):
+                    selected = selected.lower() == 'true'
+                if selected:
+                    cart_items.append(item)
             cart_is_empty = len(cart_items) == 0
 
     if request.method == 'POST':

@@ -15,6 +15,7 @@ def get_cart(request):
 def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     quantity = int(request.GET.get('quantity', 1))
+    confirm = request.GET.get('confirm', 'false')
     
     if request.user.is_authenticated:
         cart, created = Cart.objects.get_or_create(user=request.user)
@@ -34,7 +35,14 @@ def add_to_cart(request, product_id):
         cart_item.save()
     else:
         cart = SessionCart(request)
+        
+        # For guest users: directly add the product to cart
+        # The SessionCart.add method will handle clearing the cart if needed
         cart.add(product, quantity)
+        
+        # Add a notification message to session to display on cart page
+        if 'pending_cart_item' in request.session:
+            del request.session['pending_cart_item']
     
     return redirect('cart:cart')
 
