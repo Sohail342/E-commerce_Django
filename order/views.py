@@ -68,7 +68,8 @@ def checkout(request):
             cart_items = cart.items.filter(selected=True)
             cart_is_empty = cart_items.count() == 0
         else:
-            # For guest users, filter selected items from session cart
+            # For guest users, get only selected items from session cart
+            # Filter items based on their selection status
             cart_items = [item for item in cart if item.get('selected', False)]
             cart_is_empty = len(cart_items) == 0
 

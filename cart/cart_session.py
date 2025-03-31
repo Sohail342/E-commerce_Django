@@ -18,7 +18,7 @@ class SessionCart:
             self.cart[product_id] = {
                 'quantity': 0,
                 'price': str(price),
-                'selected': False
+                'selected': True  # Set selected to True by default
             }
         
         # Calculate total quantity (existing + new)

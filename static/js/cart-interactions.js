@@ -227,6 +227,21 @@ function updateItemPrice(quantityInput) {
                     unitPrice = parseFloat(item.dataset.unitPrice);
                 }
                 
+                // Fallback to DOM elements if data attributes are not available
+                if (unitPrice === 0) {
+                    if (isOnSale) {
+                        const salePriceElement = item.querySelector('.text-primary-600');
+                        if (salePriceElement) {
+                            unitPrice = parsePrice(salePriceElement.textContent);
+                        }
+                    } else {
+                        const regularPriceElement = item.querySelector('.item-price');
+                        if (regularPriceElement) {
+                            unitPrice = parsePrice(regularPriceElement.textContent);
+                        }
+                    }
+                }
+                
                 if (!isNaN(unitPrice) && unitPrice > 0) {
                     total += unitPrice * quantity;
                 }

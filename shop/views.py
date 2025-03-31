@@ -41,6 +41,8 @@ def shop_page(request):
     return render(request, 'shop/shop.html', context)
 
 
+
+
 def product_detail(request, product_id):
     product_details = Product.objects.get(id=product_id, is_draft=False)
     ctg = Category.objects.get(name=product_details.category)
