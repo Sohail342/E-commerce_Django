@@ -15,7 +15,7 @@ def get_cart(request):
 def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     quantity = int(request.GET.get('quantity', 1))
-    confirm = request.GET.get('confirm', 'false')
+    
     
     if request.user.is_authenticated:
         cart, created = Cart.objects.get_or_create(user=request.user)
