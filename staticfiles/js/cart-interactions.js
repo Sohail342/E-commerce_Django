@@ -246,9 +246,17 @@ function updateItemPrice(quantityInput) {
             if (anySelected && total > 0) {
                 checkoutBtn.classList.remove('opacity-50', 'cursor-not-allowed');
                 checkoutBtn.disabled = false;
+                // Update Alpine.js binding if it exists
+                if (checkoutBtn._x_dataStack && checkoutBtn._x_dataStack[0]) {
+                    checkoutBtn._x_dataStack[0].disabled = false;
+                }
             } else {
                 checkoutBtn.classList.add('opacity-50', 'cursor-not-allowed');
                 checkoutBtn.disabled = true;
+                // Update Alpine.js binding if it exists
+                if (checkoutBtn._x_dataStack && checkoutBtn._x_dataStack[0]) {
+                    checkoutBtn._x_dataStack[0].disabled = true;
+                }
             }
         }
         
@@ -376,8 +384,78 @@ function updateItemPrice(quantityInput) {
 
     document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
         checkbox.addEventListener('change', () => updateCartTotal());
+        // Ensure all checkboxes are unchecked initially to properly disable checkout button
+        checkbox.checked = false;
     });
 
+    // Ensure all checkboxes are unchecked initially
+    document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+        checkbox.checked = false;
+    });
+    
+    // Initialize Alpine.js binding for checkout button
+    const checkoutBtn = document.getElementById('checkout-btn');
+    if (checkoutBtn && window.Alpine) {
+        // Wait for Alpine to initialize the component
+        setTimeout(() => {
+            if (checkoutBtn._x_dataStack && checkoutBtn._x_dataStack[0]) {
+                checkoutBtn._x_dataStack[0].disabled = true;
+            }
+        }, 100);
+    }
+    
+    // Add event listener to handle checkout button click
+    if (checkoutBtn) {
+        checkoutBtn.addEventListener('click', function(e) {
+            // Always prevent default action first
+            e.preventDefault();
+            
+            // If button is disabled or no-click state, prevent any action
+            if (this.disabled || this.classList.contains('cursor-not-allowed')) {
+                createToast('Please select at least one product before proceeding to checkout', 'warning');
+                return false;
+            }
+            
+            // Get all selected items
+            const selectedItems = document.querySelectorAll('.cart-item input[type="checkbox"]:checked');
+            
+            // If no items selected, prevent action
+            if (selectedItems.length === 0) {
+                createToast('Please select at least one product before proceeding to checkout', 'warning');
+                return false;
+            }
+            
+            // Verify at least one selected item has a valid price > 0
+            let hasValidItem = false;
+            selectedItems.forEach(item => {
+                const cartItem = item.closest('.cart-item');
+                const priceText = cartItem.querySelector('.item-price')?.textContent;
+                if (priceText && parsePrice(priceText) > 0) {
+                    hasValidItem = true;
+                }
+            });
+            
+            if (!hasValidItem) {
+                createToast('Selected items must have valid prices to proceed to checkout', 'warning');
+                return false;
+            }
+            
+            // Check if user is authenticated
+            const isAuthenticated = document.body.classList.contains('user-authenticated');
+            
+            // Only proceed if all checks pass
+            const checkoutUrl = this.getAttribute('href');
+            if (checkoutUrl) {
+                // Redirect to cart for authenticated users, checkout for guests
+                if (isAuthenticated) {
+                    window.location.href = '/cart/';
+                } else {
+                    window.location.href = checkoutUrl;
+                }
+            }
+        });
+    }
+    
     // Call this function to format prices on page load
     formatInitialPrices();
     

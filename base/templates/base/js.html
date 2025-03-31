@@ -35,9 +35,8 @@
     });
 
     window.addEventListener('load', () => {
-      setTimeout(() => {
-        Alpine.store('loader').loading = false;
-      }, 300);
+      // Ensure loader is hidden immediately after all content is loaded
+      Alpine.store('loader').loading = false;
     });
   });
 </script>
