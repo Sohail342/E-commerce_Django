@@ -160,17 +160,17 @@ def checkout(request):
                     del request.session['buy_now_product']
 
                 # Send order confirmation email
-                send_email(
-                    subject='Order Confirmation',
-                    recipient_list=[emailaddress],
-                    template='order/email/order_confirmation.html',
-                    context={
-                        'order': order,
-                        'items': order.items.all(),
-                        'subtotal': subtotal,
-                        'total': total,
-                    }
-                )
+                # send_email(
+                #     subject='Order Confirmation',
+                #     recipient_list=[emailaddress],
+                #     template='order/email/order_confirmation.html',
+                #     context={
+                #         'order': order,
+                #         'items': order.items.all(),
+                #         'subtotal': subtotal,
+                #         'total': total,
+                #     }
+                # )
         
         messages.success(request, 'Your order has been placed successfully!')
         return redirect('order:order_summary', order_id=order.id) 

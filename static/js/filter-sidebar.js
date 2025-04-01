@@ -9,21 +9,43 @@ document.addEventListener('DOMContentLoaded', function() {
     const maxPriceValue = document.getElementById('maxPriceValue');
     const filterHeadings = document.querySelectorAll('.filter-heading');
     const sortOptions = document.getElementById('sortOptions');
+    const isMobile = window.innerWidth < 1024;
 
-    // Toggle filter sidebar
+    // Toggle filter sidebar with enhanced animations
     function toggleSidebar() {
         const isHidden = filterSidebar.classList.contains('-translate-x-full');
-        filterSidebar.classList.toggle('-translate-x-full');
-        filterSidebar.classList.toggle('pointer-events-none');
-        filterSidebar.classList.toggle('opacity-0');
-        document.body.classList.toggle('overflow-hidden');
         
+        // Add a slight delay for backdrop to create a staggered effect
         if (isHidden) {
-            sidebarBackdrop.classList.remove('opacity-0');
-            sidebarBackdrop.classList.remove('pointer-events-none');
+            // Opening the sidebar
+            filterSidebar.classList.remove('-translate-x-full');
+            filterSidebar.classList.remove('pointer-events-none');
+            filterSidebar.classList.remove('opacity-0');
+            document.body.classList.add('overflow-hidden');
+            
+            // Animate backdrop with slight delay
+            setTimeout(() => {
+                sidebarBackdrop.classList.remove('opacity-0');
+                sidebarBackdrop.classList.remove('pointer-events-none');
+            }, 50);
+            
+            // Add entrance animation class
+            filterSidebar.querySelector('div:last-child').classList.add('animate-entrance');
         } else {
+            // Closing the sidebar
             sidebarBackdrop.classList.add('opacity-0');
             sidebarBackdrop.classList.add('pointer-events-none');
+            
+            // Slight delay before hiding sidebar
+            setTimeout(() => {
+                filterSidebar.classList.add('-translate-x-full');
+                filterSidebar.classList.add('pointer-events-none');
+                filterSidebar.classList.add('opacity-0');
+                document.body.classList.remove('overflow-hidden');
+            }, 100);
+            
+            // Remove entrance animation class
+            filterSidebar.querySelector('div:last-child').classList.remove('animate-entrance');
         }
     }
 
@@ -195,25 +217,43 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Initialize filter sections with smooth animations - all sections initially closed
-    document.querySelectorAll('.filter-content').forEach((content) => {
-        // Set initial styles for all sections
-        content.style.transition = 'height 300ms ease-in-out, opacity 300ms ease-in-out';
+    // Initialize filter sections with smooth animations - first section open, others closed
+    document.querySelectorAll('.filter-content').forEach((content, index) => {
+        // Set initial styles for all sections with enhanced transitions
+        content.style.transition = 'height 350ms cubic-bezier(0.16, 1, 0.3, 1), opacity 350ms ease-in-out';
         
-        // Initially hide all filter sections
-        content.style.height = '0';
-        content.style.opacity = '0';
-        content.style.overflow = 'hidden';
-        
-        // Make sure the section is not active initially
-        content.classList.remove('filter-content-active');
-        
-        // Find the corresponding heading and rotate the chevron to indicate closed state
-        const heading = content.previousElementSibling;
-        if (heading && heading.classList.contains('filter-heading')) {
-            const chevron = heading.querySelector('.chevron-icon');
-            if (chevron) {
-                chevron.classList.remove('rotate-180');
+        if (index === 0 && !isMobile) {
+            // First section open on desktop
+            content.style.height = content.scrollHeight + 'px';
+            content.style.opacity = '1';
+            content.style.overflow = 'visible';
+            content.classList.add('filter-content-active');
+            
+            // Rotate chevron for first section
+            const heading = content.previousElementSibling;
+            if (heading && heading.classList.contains('filter-heading')) {
+                const chevron = heading.querySelector('.chevron-icon');
+                if (chevron) {
+                    chevron.classList.add('rotate-180');
+                }
+                // Add active styling to heading
+                heading.classList.add('bg-primary-50');
+                heading.classList.add('text-primary-700');
+            }
+        } else {
+            // Initially hide all other filter sections
+            content.style.height = '0';
+            content.style.opacity = '0';
+            content.style.overflow = 'hidden';
+            content.classList.remove('filter-content-active');
+            
+            // Find the corresponding heading and rotate the chevron to indicate closed state
+            const heading = content.previousElementSibling;
+            if (heading && heading.classList.contains('filter-heading')) {
+                const chevron = heading.querySelector('.chevron-icon');
+                if (chevron) {
+                    chevron.classList.remove('rotate-180');
+                }
             }
         }
     });
@@ -221,7 +261,34 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add a small delay to ensure smooth initial rendering
     setTimeout(() => {
         document.querySelectorAll('.filter-content').forEach((content) => {
-            content.style.transition = 'height 300ms ease-in-out, opacity 300ms ease-in-out';
+            content.style.transition = 'height 350ms cubic-bezier(0.16, 1, 0.3, 1), opacity 350ms ease-in-out';
         });
-    }, 50);
+    }, 100);
+    
+    // Add window resize handler for responsive behavior
+    window.addEventListener('resize', function() {
+        const newIsMobile = window.innerWidth < 1024;
+        
+        // Only update if mobile state changed
+        if (newIsMobile !== isMobile) {
+            // Update mobile state
+            isMobile = newIsMobile;
+            
+            // Reset filter sidebar on mobile/desktop switch
+            if (!isMobile) {
+                // Switching to desktop
+                filterSidebar.classList.remove('-translate-x-full');
+                filterSidebar.classList.remove('pointer-events-none');
+                filterSidebar.classList.remove('opacity-0');
+                document.body.classList.remove('overflow-hidden');
+                sidebarBackdrop.classList.add('opacity-0');
+                sidebarBackdrop.classList.add('pointer-events-none');
+            } else {
+                // Switching to mobile
+                filterSidebar.classList.add('-translate-x-full');
+                filterSidebar.classList.add('pointer-events-none');
+                filterSidebar.classList.add('opacity-0');
+            }
+        }
+    });
 });

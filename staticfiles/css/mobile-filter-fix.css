@@ -1,0 +1,89 @@
+/* Mobile Filter Fix - Enhanced for modern e-commerce experience */
+
+@media (max-width: 1024px) {
+    /* Improved filter sidebar positioning and appearance */
+    #filterSidebar {
+        padding-top: 1.5rem; /* Further reduced space to avoid navbar overlap */
+        backdrop-filter: blur(8px); /* Enhanced blur effect */
+    }
+    
+    /* Enhanced close button styling and positioning */
+    #closeFilter {
+        top: 2.7rem;
+        right: 0.75rem;
+        padding: 0.5rem; /* Slightly larger touch target */
+        border-radius: 50%;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 60; /* Ensure it's above other elements */
+    }
+    
+    /* Improved search field spacing and appearance */
+    #filterSidebar .mb-6:first-of-type {
+        margin-top: 6rem; /* Increased margin to create space between search field and close button */
+        margin-bottom: 0.5rem; /* Added some bottom margin */
+    }
+    
+    
+    /* Improved filter section styling with reduced spacing */
+    .filter-section {
+        margin-bottom: 0.5rem; /* Further reduced margin */
+        border-width: 1px;
+        padding: 0.4rem;
+    }
+       /* Better filter headings for touch with reduced height */
+    .filter-heading {
+        padding: 0.35rem 0.35rem;
+        min-height: 2rem;
+        font-size: 0.85rem;
+        margin-bottom: 0.2rem; /* Reduced margin */
+    }
+    
+    .filter-heading h4 {
+        font-size: 0.95rem; /* Smaller heading text */
+    }
+    
+    .filter-heading svg {
+        width: 1.1rem;
+        height: 1.1rem;
+    }
+   
+    
+    .filter-content ul.space-y-2 li a {
+        padding: 0.35rem 0.5rem;
+        font-size: 0.8rem;
+    }
+    
+    /* Adjust price range slider container */
+    .relative.mb-8.px-2 {
+        margin-bottom: 0.5rem;
+        padding: 0 0.5rem;
+    }
+}
+
+/* Small mobile devices */
+@media (max-width: 640px) {
+    #filterSidebar > div:last-child {
+        max-width: 90%;
+        padding: 0.75rem;
+    }
+    
+    .filter-heading h4 {
+        font-size: 0.9rem;
+    }
+    
+    /* Even smaller price range bubbles for very small screens */
+    .absolute.-bottom-6 .bg-primary-100 {
+        padding: 0.1rem 0.3rem;
+        min-width: 40px !important;
+        font-size: 0.65rem;
+    }
+    
+    /* Further adjust price display spacing */
+    .flex.justify-between.items-center.mt-10 {
+        margin-top: 5.5rem !important;
+    }
+}
