@@ -148,7 +148,7 @@ function updateItemPrice(quantityInput) {
         
         const quantity = parseInt(quantityInput.value) || 1;
         if (isNaN(unitPrice) || unitPrice <= 0) {
-            console.error('Invalid price:', { unitPrice });
+            
             overlay.remove();
             return;
         }
@@ -176,9 +176,6 @@ function updateItemPrice(quantityInput) {
                 if (data.valid) {
                     // Always use the priceToUse that was determined earlier
                     const totalPrice = priceToUse * quantity;
-                    console.log(`Unit Price: ${unitPrice}`);
-                    console.log(`Quantity: ${quantity}`);
-                    console.log(`Total Price: ${totalPrice}`);
                     // Update ALL price elements
                     priceElements.forEach(element => {
                         element.textContent = formatPrice(totalPrice);
@@ -208,7 +205,6 @@ function updateItemPrice(quantityInput) {
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
                 // Ensure loading overlay stays visible for at least 2 seconds even on error
                 const elapsedTime = Date.now() - overlay.startTime;
                 const minDisplayTime = 2000;
@@ -327,8 +323,6 @@ function updateItemPrice(quantityInput) {
                 }
             }
         }
-        
-        console.log(`Cart total updated: ${total}, Any selected: ${anySelected}, Is guest: ${isGuestUser}`);
     }
 
     const debouncedUpdate = debounce(updateItemPrice, 300);
@@ -426,7 +420,6 @@ function updateItemPrice(quantityInput) {
                             }, Math.max(0, minDisplayTime - elapsedTime));
                         })
                         .catch(error => {
-                            console.error('Error:', error);
                             // Remove loading overlay after minimum display time
                             const elapsedTime = Date.now() - overlay.startTime;
                             const minDisplayTime = 2000;

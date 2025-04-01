@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, PasswordChangeForm
 from django.contrib.auth.decorators import login_required
@@ -6,7 +6,8 @@ from django.urls import reverse
 from django.contrib import messages
 from SendEmail.views import send_email
 from .forms import UserRegForm
-from order.models import Order
+from order.models import Order, OrderItem
+from decimal import Decimal
 
 def signup(request):
     if not request.user.is_authenticated:
@@ -50,6 +51,36 @@ def signout(request):
 def order_history(request):
     orders = Order.objects.filter(user=request.user).order_by('-created_at')
     return render(request, 'account/order_history.html', {'orders': orders})
+
+@login_required
+def order_detail(request, order_id):
+    # Check if user is authenticated
+    if not request.user.is_authenticated:
+        from django.contrib import messages
+        messages.error(request, "You need to login to view order details.")
+        from django.shortcuts import redirect
+        return redirect('account:signin')
+
+    # Get the order
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+
+
+     # Check if the logged-in user is the creator of this order
+    if order.user != request.user:
+        from django.contrib import messages
+        messages.error(request, "You are not authorized to view this order.")
+        from django.shortcuts import redirect
+        return redirect('shop:shop')  # Redirect to shop page
+    
+    # Calculate subtotal (total price - delivery charges)
+    subtotal = order.total_price - Decimal('250.00')
+    
+    context = {
+        'order': order,
+        'subtotal': subtotal,
+    }
+    
+    return render(request, 'account/order_detail.html', context)
 
 @login_required
 def profile(request):

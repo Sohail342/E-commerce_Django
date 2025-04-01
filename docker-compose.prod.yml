@@ -31,7 +31,7 @@ services:
       - web
 
   # Uncomment this section if you want to run PostgreSQL in production
-  # Otherwise, use your existing cloud database (like Neon)
+  # Otherwise, use cloud database (like Neon)
   db:
     image: postgres:15
     volumes:

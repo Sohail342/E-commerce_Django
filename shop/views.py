@@ -42,6 +42,42 @@ def shop_page(request):
 
 
 
+def sale_products(request):
+    category = Category.objects.all()
+    product_list = Product.objects.filter(is_draft=False, on_sale=True)
+    
+    # Handle price sorting
+    sort_by = request.GET.get('sort', None)
+    if sort_by == 'price_low_high':
+        product_list = product_list.order_by('price')
+    elif sort_by == 'price_high_low':
+        product_list = product_list.order_by('-price')
+    else:
+        product_list = product_list.order_by('-id')
+        
+    
+    # Set pagination with 12 items per page
+    paginator = Paginator(product_list, 12)
+    page = request.GET.get('page')
+    
+    try:
+        products = paginator.page(page)
+    except PageNotAnInteger:
+        products = paginator.page(1)
+    except EmptyPage:
+        products = paginator.page(paginator.num_pages)
+    
+    context = {
+        'category': category,
+        'products': products,
+        'is_paginated': True if paginator.num_pages > 1 else False,
+        'total_products': product_list.count()
+    }
+
+    return render(request, 'shop/sale_products.html', context)
+
+
+
 
 def product_detail(request, product_id):
     product_details = Product.objects.get(id=product_id, is_draft=False)

@@ -24,6 +24,7 @@ def calculate_order_totals(items: List[Union[CartItem, Dict[str, Any]]], is_auth
     total = Decimal('250.00') + subtotal  # Add delivery charges
     return subtotal, total_savings, total
 
+
 @transaction.atomic
 def create_order_items(order: Order, items: List[Union[CartItem, Dict[str, Any]]], is_authenticated: bool) -> None:
     """Create order items and update product inventory."""
@@ -50,6 +51,8 @@ def create_order_items(order: Order, items: List[Union[CartItem, Dict[str, Any]]
             product.delete()
         else:
             product.save()
+
+
 
 def checkout(request):
     cart = get_cart(request)
@@ -155,9 +158,21 @@ def checkout(request):
                 cart.clear()
                 if 'buy_now_product' in request.session:
                     del request.session['buy_now_product']
+
+                # Send order confirmation email
+                send_email(
+                    subject='Order Confirmation',
+                    recipient_list=[emailaddress],
+                    template='order/email/order_confirmation.html',
+                    context={
+                        'order': order,
+                        'items': order.items.all(),
+                        'subtotal': subtotal,
+                        'total': total,
+                    }
+                )
         
-        messages.success(request, 'Order placed successfully!')
-        send_email(emailaddress, 'SendEmail/succefully_order.html') 
+        messages.success(request, 'Your order has been placed successfully!')
         return redirect('order:order_summary', order_id=order.id) 
     else:
         if buy_now_product:
@@ -181,13 +196,28 @@ def checkout(request):
     })
 
 
+
 def order_summary(request, order_id):
+    # Check if user is authenticated
+    if not request.user.is_authenticated:
+        from django.contrib import messages
+        messages.error(request, "You need to login to view order details.")
+        from django.shortcuts import redirect
+        return redirect('account:signin')
+    
+    # Get the order or return 404
     order = get_object_or_404(Order, id=order_id)
+    
+    # Check if the logged-in user is the creator of this order
+    if order.user != request.user:
+        from django.contrib import messages
+        messages.error(request, "You are not authorized to view this order.")
+        from django.shortcuts import redirect
+        return redirect('shop:shop')  # Redirect to shop page
     
     # Calculate total quantity and subtotal for the order
     total_quantity = sum(item.quantity for item in order.items.all())
     subtotal = sum(item.price * item.quantity for item in order.items.all())
-    
     
     return render(request, 'order/order_summary.html', {
         'order': order,

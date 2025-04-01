@@ -46,8 +46,8 @@ def handle_cart_analytics(sender, instance, created, **kwargs):
 @receiver(post_save, sender=Order)
 def handle_order_analytics(sender, instance, created, **kwargs):
     if created and instance.cart:
-        # Update cart analytics
-        cart_analytics = CartAnalytics.objects.get(cart=instance.cart)
+        # Update cart analytics - use get_or_create to avoid DoesNotExist error
+        cart_analytics, created_analytics = CartAnalytics.objects.get_or_create(cart=instance.cart)
         cart_analytics.abandoned = False
         cart_analytics.converted_to_order = True
         cart_analytics.conversion_time = timezone.now()

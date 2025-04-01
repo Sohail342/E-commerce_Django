@@ -5,7 +5,9 @@ from .models import Order, OrderItem
 
 @admin.register(Order)
 class OrderADminModel(admin.ModelAdmin):
-    list_display = ('id','user', 'cart','shipping_address', 'payment_method', 'is_paid')
+    list_display = ('order_number','user', 'cart','shipping_address', 'payment_method', 'is_paid')
+    search_fields = ('order_number','shipping_address', 'payment_method', 'is_paid')
+    list_filter = ('payment_method', 'is_paid')
     
 
 @admin.register(OrderItem)
