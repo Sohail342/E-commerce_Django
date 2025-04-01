@@ -108,6 +108,7 @@
                             
                             <!-- Enhanced selection UI with better touch target and improved visual feedback -->
                             <div class="flex-shrink-0 rounded mt-4 flex items-center justify-center">
+                                {% if user.is_authenticated %}
                                 <label class="custom-checkbox">
                                     <input type="checkbox" class="rounded border-2 border-gray-300 transition-colors duration-200"
                                            type="checkbox"
@@ -118,6 +119,12 @@
                                     <div class="checkbox-indicator">
                                     </div>
                                 </label>
+                                {% else %}
+                                <input type="hidden"
+                                       id="select-item-{{ item.product.id }}"
+                                       value="true"
+                                       data-selected="true">
+                                {% endif %}
                             </div>
                             
                             <!-- Product image with better mobile sizing -->
@@ -203,6 +210,7 @@
                 </div>
             </div>
             
+            {% if user.is_authenticated %}
             <!-- Improved order summary section with left alignment on desktop -->
             <div class="w-full lg:w-96 mt-4 lg:mt-0 sticky bottom-0 lg:static lg:self-start z-20 pb-safe" id="checkout-container">
                 <div class="bg-white rounded-t-xl lg:rounded-lg shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] lg:shadow-lg p-4 sm:p-6 lg:sticky lg:top-24 border-t border-gray-100 lg:border safe-area-inset-bottom" id="checkout-summary">
@@ -226,6 +234,31 @@
                     </a>
                 </div>
             </div>
+            {% else %}
+            <!-- Improved order summary section with left alignment on desktop -->
+            <div class="w-full lg:w-96 mt-4 lg:mt-0 sticky bottom-0 lg:static lg:self-start z-20 pb-safe" id="checkout-container">
+                <div class="bg-white rounded-t-xl lg:rounded-lg shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] lg:shadow-lg p-4 sm:p-6 lg:sticky lg:top-24 border-t border-gray-100 lg:border safe-area-inset-bottom" id="checkout-summary">
+                    <h2 class="text-lg font-medium text-gray-900 hidden lg:block">Order Summary</h2>
+                    <div class="flex justify-between items-baseline mb-3 lg:mt-6">
+                        <span class="text-base font-medium text-gray-900">Total</span>
+                        <span class="text-xl sm:text-2xl font-semibold text-primary-600 cart-total">PKR 0.0</span>
+                    </div>
+                    <a href="{% if user.is_authenticated %}{% url 'order:checkout' %}{% else %}{% url 'order:checkout' %}{% endif %}" 
+                       class="w-full inline-flex justify-center items-center px-4 sm:px-6 py-3 sm:py-4 border border-transparent text-base sm:text-lg font-semibold rounded-xl text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 transform hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:from-indigo-600 disabled:hover:to-purple-600 disabled:bg-gray-400 disabled:hover:bg-gray-400"
+                       id="checkout-guest-btn"
+                       disabled
+                       x-data="{ disabled: true }"
+                       :disabled="disabled">
+                        <span class="relative flex items-center gap-2">
+                            <span>Proceed to Checkout</span>
+                            <svg class="h-5 w-5 sm:h-6 sm:w-6 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                            </svg>
+                        </span>
+                    </a>
+                </div>
+            </div>
+            {% endif %}
         </div>
         {% endif %}
     </div>

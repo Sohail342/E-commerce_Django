@@ -12,12 +12,6 @@ class SessionCart:
 
     def add(self, product, quantity=1):
         product_id = str(product.id)
-        
-        # For guest users, check if cart already contains a different product
-        # Automatically clear the cart and add the new product
-        if len(self.cart) > 0 and product_id not in self.cart:
-            # Clear the cart first
-            self.cart.clear()
             
         if product_id not in self.cart:
             # Use sale_price if product is on sale, otherwise use regular price
@@ -62,18 +56,12 @@ class SessionCart:
     def get_total_price(self):
         total = Decimal('0.00')
         for item in self.cart.values():
-            # Only include items that are explicitly selected
-            # Handle case where selected might be stored as a string
-            selected = item.get('selected', False)
-            if isinstance(selected, str):
-                selected = selected.lower() == 'true'
-            
-            if selected:
-                # Ensure price is always a Decimal object
-                price = item['price'] if isinstance(item['price'], Decimal) else Decimal(str(item['price']))
-                # Convert quantity to Decimal
-                quantity = Decimal(str(item['quantity']))
-                total += price * quantity
+            # For guest users, include all items regardless of selection status
+            # Ensure price is always a Decimal object
+            price = item['price'] if isinstance(item['price'], Decimal) else Decimal(str(item['price']))
+            # Convert quantity to Decimal
+            quantity = Decimal(str(item['quantity']))
+            total += price * quantity
         return total.quantize(Decimal('0.01'))
 
     def get_total_items(self):

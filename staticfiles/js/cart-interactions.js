@@ -63,7 +63,7 @@ function createLoadingOverlay(element) {
     return overlay;
 }
 
-// Add CSS for loading overlay
+// Add CSS for loading overlay, hide checkboxes for guest users, and style selected items
 const style = document.createElement('style');
 style.textContent = `
     .loading-overlay {
@@ -85,6 +85,25 @@ style.textContent = `
         align-items: center;
         height: 2rem;
         width: 2rem;
+    }
+    body:not(.user-authenticated) .cart-item-selection {
+        display: none !important;
+    }
+    body:not(.user-authenticated) .selection-header {
+        display: none !important;
+    }
+    .select-all-container {
+        margin-bottom: 0.75rem;
+        border-bottom: 1px solid #e5e7eb;
+        padding-bottom: 0.75rem;
+    }
+    .cart-item.selected {
+        background-color: rgba(59, 130, 246, 0.05);
+        border-left: 3px solid #3b82f6;
+    }
+    .user-authenticated .cart-item {
+        transition: background-color 0.2s, border-left 0.2s;
+        border-left: 3px solid transparent;
     }
 `;
 document.head.appendChild(style);
@@ -209,11 +228,21 @@ function updateItemPrice(quantityInput) {
         const cartItems = document.querySelectorAll('.cart-item');
         let total = 0;
         let anySelected = false;
+        const isGuestUser = !document.body.classList.contains('user-authenticated');
+        
+        // For guest users, automatically set anySelected to true if there are cart items
+        if (isGuestUser && cartItems.length > 0) {
+            anySelected = true;
+        }
+        // For authenticated users, don't automatically select any items
     
         cartItems.forEach(item => {
-            // Only include selected items in the total calculation
+            // For guest users, all items are considered selected
+            // For authenticated users, only selected items are considered
             const checkbox = item.querySelector('input[type="checkbox"]');
-            if (checkbox && checkbox.checked) {
+            const isItemSelected = isGuestUser || (checkbox && checkbox.checked);
+            
+            if (isItemSelected) {
                 anySelected = true;
                 const quantity = parseInt(item.querySelector('input[type="number"]').value) || 1;
                 let unitPrice = 0;
@@ -227,17 +256,44 @@ function updateItemPrice(quantityInput) {
                     unitPrice = parseFloat(item.dataset.unitPrice);
                 }
                 
+                // Fallback to DOM elements if data attributes are not available
+                if (unitPrice === 0) {
+                    if (isOnSale) {
+                        const salePriceElement = item.querySelector('.text-primary-600');
+                        if (salePriceElement) {
+                            unitPrice = parsePrice(salePriceElement.textContent);
+                        }
+                    } else {
+                        const regularPriceElement = item.querySelector('.item-price');
+                        if (regularPriceElement) {
+                            unitPrice = parsePrice(regularPriceElement.textContent);
+                        }
+                    }
+                }
+                
                 if (!isNaN(unitPrice) && unitPrice > 0) {
                     total += unitPrice * quantity;
                 }
+                
+                // Visually highlight selected items for authenticated users
+                if (!isGuestUser) {
+                    item.classList.add('selected');
+                }
+            } else if (!isGuestUser) {
+                // Remove highlight from unselected items for authenticated users
+                item.classList.remove('selected');
             }
         });
         
-
-    
+        // Update the cart total display
         const totalElement = document.querySelector('.cart-total');
         if (totalElement) {
-            totalElement.textContent = formatPrice(total);
+            // For authenticated users, show a message if no items are selected
+            if (!isGuestUser && !anySelected) {
+                totalElement.textContent = "No items selected";
+            } else {
+                totalElement.textContent = formatPrice(total);
+            }
         }
         
         // Enable/disable checkout button based on selection
@@ -382,83 +438,277 @@ function updateItemPrice(quantityInput) {
         });
     });
 
-    document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-        checkbox.addEventListener('change', () => updateCartTotal());
-        // Ensure all checkboxes are unchecked initially to properly disable checkout button
-        checkbox.checked = false;
-    });
-
-    // Ensure all checkboxes are unchecked initially
-    document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-        checkbox.checked = false;
-    });
-    
-    // Initialize Alpine.js binding for checkout button
-    const checkoutBtn = document.getElementById('checkout-btn');
-    if (checkoutBtn && window.Alpine) {
-        // Wait for Alpine to initialize the component
-        setTimeout(() => {
-            if (checkoutBtn._x_dataStack && checkoutBtn._x_dataStack[0]) {
-                checkoutBtn._x_dataStack[0].disabled = true;
-            }
-        }, 100);
-    }
-    
-    // Add event listener to handle checkout button click
-    if (checkoutBtn) {
-        checkoutBtn.addEventListener('click', function(e) {
-            // Always prevent default action first
-            e.preventDefault();
+    // Ensure checkbox change events trigger cart total update
+    document.querySelectorAll('.cart-item input[type="checkbox"]').forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+            updateCartTotal();
             
-            // If button is disabled or no-click state, prevent any action
-            if (this.disabled || this.classList.contains('cursor-not-allowed')) {
-                createToast('Please select at least one product before proceeding to checkout', 'warning');
-                return false;
-            }
-            
-            // Get all selected items
-            const selectedItems = document.querySelectorAll('.cart-item input[type="checkbox"]:checked');
-            
-            // If no items selected, prevent action
-            if (selectedItems.length === 0) {
-                createToast('Please select at least one product before proceeding to checkout', 'warning');
-                return false;
-            }
-            
-            // Verify at least one selected item has a valid price > 0
-            let hasValidItem = false;
-            selectedItems.forEach(item => {
-                const cartItem = item.closest('.cart-item');
-                const priceText = cartItem.querySelector('.item-price')?.textContent;
-                if (priceText && parsePrice(priceText) > 0) {
-                    hasValidItem = true;
-                }
-            });
-            
-            if (!hasValidItem) {
-                createToast('Selected items must have valid prices to proceed to checkout', 'warning');
-                return false;
-            }
-            
-            // Check if user is authenticated
-            const isAuthenticated = document.body.classList.contains('user-authenticated');
-            
-            // Only proceed if all checks pass
-            const checkoutUrl = this.getAttribute('href');
-            if (checkoutUrl) {
-                // Redirect to cart for authenticated users, checkout for guests
-                if (isAuthenticated) {
-                    window.location.href = '/cart/';
-                } else {
-                    window.location.href = checkoutUrl;
-                }
+            // Send selection to server if needed
+            if (typeof window.updateSelectedItems === 'function') {
+                window.updateSelectedItems();
             }
         });
+    });
+
+    // Initialize checkboxes based on cart item's selected status
+    const isGuestUser = !document.body.classList.contains('user-authenticated');
+
+    // Add "Select All" checkbox for authenticated users
+    if (!isGuestUser) {
+        // First, ensure all checkboxes are unchecked by default for authenticated users
+        document.querySelectorAll('.cart-item input[type="checkbox"]').forEach(checkbox => {
+            // Explicitly set to false and remove any checked attribute
+            checkbox.checked = false;
+            checkbox.removeAttribute('checked');
+            checkbox.addEventListener('change', () => {
+                // Update cart total in real-time when checkbox state changes
+                updateCartTotal();
+            });
+        });
     }
+        
+        document.querySelectorAll('.cart-item').forEach(item => {
+            const checkbox = item.querySelector('input[type="checkbox"]');
+            const hiddenInput = item.querySelector('input[type="hidden"]');
+            
+            if (checkbox) {
+                // Add change event listener for authenticated users
+                checkbox.addEventListener('change', () => {
+                    // Update cart total immediately when checkbox state changes
+                    updateCartTotal();
+                    
+                    // Update select all checkbox state
+                    if (!isGuestUser) {
+                        const selectAllCheckbox = document.getElementById('select-all-items');
+                        if (selectAllCheckbox) {
+                            const allCheckboxes = document.querySelectorAll('.cart-item input[type="checkbox"]');
+                            const allChecked = Array.from(allCheckboxes).every(cb => cb.checked);
+                            selectAllCheckbox.checked = allChecked;
+                        }
+                    }
+                    
+                    // Send selection to server if needed
+                    if (typeof window.updateSelectedItems === 'function') {
+                        window.updateSelectedItems();
+                    }
+                });
+                
+                // For guest users, always set checked to true
+                // For authenticated users, NEVER check by default - let user select items
+                if (isGuestUser) {
+                    checkbox.checked = true;
+                } else {
+                    // Ensure checkboxes are unchecked for authenticated users
+                    checkbox.checked = false;
+                    // Remove the checked attribute entirely instead of setting it to false
+                    checkbox.removeAttribute('checked');
+                }
+                
+                // Only trigger change event for guest users to avoid auto-selecting for authenticated users
+                if (isGuestUser) {
+                    checkbox.dispatchEvent(new Event('change'));
+                }
+            } else if (hiddenInput || isGuestUser) {
+                // For guest users, items are always selected
+                item.classList.add('selected');
+            }
+        });
     
-    // Call this function to format prices on page load
-    formatInitialPrices();
+        // Ensure all checkboxes are properly unchecked for authenticated users
+        if (!isGuestUser) {
+            // Force all checkboxes to be unchecked
+            document.querySelectorAll('.cart-item input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+                // Remove any checked attribute that might be set in HTML
+                checkbox.removeAttribute('checked');
+            });
+            
+            // Prevent any automatic selection for authenticated users
+            document.querySelectorAll('.cart-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+        }
     
-    // Initial total calculation
-    updateCartTotal();
-});
+        // Make sure to update cart total when page loads
+        // For authenticated users, don't auto-select items
+        if (isGuestUser) {
+            updateCartTotal();
+        } else {
+            // For authenticated users, update the cart total without triggering selection
+            const cartItems = document.querySelectorAll('.cart-item');
+            cartItems.forEach(item => {
+                item.classList.remove('selected');
+            });
+            
+            // Show "No items selected" message for authenticated users
+            const totalElement = document.querySelector('.cart-total');
+            if (totalElement) {
+                totalElement.textContent = "No items selected";
+            }
+            
+            // Disable checkout button
+            const checkoutBtn = document.getElementById('checkout-btn');
+            if (checkoutBtn) {
+                checkoutBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                checkoutBtn.disabled = true;
+                // Update Alpine.js binding if it exists
+                if (checkoutBtn._x_dataStack && checkoutBtn._x_dataStack[0]) {
+                    checkoutBtn._x_dataStack[0].disabled = true;
+                }
+            }
+        }
+        
+        // Update select all checkbox initial state for authenticated users
+        if (!isGuestUser) {
+            const selectAllCheckbox = document.getElementById('select-all-items');
+            if (selectAllCheckbox) {
+                // For authenticated users, we want the select all checkbox to be unchecked by default
+                selectAllCheckbox.checked = false;
+                selectAllCheckbox.removeAttribute('checked');
+                
+                // Make sure all item checkboxes are unchecked initially
+                document.querySelectorAll('.cart-item input[type="checkbox"]').forEach(checkbox => {
+                    checkbox.checked = false;
+                    checkbox.removeAttribute('checked');
+                });
+                
+                // Add event listener to select-all checkbox
+                selectAllCheckbox.addEventListener('change', function() {
+                    const isChecked = this.checked;
+                    
+                    // Update all item checkboxes
+                    document.querySelectorAll('.cart-item input[type="checkbox"]').forEach(checkbox => {
+                        checkbox.checked = isChecked;
+                        // Trigger change event to update UI
+                        checkbox.dispatchEvent(new Event('change'));
+                    });
+                    
+                    // Update cart total
+                    updateCartTotal();
+                    
+                    // Send selection to server if needed
+                    if (typeof window.updateSelectedItems === 'function') {
+                        window.updateSelectedItems();
+                    }
+                });
+            }
+        }
+    
+        
+        // Update cart total after initializing checkboxes
+        // For authenticated users, this should show zero since no items are selected by default
+        
+        // IMPORTANT: Final check to ensure all checkboxes are unchecked for authenticated users
+        // This is the last operation before updating the cart total to ensure nothing overrides it
+        if (!isGuestUser) {
+            document.querySelectorAll('.cart-item input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+                // Remove any checked attribute that might be set in HTML
+                checkbox.removeAttribute('checked');
+            });
+            
+            // Also ensure the select-all checkbox is unchecked
+            const selectAllCheckbox = document.getElementById('select-all-items');
+            if (selectAllCheckbox) {
+                selectAllCheckbox.checked = false;
+                selectAllCheckbox.removeAttribute('checked');
+            }
+        }
+        
+        updateCartTotal();
+        
+        // Initialize Alpine.js binding for checkout button
+        const checkoutBtn = document.getElementById('checkout-btn');
+        if (checkoutBtn && window.Alpine) {
+            // Wait for Alpine to initialize the component
+            setTimeout(() => {
+                if (checkoutBtn._x_dataStack && checkoutBtn._x_dataStack[0]) {
+                    // For authenticated users, initially disable the checkout button since no items are selected
+                    if (!isGuestUser) {
+                        checkoutBtn._x_dataStack[0].disabled = true;
+                    }
+                }
+            }, 100);
+        }
+        
+        // Add event listener to handle checkout button click
+        if (checkoutBtn) {
+            checkoutBtn.addEventListener('click', function(e) {
+                // Always prevent default action first
+                e.preventDefault();
+                
+                const isGuestUser = !document.body.classList.contains('user-authenticated');
+                
+                // For guest users with items in cart, always allow checkout
+                if (isGuestUser) {
+                    const cartItems = document.querySelectorAll('.cart-item');
+                    if (cartItems.length > 0) {
+                        // Only proceed if the button is not explicitly disabled
+                        if (!this.disabled) {
+                            const checkoutUrl = this.getAttribute('href');
+                            if (checkoutUrl) {
+                                window.location.href = checkoutUrl;
+                                return;
+                            }
+                        }
+                    } else {
+                        createToast('Your cart is empty', 'warning');
+                        return false;
+                    }
+                }
+                
+                // For authenticated users, continue with normal flow
+                // If button is disabled or no-click state, prevent any action
+                if (this.disabled || this.classList.contains('cursor-not-allowed')) {
+                    createToast('Please ensure you have items in your cart before proceeding to checkout', 'warning');
+                    return false;
+                }
+                
+                // Get all selected items, considering guest users
+                const selectedItems = isGuestUser ? 
+                    document.querySelectorAll('.cart-item') : 
+                    document.querySelectorAll('.cart-item input[type="checkbox"]:checked');
+                
+                // If no items selected, prevent action
+                if (selectedItems.length === 0) {
+                    createToast('Please ensure you have items in your cart before proceeding to checkout', 'warning');
+                    return false;
+                }
+                
+                // Verify at least one selected item has a valid price > 0
+                let hasValidItem = false;
+                selectedItems.forEach(item => {
+                    const cartItem = item.closest('.cart-item');
+                    const priceText = cartItem.querySelector('.item-price')?.textContent;
+                    if (priceText && parsePrice(priceText) > 0) {
+                        hasValidItem = true;
+                    }
+                });
+                
+                if (!hasValidItem) {
+                    createToast('Selected items must have valid prices to proceed to checkout', 'warning');
+                    return false;
+                }
+                
+                // Check if user is authenticated
+                const isAuthenticated = document.body.classList.contains('user-authenticated');
+                
+                // Only proceed if all checks pass
+                const checkoutUrl = this.getAttribute('href');
+                if (checkoutUrl) {
+                    // Redirect to cart for authenticated users, checkout for guests
+                    if (isAuthenticated) {
+                        window.location.href = '/cart/';
+                    } else {
+                        window.location.href = checkoutUrl;
+                    }
+                }
+            });
+        }
+        
+        // Call this function to format prices on page load
+        formatInitialPrices();
+        
+        // Initial total calculation
+        updateCartTotal();
+    });

@@ -68,18 +68,8 @@ def checkout(request):
             cart_items = cart.items.filter(selected=True)
             cart_is_empty = cart_items.count() == 0
         else:
-            # For guest users, get only selected items from session cart
-            # Filter items based on their selection status
-            # Ensure we're only including items that are explicitly marked as selected
-            # Convert string 'true'/'false' to boolean if needed
-            cart_items = []
-            for item in cart:
-                selected = item.get('selected', False)
-                # Handle case where selected might be stored as a string
-                if isinstance(selected, str):
-                    selected = selected.lower() == 'true'
-                if selected:
-                    cart_items.append(item)
+            # For guest users, include all items in the cart without requiring selection
+            cart_items = list(cart)
             cart_is_empty = len(cart_items) == 0
 
     if request.method == 'POST':

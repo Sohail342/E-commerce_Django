@@ -42,6 +42,24 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     }
+    
+    // Check if this is a guest user
+    const isGuestUser = document.getElementById('checkout-guest-btn') !== null;
+    
+    // Initialize cart total and checkout button state
+    formatInitialPrices();
+    updateCartTotal();
+    
+    // For guest users, we need to initialize the cart total and enable the checkout button if there are items
+    if (isGuestUser) {
+        const guestCheckoutBtn = document.getElementById('checkout-guest-btn');
+        if (guestCheckoutBtn) {
+            // Set the initial state of the Alpine.js binding
+            if (guestCheckoutBtn._x_dataStack && guestCheckoutBtn._x_dataStack[0]) {
+                guestCheckoutBtn._x_dataStack[0].disabled = false;
+            }
+        }
+    }
 
     // Create loading overlay for cart items with minimum display time
 function createLoadingOverlay(element) {
@@ -210,11 +228,24 @@ function updateItemPrice(quantityInput) {
         let total = 0;
         let anySelected = false;
     
+        // Check if this is a guest user by looking for the guest checkout button
+        const isGuestUser = document.getElementById('checkout-guest-btn') !== null;
+        
         cartItems.forEach(item => {
-            // Only include selected items in the total calculation
+            // For guest users, include all items in the total calculation regardless of selection
+            // For authenticated users, only include selected items
             const checkbox = item.querySelector('input[type="checkbox"]');
-            if (checkbox && checkbox.checked) {
-                anySelected = true;
+            
+            if ((isGuestUser || (checkbox && checkbox.checked))) {
+                if (checkbox && checkbox.checked) {
+                    anySelected = true;
+                }
+                
+                // For guest users, we count all items as "selected" for total calculation purposes
+                if (isGuestUser) {
+                    anySelected = true;
+                }
+                
                 const quantity = parseInt(item.querySelector('input[type="number"]').value) || 1;
                 let unitPrice = 0;
                 
@@ -255,8 +286,11 @@ function updateItemPrice(quantityInput) {
             totalElement.textContent = formatPrice(total);
         }
         
-        // Enable/disable checkout button based on selection
+        // Enable/disable checkout button based on selection for authenticated users
+        // For guest users, enable the button if there are items in the cart
         const checkoutBtn = document.getElementById('checkout-btn');
+        const guestCheckoutBtn = document.getElementById('checkout-guest-btn');
+        
         if (checkoutBtn) {
             if (anySelected && total > 0) {
                 checkoutBtn.classList.remove('opacity-50', 'cursor-not-allowed');
@@ -275,7 +309,26 @@ function updateItemPrice(quantityInput) {
             }
         }
         
-        console.log(`Cart total updated: ${total}, Any selected: ${anySelected}`);
+        // For guest checkout button, enable if there are items in the cart
+        if (guestCheckoutBtn) {
+            if (total > 0) {
+                guestCheckoutBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                guestCheckoutBtn.disabled = false;
+                // Update Alpine.js binding if it exists
+                if (guestCheckoutBtn._x_dataStack && guestCheckoutBtn._x_dataStack[0]) {
+                    guestCheckoutBtn._x_dataStack[0].disabled = false;
+                }
+            } else {
+                guestCheckoutBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                guestCheckoutBtn.disabled = true;
+                // Update Alpine.js binding if it exists
+                if (guestCheckoutBtn._x_dataStack && guestCheckoutBtn._x_dataStack[0]) {
+                    guestCheckoutBtn._x_dataStack[0].disabled = true;
+                }
+            }
+        }
+        
+        console.log(`Cart total updated: ${total}, Any selected: ${anySelected}, Is guest: ${isGuestUser}`);
     }
 
     const debouncedUpdate = debounce(updateItemPrice, 300);
