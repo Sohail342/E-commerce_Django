@@ -13,6 +13,8 @@
 <link rel="stylesheet" href="{% static 'css/filter-animations.css' %}">
 <link rel="stylesheet" href="{% static 'css/search-transitions.css' %}">
 <link rel="stylesheet" href="{% static 'css/mobile-filter-fix.css' %}">
+<link rel="stylesheet" href="{% static 'css/pagination-gradient.css' %}">
+<link rel="stylesheet" href="{% static 'css/sale-section-animations.css' %}">
 {% endblock %}
 
 {% block extra_head %}
@@ -293,35 +295,85 @@
             </div>
         </div>
 
-        <!-- Pagination -->
-        <div class="mt-16 w-full">
+        <!-- Pagination - Modern E-commerce Style with Gradient Effects -->
+        <div class="mt-16 w-full pagination-container">
             {% if is_paginated %}
             <div class="flex justify-center">
-                <nav class="inline-flex rounded-lg shadow-md space-x-1" aria-label="Pagination">
+                <nav class="pagination-nav" aria-label="Pagination">
+                    <!-- Previous Page Button -->
                     {% if products.has_previous %}
-                        <a href="?page={{ products.previous_page_number }}" class="relative inline-flex items-center px-4 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
-                            <span class="sr-only">Previous</span>
-                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <a href="?page={{ products.previous_page_number }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}" 
+                           class="page-nav-button">
+                            <svg class="h-5 w-5 mr-1 sm:mr-2 prev-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                             </svg>
+                            <span class="hidden sm:inline page-nav-text">Previous</span>
                         </a>
+                    {% else %}
+                        <span class="page-nav-button page-nav-disabled">
+                            <svg class="h-5 w-5 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                            </svg>
+                            <span class="hidden sm:inline page-nav-text">Previous</span>
+                        </span>
                     {% endif %}
-
+                    
+                    <!-- First Page (if not in first few pages) -->
+                    {% if products.number > 3 %}
+                        <a href="?page=1{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}" 
+                           class="page-item">
+                            1
+                        </a>
+                        {% if products.number > 4 %}
+                            <span class="page-ellipsis">
+                                ...
+                            </span>
+                        {% endif %}
+                    {% endif %}
+                    
+                    <!-- Page Numbers (limited to current and adjacent) -->
                     {% for num in products.paginator.page_range %}
-                        {% if products.number == num %}
-                            <a class="relative inline-flex items-center px-4 py-2 border border-primary-600 bg-primary-600 text-sm font-medium text-white hover:bg-primary-700 transition-colors" href="?page={{ num }}" aria-current="page">{{ num }}</a>
-                        {% else %}
-                            <a class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors" href="?page={{ num }}">{{ num }}</a>
+                        {% if num == products.number %}
+                            <a class="page-item page-item-active" 
+                               href="?page={{ num }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}" 
+                               aria-current="page">
+                                {{ num }}
+                            </a>
+                        {% elif num > products.number|add:"-2" and num < products.number|add:"2" %}
+                            <a class="page-item" 
+                               href="?page={{ num }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">
+                                {{ num }}
+                            </a>
                         {% endif %}
                     {% endfor %}
-
+                    
+                    <!-- Last Page (if not in last few pages) -->
+                    {% if products.number < products.paginator.num_pages|add:"-3" %}
+                        <span class="page-ellipsis">
+                            ...
+                        </span>
+                        <a href="?page={{ products.paginator.num_pages }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}" 
+                           class="page-item hidden sm:inline-flex">
+                            {{ products.paginator.num_pages }}
+                        </a>
+                    {% endif %}
+                    
+                    <!-- Next Page Button -->
                     {% if products.has_next %}
-                        <a href="?page={{ products.next_page_number }}" class="relative inline-flex items-center px-4 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
-                            <span class="sr-only">Next</span>
-                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <a href="?page={{ products.next_page_number }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}" 
+                           class="page-nav-button">
+                            <span class="hidden sm:inline page-nav-text">Next</span>
+                            <svg class="h-5 w-5 ml-1 sm:ml-2 next-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                             </svg>
                         </a>
+                    {% else %}
+                        <span class="page-nav-button page-nav-disabled">
+                            <span class="hidden sm:inline page-nav-text">Next</span>
+                            <svg class="h-5 w-5 ml-1 sm:ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </span>
                     {% endif %}
                 </nav>
             </div>
@@ -330,115 +382,174 @@
     </div>
 </section>
 
-<!-- Sale Products Section -->
-<section class="py-12 bg-gradient-to-br from-red-50 via-white to-red-50/30">
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center space-y-4 mb-10">
-            <span class="inline-block rounded-full bg-gradient-to-r from-red-500 to-pink-500 px-6 py-2 text-sm font-semibold text-white transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-red-200/50 animate-pulse">Hot Deals</span>
-            <h2 class="text-4xl font-bold text-gray-900">50% Off or More</h2>
-            <p class="text-lg text-gray-600 max-w-2xl mx-auto">Limited time offers! Grab these amazing deals before they're gone forever.</p>
+<!-- Sale Products Section - Enhanced UI -->
+<section class="py-16 bg-gradient-to-br from-red-50 via-white to-red-50/30 relative overflow-hidden">
+    <!-- Decorative elements for visual interest -->
+    <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none opacity-10">
+        <div class="absolute -top-24 -left-24 w-96 h-96 bg-red-500 rounded-full blur-3xl"></div>
+        <div class="absolute top-1/2 -right-48 w-96 h-96 bg-pink-500 rounded-full blur-3xl"></div>
+    </div>
+    
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="text-center space-y-4 mb-12">
+            <!-- Animated badge with improved visual feedback -->
+            <div class="inline-block relative">
+                <span class="inline-block rounded-full bg-gradient-to-r from-red-500 to-pink-500 px-6 py-2 text-sm font-semibold text-white transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-red-200/50 group">
+                    <span class="relative z-10 flex items-center gap-2">
+                        <svg class="w-4 h-4 animate-pulse" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"/>
+                        </svg>
+                        Hot Deals
+                    </span>
+                    <span class="absolute inset-0 rounded-full bg-white/20 scale-0 group-hover:scale-100 transition-transform duration-500 origin-center"></span>
+                </span>
+            </div>
+            
+            <!-- Enhanced heading with subtle animation -->
+            <h2 class="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-pink-600 inline-block transform transition-all duration-700 hover:scale-105">50% Off or More</h2>
+            
+            <!-- Improved subheading with better readability -->
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">Limited time offers! Grab these amazing deals before they're gone forever.</p>
         </div>
         
         {% if sale_products %}
         <div class="w-full">
-            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 md:gap-6">
+            <!-- Responsive grid with improved spacing for mobile -->
+            <div class="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-6 gap-4 md:gap-6 lg:gap-8">
                 {% for product in sale_products %}
-                <div class="group bg-white rounded-xl shadow-md hover:shadow-xl overflow-hidden transform transition-all duration-300 ease-in-out hover:-translate-y-2 border border-gray-100 flex flex-col h-full product-item">
-                    <!-- Image container with consistent aspect ratio -->
-                    <div class="relative w-full aspect-square overflow-hidden bg-gray-50 group-hover:bg-gray-100 transition-colors duration-300">
-                        <a href="{% url 'shop:product_detail' product.id %}" class="block w-full h-full flex items-center justify-center p-4">
-                            <img src="{{ product.photo.url }}" alt="{{ product.name }}" class="w-full h-full object-contain transform group-hover:scale-110 transition-transform duration-500 ease-out">                                
+                <!-- Enhanced product card with better hover effects and animations -->
+                <div class="group bg-white rounded-xl shadow-md hover:shadow-2xl overflow-hidden transform transition-all duration-500 ease-out hover:-translate-y-2 hover:translate-x-0 border border-gray-100 hover:border-red-200 flex flex-col h-full product-item relative">
+                    <!-- Improved image container with better hover effects -->
+                    <div class="relative w-full aspect-square overflow-hidden bg-gradient-to-br from-gray-50 to-white group-hover:from-red-50 group-hover:to-white transition-colors duration-500">
+                        <!-- Subtle overlay effect on hover -->
+                        <div class="absolute inset-0 bg-gradient-to-br from-red-500/0 to-pink-500/0 group-hover:from-red-500/5 group-hover:to-pink-500/10 transition-colors duration-500 z-0"></div>
+                        
+                        <a href="{% url 'shop:product_detail' product.id %}" class="block w-full h-full flex items-center justify-center p-4 relative z-10">
+                            <!-- Enhanced image with smoother transitions -->
+                            <img src="{{ product.photo.url }}" alt="{{ product.name }}" class="w-4/5 h-4/5 object-contain transform group-hover:scale-110 transition-all duration-700 ease-out drop-shadow-sm group-hover:drop-shadow-md">
                         </a>
-                        <!-- Product Labels -->
-                        <div class="absolute top-3 left-3 flex flex-col gap-2">
+                        
+                        <!-- Enhanced product labels with better positioning and animations -->
+                        <div class="absolute top-3 left-3 flex flex-col gap-2 z-20">
                             {% if product.on_sale %}
-                            <span class="px-3 py-1 bg-gradient-to-r from-red-600 to-pink-600 text-white text-xs font-bold rounded-full shadow-lg transform transition-all duration-300 hover:scale-110">
-                                SALE
+                            <span class="px-3 py-1 bg-gradient-to-r from-red-600 to-pink-600 text-white text-xs font-bold rounded-full shadow-lg transform transition-all duration-300 hover:scale-110 hover:shadow-red-300/50 flex items-center">
+                                <span class="relative overflow-hidden inline-flex">
+                                    <span class="animate-pulse-slow">SALE</span>
+                                </span>
                             </span>
                             {% endif %}
                             {% if product.trending %}
-                            <span class="px-3 py-1 bg-gradient-to-r from-amber-600 to-orange-600 text-white text-xs font-bold rounded-full shadow-lg transform transition-all duration-300 hover:scale-110 flex items-center gap-1">
+                            <span class="px-3 py-1 bg-gradient-to-r from-amber-600 to-orange-600 text-white text-xs font-bold rounded-full shadow-lg transform transition-all duration-300 hover:scale-110 hover:shadow-orange-300/50 flex items-center gap-1">
                                 <svg class="w-3 h-3 animate-pulse" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clip-rule="evenodd"/>
                                 </svg>
-                                TRENDING
+                                <span>HOT</span>
                             </span>
                             {% endif %}
                         </div>
+                        
+                        <!-- Quick view button that appears on hover -->
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-20">
+                            <a href="{% url 'shop:product_detail' product.id %}" class="bg-white/90 backdrop-blur-sm text-primary-600 hover:text-primary-700 p-2 rounded-full shadow-lg hover:shadow-xl transform transition-all duration-300 hover:scale-110">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                            </a>
+                        </div>
                     </div>
                     
-                    <!-- Product Details -->
-                    <div class="p-4 flex-grow flex flex-col justify-between">
-                        <!-- Title -->
+                    <!-- Enhanced product details with better spacing and animations -->
+                    <div class="p-4 flex-grow flex flex-col justify-between relative z-10">
+                        <!-- Improved title with better typography -->
                         <div class="mb-3">
-                            <h3 class="text-sm font-bold text-gray-900 line-clamp-2 group-hover:text-primary-600 transition-colors">
-                                <a href="{% url 'shop:product_detail' product.id %}">{{ product.name }}</a>
+                            <h3 class="text-sm font-bold text-gray-900 line-clamp-2 group-hover:text-primary-600 transition-colors duration-300">
+                                <a href="{% url 'shop:product_detail' product.id %}" class="hover:underline decoration-primary-300 decoration-2 underline-offset-2">{{ product.name }}</a>
                             </h3>
                         </div>
                         
-                        <!-- Price -->
+                        <!-- Enhanced price display with better visual hierarchy -->
                         <div class="mb-3">
                             {% if product.on_sale %}
-                            <div class="space-y-1">
-                                <div class="text-primary-900 font-extrabold text-lg bg-gradient-to-r from-primary-50 to-primary-100 px-2 py-1 rounded-lg inline-flex items-center">
-                                    <span class="mr-1 text-sm">PKR</span>
+                            <div class="space-y-2">
+                                <!-- Sale price with enhanced styling -->
+                                <div class="text-primary-900 font-extrabold text-lg bg-gradient-to-r from-primary-50 to-primary-100 px-2 py-1 rounded-lg inline-flex items-center shadow-sm group-hover:shadow-md transition-all duration-300 group-hover:from-primary-100 group-hover:to-primary-200">
+                                    <span class="mr-1 text-sm font-medium text-primary-700">PKR</span>
                                     <span>{{ product.sale_price|format_price }}</span>
                                 </div>
+                                <!-- Original price and discount badge with improved layout -->
                                 <div class="flex items-center gap-2">
                                     <span class="text-gray-500 line-through text-sm">PKR {{ product.price|format_price }}</span>
-                                    <span class="text-white text-xs font-bold bg-gradient-to-r from-red-500 to-pink-500 px-2 py-0.5 rounded-full">SAVE {{ product.sale_percentage }}%</span>
+                                    <span class="text-white text-xs font-bold bg-gradient-to-r from-red-500 to-pink-500 px-2 py-0.5 rounded-full shadow-sm group-hover:shadow transform transition-all duration-300 group-hover:scale-105">SAVE {{ product.sale_percentage }}%</span>
                                 </div>
                             </div>
                             {% else %}
-                            <div class="text-primary-900 font-extrabold text-lg bg-primary-50 px-2 py-1 rounded-lg inline-flex items-center">
-                                <span class="mr-1 text-sm">PKR</span>
+                            <div class="text-primary-900 font-extrabold text-lg bg-primary-50 px-2 py-1 rounded-lg inline-flex items-center shadow-sm group-hover:shadow-md transition-all duration-300 group-hover:bg-primary-100">
+                                <span class="mr-1 text-sm font-medium text-primary-700">PKR</span>
                                 <span>{{ product.price|format_price }}</span>
                             </div>
                             {% endif %}
                         </div>
                         
-                        <!-- Rating and Add to Cart -->
+                        <!-- Enhanced rating and action buttons with better interaction -->
                         <div class="flex items-center justify-between">
-                            <div class="flex items-center">
+                            <!-- Rating with improved visual feedback -->
+                            <div class="flex items-center group-hover:scale-105 transition-transform duration-300">
                                 {% with ''|center:5 as range %}
                                 {% for _ in range %}
-                                <svg class="w-4 h-4 {% if forloop.counter <= product.rating %} text-yellow-400 {% else %} text-gray-300 {% endif %}" fill="currentColor" viewBox="0 0 20 20">
+                                <svg class="w-4 h-4 {% if forloop.counter <= product.rating %} text-yellow-400 group-hover:text-yellow-500 {% else %} text-gray-300 group-hover:text-gray-400 {% endif %} transition-colors duration-300" fill="currentColor" viewBox="0 0 20 20">
                                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                                 </svg>
                                 {% endfor %}
                                 {% endwith %}
-                                <span class="ml-1 text-xs text-gray-600">({{ product.rating|floatformat:1 }})</span>
+                                <span class="ml-1 text-xs text-gray-600 group-hover:text-gray-800 transition-colors duration-300">({{ product.rating|floatformat:1 }})</span>
                             </div>
-                            <button class="text-white bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 rounded-full p-2 shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-110">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            
+                            <!-- Add to cart button with enhanced interaction -->
+                            <button class="text-white bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 rounded-full p-2 shadow-md hover:shadow-lg transition-all duration-300 transform hover:scale-110 relative overflow-hidden group/btn">
+                                <!-- Button background animation -->
+                                <span class="absolute inset-0 w-full h-full bg-white/20 transform scale-0 group-hover/btn:scale-100 transition-transform duration-500 rounded-full"></span>
+                                <!-- Icon with subtle animation -->
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 relative z-10 transform group-hover/btn:rotate-90 transition-transform duration-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                                 </svg>
                             </button>
                         </div>
+                    </div>
+                    
+                    <!-- Decorative corner accent -->
+                    <div class="absolute top-0 right-0 w-16 h-16 overflow-hidden">
+                        <div class="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-red-500/0 to-red-500/0 group-hover:from-red-500/10 group-hover:to-red-500/0 transition-colors duration-500"></div>
                     </div>
                 </div>
                 {% endfor %}
             </div>
         </div>
         {% else %}
-        <div class="col-span-full text-center py-12">
-            <div class="inline-flex items-center justify-center bg-gray-100 rounded-full p-4 mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        <!-- Enhanced empty state with better visual feedback -->
+        <div class="col-span-full text-center py-12 px-4">
+            <div class="inline-flex items-center justify-center bg-red-50 rounded-full p-6 mb-6 shadow-inner">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-red-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
             </div>
-            <h3 class="text-xl font-medium text-gray-700 mb-2">No products found</h3>
-            <p class="text-gray-500">We couldn't find any products matching your criteria.</p>
+            <h3 class="text-2xl font-medium text-gray-700 mb-3">No Sale Products Found</h3>
+            <p class="text-gray-500 max-w-md mx-auto">We couldn't find any products with 50% or more discount right now. Check back soon for new deals!</p>
         </div>
         {% endif %}
 
-        <!-- View All Button -->
-        <div class="text-center mt-10">
-            <a href="{% url 'shop:sale_products' %}" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium text-white bg-gradient-to-r from-blue-600 to-indigo-700 rounded-md shadow-lg hover:from-blue-700 hover:to-indigo-800 transition-colors">
-                View All Deals
-                <svg xmlns="http://www.w3.org/2000/svg" class="ml-2 -mr-1 w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                </svg>
+        <!-- Enhanced View All Button with improved interaction -->
+        <div class="text-center mt-12">
+            <a href="{% url 'shop:sale_products' %}" class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium text-white bg-gradient-to-r from-red-600 to-pink-600 rounded-md shadow-lg hover:shadow-xl hover:from-red-700 hover:to-pink-700 transition-all duration-300 transform hover:translate-y-[-2px] relative overflow-hidden group">
+                <!-- Button background animation -->
+                <span class="absolute inset-0 w-full h-full bg-white/10 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></span>
+                <!-- Button text with icon -->
+                <span class="relative flex items-center">
+                    <span>View All Deals</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="ml-2 -mr-1 w-5 h-5 transform group-hover:translate-x-1 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                </span>
             </a>
         </div>
     </div>

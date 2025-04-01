@@ -13,6 +13,7 @@
 <link rel="stylesheet" href="{% static 'css/filter-animations.css' %}">
 <link rel="stylesheet" href="{% static 'css/search-transitions.css' %}">
 <link rel="stylesheet" href="{% static 'css/mobile-filter-fix.css' %}">
+<link rel="stylesheet" href="{% static 'css/pagination-gradient.css' %}">
 {% endblock %}
 
 {% block extra_head %}
@@ -293,35 +294,85 @@
             </div>
         </div>
 
-        <!-- Pagination -->
-        <div class="mt-16 w-full">
+        <!-- Pagination - Modern E-commerce Style with Gradient Effects -->
+        <div class="mt-16 w-full pagination-container">
             {% if is_paginated %}
             <div class="flex justify-center">
-                <nav class="inline-flex rounded-lg shadow-md space-x-1" aria-label="Pagination">
+                <nav class="pagination-nav" aria-label="Pagination">
+                    <!-- Previous Page Button -->
                     {% if products.has_previous %}
-                        <a href="?page={{ products.previous_page_number }}" class="relative inline-flex items-center px-4 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
-                            <span class="sr-only">Previous</span>
-                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <a href="?page={{ products.previous_page_number }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}" 
+                           class="page-nav-button">
+                            <svg class="h-5 w-5 mr-1 sm:mr-2 prev-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                             </svg>
+                            <span class="hidden sm:inline page-nav-text">Previous</span>
                         </a>
+                    {% else %}
+                        <span class="page-nav-button page-nav-disabled">
+                            <svg class="h-5 w-5 mr-1 sm:mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                            </svg>
+                            <span class="hidden sm:inline page-nav-text">Previous</span>
+                        </span>
                     {% endif %}
-
+                    
+                    <!-- First Page (if not in first few pages) -->
+                    {% if products.number > 3 %}
+                        <a href="?page=1{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}" 
+                           class="page-item">
+                            1
+                        </a>
+                        {% if products.number > 4 %}
+                            <span class="page-ellipsis">
+                                ...
+                            </span>
+                        {% endif %}
+                    {% endif %}
+                    
+                    <!-- Page Numbers (limited to current and adjacent) -->
                     {% for num in products.paginator.page_range %}
-                        {% if products.number == num %}
-                            <a class="relative inline-flex items-center px-4 py-2 border border-primary-600 bg-primary-600 text-sm font-medium text-white hover:bg-primary-700 transition-colors" href="?page={{ num }}" aria-current="page">{{ num }}</a>
-                        {% else %}
-                            <a class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors" href="?page={{ num }}">{{ num }}</a>
+                        {% if num == products.number %}
+                            <a class="page-item page-item-active" 
+                               href="?page={{ num }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}" 
+                               aria-current="page">
+                                {{ num }}
+                            </a>
+                        {% elif num > products.number|add:"-2" and num < products.number|add:"2" %}
+                            <a class="page-item" 
+                               href="?page={{ num }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}">
+                                {{ num }}
+                            </a>
                         {% endif %}
                     {% endfor %}
-
+                    
+                    <!-- Last Page (if not in last few pages) -->
+                    {% if products.number < products.paginator.num_pages|add:"-3" %}
+                        <span class="page-ellipsis">
+                            ...
+                        </span>
+                        <a href="?page={{ products.paginator.num_pages }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}" 
+                           class="page-item hidden sm:inline-flex">
+                            {{ products.paginator.num_pages }}
+                        </a>
+                    {% endif %}
+                    
+                    <!-- Next Page Button -->
                     {% if products.has_next %}
-                        <a href="?page={{ products.next_page_number }}" class="relative inline-flex items-center px-4 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
-                            <span class="sr-only">Next</span>
-                            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <a href="?page={{ products.next_page_number }}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}" 
+                           class="page-nav-button">
+                            <span class="hidden sm:inline page-nav-text">Next</span>
+                            <svg class="h-5 w-5 ml-1 sm:ml-2 next-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                             </svg>
                         </a>
+                    {% else %}
+                        <span class="page-nav-button page-nav-disabled">
+                            <span class="hidden sm:inline page-nav-text">Next</span>
+                            <svg class="h-5 w-5 ml-1 sm:ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                            </svg>
+                        </span>
                     {% endif %}
                 </nav>
             </div>
