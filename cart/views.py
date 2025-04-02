@@ -1,9 +1,15 @@
+from django.contrib import messages
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 from .models import Product, Cart, CartItem
 from .cart_session import SessionCart
 from shop.models import Product
 import json
+from django.urls import reverse
+
+# Remove the module-level reverse call
+# cart_url = reverse('cart:cart')
+
 
 def get_cart(request):
     if request.user.is_authenticated:
@@ -16,6 +22,8 @@ def add_to_cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     quantity = int(request.GET.get('quantity', 1))
     
+    # Get cart_url inside the function instead of at module level
+    cart_url = reverse('cart:cart')
     
     if request.user.is_authenticated:
         cart, created = Cart.objects.get_or_create(user=request.user)
@@ -33,18 +41,23 @@ def add_to_cart(request, product_id):
         # Set the new quantity
         cart_item.quantity = total_quantity
         cart_item.save()
+        message = f"{product.name} has been added to your cart. <a href='{cart_url}' class='flex-1 mt-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white py-1.5 sm:py-2 px-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium transition-colors duration-300 flex items-center justify-center'>View Cart</a>"
+
+        messages.success(request, message)
     else:
         cart = SessionCart(request)
         
         # For guest users: directly add the product to cart
         # The SessionCart.add method will handle clearing the cart if needed
         cart.add(product, quantity)
+        message = f"{product.name} has been added to your cart. <a href='{cart_url}' class='flex-1 mt-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white py-1.5 sm:py-2 px-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium transition-colors duration-300 flex items-center justify-center'>View Cart</a>"
+        messages.success(request, message)
         
         # Add a notification message to session to display on cart page
         if 'pending_cart_item' in request.session:
             del request.session['pending_cart_item']
     
-    return redirect('cart:cart')
+    return redirect(request.META.get('HTTP_REFERER', '/'))
 
 def cart_page(request):
     if request.user.is_authenticated:

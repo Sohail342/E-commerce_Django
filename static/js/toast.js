@@ -1,7 +1,20 @@
+let toastCount = 0;
+
+function updateToastPositions() {
+    const toasts = document.querySelectorAll('.toast-notification');
+    toasts.forEach((toast, index) => {
+        const topOffset = 48 + (index * 80);
+        toast.style.top = `${topOffset}px`;
+    });
+}
+
 function createToast(message, type = 'warning') {
+    toastCount++;
     const toast = document.createElement('div');
-    toast.className = `fixed top-4 right-4 w-full max-w-xs sm:max-w-sm flex items-start p-4 rounded-lg shadow-lg transform transition-all duration-300 z-[100] ${
-        type === 'warning' ? 'bg-amber-50 border-l-4 border-amber-500' :
+    const topOffset = 48 + (toastCount * 80); // Base offset + spacing per toast
+    toast.style.top = `${topOffset}px`;
+    toast.className = `toast-notification fixed right-4 text-center w-full max-w-xs sm:max-w-sm flex items-start p-4 rounded-lg shadow-lg transform transition-all duration-300 z-[100] ${
+        type === 'warning' ? 'bg-white border-l-4 border-amber-500' :
         type === 'error' ? 'bg-red-50 border-l-4 border-red-500' :
         'bg-emerald-50 border-l-4 border-emerald-500'
     } animate-toast-enter`;
@@ -38,7 +51,11 @@ function createToast(message, type = 'warning') {
 
     closeButton.addEventListener('click', () => {
         toast.classList.add('animate-toast-exit');
-        setTimeout(() => toast.remove(), 300);
+        setTimeout(() => {
+            toast.remove();
+            toastCount--;
+            updateToastPositions();
+        }, 300);
     });
 
     contentWrapper.appendChild(content);
@@ -51,7 +68,11 @@ function createToast(message, type = 'warning') {
     setTimeout(() => {
         if (document.body.contains(toast)) {
             toast.classList.add('animate-toast-exit');
-            setTimeout(() => toast.remove(), 300);
+            setTimeout(() => {
+                toast.remove();
+                toastCount--;
+                updateToastPositions();
+            }, 300);
         }
     }, 5000);
 }
