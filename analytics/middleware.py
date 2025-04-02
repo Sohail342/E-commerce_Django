@@ -2,6 +2,8 @@ from django.utils import timezone
 from .models import PageView, DailyMetrics, MonthlyMetrics
 from cart.models import Cart, CartItem
 from django.db.models import F
+from shop.models import Product
+import re
 
 class AnalyticsMiddleware:
     def __init__(self, get_response):
@@ -31,6 +33,9 @@ class AnalyticsMiddleware:
         # Get or create the last page view for this session
         last_pageview = PageView.objects.filter(session_key=session_key).order_by('-timestamp').first()
         
+        # Determine page type and associated product
+        page_type, product = self._determine_page_type_and_product(request)
+        
         # Create new PageView record
         PageView.objects.create(
             path=request.path,
@@ -40,7 +45,9 @@ class AnalyticsMiddleware:
             user_agent=request.META.get('HTTP_USER_AGENT', ''),
             referrer=request.META.get('HTTP_REFERER', None),
             is_unique=is_unique,
-            session_start=last_pageview.session_start if last_pageview else timezone.now()
+            session_start=last_pageview.session_start if last_pageview else timezone.now(),
+            page_type=page_type,
+            product=product
         )
 
         # Update last pageview's session end time
@@ -83,3 +90,40 @@ class AnalyticsMiddleware:
         if x_forwarded_for:
             return x_forwarded_for.split(',')[0]
         return request.META.get('REMOTE_ADDR')
+        
+    def _determine_page_type_and_product(self, request):
+        """Determine the page type and associated product (if any) based on the request path."""
+        path = request.path
+        product = None
+        page_type = 'other'
+        
+        # Define patterns for different page types
+        patterns = {
+            'home': r'^/$',
+            'shop': r'^/shop/$',
+            'category': r'^/shop/category/([^/]+)/$',
+            'product': r'^/shop/product/([0-9]+)/$',
+            'cart': r'^/cart/$',
+            'wishlist': r'^/wishlist/$',
+            'checkout': r'^/order/checkout/$',
+            'contact': r'^/contact/$',
+            'account': r'^/account/'
+        }
+        
+        # Check which pattern matches the current path
+        for page, pattern in patterns.items():
+            if re.match(pattern, path):
+                page_type = page
+                break
+        
+        # If it's a product page, extract the product ID and get the product
+        if page_type == 'product':
+            match = re.match(patterns['product'], path)
+            if match:
+                try:
+                    product_id = int(match.group(1))
+                    product = Product.objects.filter(id=product_id).first()
+                except (ValueError, IndexError):
+                    pass
+        
+        return page_type, product

@@ -7,9 +7,6 @@ from shop.models import Product
 import json
 from django.urls import reverse
 
-# Remove the module-level reverse call
-# cart_url = reverse('cart:cart')
-
 
 def get_cart(request):
     if request.user.is_authenticated:

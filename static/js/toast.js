@@ -13,10 +13,10 @@ function createToast(message, type = 'warning') {
     const toast = document.createElement('div');
     const topOffset = 48 + (toastCount * 80); // Base offset + spacing per toast
     toast.style.top = `${topOffset}px`;
-    toast.className = `toast-notification fixed right-4 text-center w-full max-w-xs sm:max-w-sm flex items-start p-4 rounded-lg shadow-lg transform transition-all duration-300 z-[100] ${
-        type === 'warning' ? 'bg-white border-l-4 border-amber-500' :
-        type === 'error' ? 'bg-red-50 border-l-4 border-red-500' :
-        'bg-emerald-50 border-l-4 border-emerald-500'
+    toast.className = `toast-notification fixed right-4 text-center w-full max-w-xs sm:max-w-sm flex items-start p-4 rounded-lg shadow-xl backdrop-blur-sm transform transition-all duration-300 z-[100] ${
+        type === 'warning' ? 'bg-gradient-to-r from-amber-100 to-amber-200 border-l-4 border-amber-500 ring-1 ring-amber-300' :
+        type === 'error' ? 'bg-gradient-to-r from-red-100 to-red-200 border-l-4 border-red-500 ring-1 ring-red-300' :
+        'bg-gradient-to-r from-emerald-100 to-emerald-200 border-l-4 border-emerald-500 ring-1 ring-emerald-300'
     } animate-toast-enter`;
 
     const icon = document.createElement('div');
@@ -34,15 +34,15 @@ function createToast(message, type = 'warning') {
     contentWrapper.className = 'ml-3 flex-1';
 
     const content = document.createElement('div');
-    content.className = 'text-sm font-medium text-gray-900';
+    content.className = `text-sm font-medium ${type === 'warning' ? 'text-amber-800' : type === 'error' ? 'text-red-800' : 'text-emerald-800'}`;
     content.textContent = message;
 
     const closeButton = document.createElement('button');
-    closeButton.className = `ml-4 -mt-0.5 -mr-1.5 p-1 rounded-md inline-flex text-gray-400 hover:text-gray-500 focus:outline-none ${
-        type === 'warning' ? 'hover:bg-amber-100 focus:ring-amber-500' :
-        type === 'error' ? 'hover:bg-red-100 focus:ring-red-500' :
-        'hover:bg-emerald-100 focus:ring-emerald-500'
-    } focus:ring-2`;
+    closeButton.className = `ml-4 -mt-0.5 -mr-1.5 p-1 rounded-md inline-flex ${        
+        type === 'warning' ? 'text-amber-500 hover:text-amber-700 hover:bg-amber-100 focus:ring-amber-500' :
+        type === 'error' ? 'text-red-500 hover:text-red-700 hover:bg-red-100 focus:ring-red-500' :
+        'text-emerald-500 hover:text-emerald-700 hover:bg-emerald-100 focus:ring-emerald-500'
+    } focus:outline-none focus:ring-2`;
     closeButton.innerHTML = 
         `<span class="sr-only">Close</span>
         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">

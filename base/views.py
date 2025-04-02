@@ -1,21 +1,21 @@
 from django.shortcuts import render
 from contact.models import Subscriber
-from SendEmail.views import send_email
+from django.shortcuts import redirect
+from django.contrib import messages
 
-def base(request):
-    message = ''  
+def subscribe(request):
     if request.method == 'POST':
         email = request.POST.get('email')
         if email:
             if not Subscriber.objects.filter(email=email).exists():
                 Subscriber.objects.create(email=email)
-                message = "Successfully subscribed."
-                send_email(email, 'SendEmail/subscribe')
+                messages.success(request, "Successfully subscribed.")
+                # send_email(email, 'SendEmail/subscribe')
             else:
-                message = "Email is already subscribed."
+                messages.error(request, "Email is already subscribed.")
         else:
-            message = "Please provide a valid email address."
+            messages.error(request, "Please provide a valid email address.")
 
-    return render(request, 'base/subscribe.html', {'message': message})
+    return redirect(request.META.get('HTTP_REFERER', '/'))
 
 

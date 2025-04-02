@@ -11,7 +11,7 @@
           </p>
         </div>
         <div class="mt-8 lg:mt-0">
-          <form id="subscribe-form" class="sm:flex" method="POST" action="{% url 'home' %}">
+          <form id="subscribe-form" class="sm:flex" method="POST" action="{% url 'base:subscribe' %}">
             {% csrf_token %}
             <div class="min-w-0 flex-1">
               <label for="email" class="sr-only">Email address</label>

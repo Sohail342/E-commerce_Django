@@ -58,10 +58,11 @@ def subtract(value, arg):
         return ''
 
 @register.filter
-def abs(value):
+def absolute(value):
     """Returns the absolute value"""
     try:
-        return abs(float(value))
+        from builtins import abs as builtin_abs
+        return builtin_abs(float(value))
     except (ValueError, TypeError):
         return 0
 

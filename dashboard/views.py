@@ -9,6 +9,7 @@ from django.db.models import Max, Count, Sum, F, Avg, ExpressionWrapper, fields,
 from django.db.models.functions import Cast, Substr, Length
 from django.utils import timezone
 from datetime import timedelta
+import json
 from analytics.models import WishlistItem, PageView, DailyMetrics, MonthlyMetrics
 from cart.models import Cart, CartItem
 
@@ -655,19 +656,24 @@ def advance_analytics_dashboard(request):
             date__gte=today - timedelta(days=30)
         ).order_by('date')
 
-        traffic_dates = [metric.date.strftime('%Y-%m-%d') for metric in traffic_metrics]
-        total_visits_data = [metric.total_visits for metric in traffic_metrics]
-        unique_visitors_data = [metric.unique_visitors for metric in traffic_metrics]
+        # Format data for JavaScript charts
+        traffic_dates = json.dumps([metric.date.strftime('%Y-%m-%d') for metric in traffic_metrics])
+        total_visits_data = json.dumps([metric.total_visits for metric in traffic_metrics])
+        unique_visitors_data = json.dumps([metric.unique_visitors for metric in traffic_metrics])
 
         # Calculate conversion funnel data
+        # Calculate conversion funnel data with improved accuracy
         funnel_data = [
             PageView.objects.filter(timestamp__date=today, is_unique=True).count(),
-            WishlistItem.objects.filter(added_at__date=today).count(),
-            CartItem.objects.filter(added_at__date=today).count(),
+            PageView.objects.filter(timestamp__date=today, page_type='wishlist').count(),
+            PageView.objects.filter(timestamp__date=today, page_type='cart').count(),
             Order.objects.filter(created_at__date=today).count()
         ]
+        
+        # Convert to JSON for JavaScript
+        funnel_data = json.dumps(funnel_data)
 
-        # Get wishlist analytics
+        # Get wishlist analytics with improved calculation
         wishlist_analytics = Product.objects.annotate(
             wishlist_count=Count('wishlist_items_analytics'),
             conversion_count=Count('wishlist_items_analytics', filter=F('wishlist_items_analytics__converted_to_cart')),
@@ -676,7 +682,15 @@ def advance_analytics_dashboard(request):
                 F('conversion_count') * 100.0 / F('wishlist_count'),
                 output_field=fields.FloatField()
             )
-        ).values('name', 'wishlist_count', 'conversion_rate')
+        ).values('name', 'wishlist_count', 'conversion_count', 'conversion_rate')
+        
+        # Ensure conversion_rate is properly formatted
+        wishlist_analytics = [{
+            'name': item['name'],
+            'wishlist_count': item['wishlist_count'],
+            'conversion_count': item['conversion_count'],
+            'conversion_rate': round(item['conversion_rate'], 2) if item['conversion_rate'] is not None else 0
+        } for item in wishlist_analytics]
 
         # Get cart analytics
         cart_analytics = [
