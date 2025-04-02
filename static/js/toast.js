@@ -15,8 +15,9 @@ function createToast(message, type = 'warning') {
     toast.style.top = `${topOffset}px`;
     const isCartQuantityWarning = message.includes('Maximum available quantity');
     const isWishlistRemoval = message.includes('Product removed from wishlist');
+    const isSelected = message.includes('Please select at least one product before proceeding to checkout');
     toast.className = `toast-notification fixed right-4 text-center w-full max-w-xs sm:max-w-sm flex items-start p-4 rounded-lg shadow-2xl transform transition-all duration-300 z-[100] ${
-        isCartQuantityWarning || isWishlistRemoval ? 'bg-red-600 text-white border-l-4 border-red-800' :
+        isCartQuantityWarning || isSelected || isWishlistRemoval ? 'bg-red-600 text-white border-l-4 border-red-800' :
         type === 'warning' ? 'bg-amber-500 text-white border-l-4 border-amber-700' :
         type === 'error' ? 'bg-red-600 text-white border-l-4 border-red-800' :
         'bg-green-600 text-white border-l-4 border-green-800'
