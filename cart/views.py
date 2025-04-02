@@ -47,7 +47,33 @@ def add_to_cart(request, product_id):
         # For guest users: directly add the product to cart
         # The SessionCart.add method will handle clearing the cart if needed
         cart.add(product, quantity)
-        message = f"{product.name} has been added to your cart. <a href='{cart_url}' class='flex-1 mt-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white py-1.5 sm:py-2 px-2 sm:px-3 rounded-lg text-xs sm:text-sm font-medium transition-colors duration-300 flex items-center justify-center'>View Cart</a>"
+        # message = f"""
+        # {product.name} has been added to your cart. 
+        # <a href='{cart_url}' class='mt-4 inline-block bg-gradient-to-r from-blue-600 to-blue-700 text-white py-2 px-4 rounded-lg text-sm sm:text-base font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50'>
+        # View Cart
+        # </a>
+        # """
+        # messages.success(request, message)
+        message = f"""
+        <div class="flex flex-col sm:flex-row items-start gap-3">
+            <div class="flex-shrink-0 bg-white rounded-lg p-2 shadow-sm">
+                <svg class="h-8 w-8 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                </svg>
+            </div>
+            <div class="flex-1">
+                <p class="font-medium">{product.name} has been added to your cart</p>
+                <div class="mt-3 flex flex-col sm:flex-row gap-2">
+                    <a href='{cart_url}' class="inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300">
+                        View Cart
+                    </a>
+                    <a href="#" onclick="window.history.back(); return false;" class="inline-flex justify-center items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300">
+                        Continue Shopping
+                    </a>
+                </div>
+            </div>
+        </div>
+        """
         messages.success(request, message)
         
         # Add a notification message to session to display on cart page

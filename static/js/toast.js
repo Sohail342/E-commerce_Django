@@ -13,20 +13,19 @@ function createToast(message, type = 'warning') {
     const toast = document.createElement('div');
     const topOffset = 48 + (toastCount * 80); // Base offset + spacing per toast
     toast.style.top = `${topOffset}px`;
-    toast.className = `toast-notification fixed right-4 text-center w-full max-w-xs sm:max-w-sm flex items-start p-4 rounded-lg shadow-xl backdrop-blur-sm transform transition-all duration-300 z-[100] ${
-        type === 'warning' ? 'bg-gradient-to-r from-amber-100 to-amber-200 border-l-4 border-amber-500 ring-1 ring-amber-300' :
-        type === 'error' ? 'bg-gradient-to-r from-red-100 to-red-200 border-l-4 border-red-500 ring-1 ring-red-300' :
-        'bg-gradient-to-r from-emerald-100 to-emerald-200 border-l-4 border-emerald-500 ring-1 ring-emerald-300'
-    } animate-toast-enter`;
+    const isCartQuantityWarning = message.includes('Maximum available quantity');
+    const isWishlistRemoval = message.includes('Product removed from wishlist');
+    toast.className = `toast-notification fixed right-4 text-center w-full max-w-xs sm:max-w-sm flex items-start p-4 rounded-lg shadow-2xl transform transition-all duration-300 z-[100] ${
+        isCartQuantityWarning || isWishlistRemoval ? 'bg-red-600 text-white border-l-4 border-red-800' :
+        type === 'warning' ? 'bg-amber-500 text-white border-l-4 border-amber-700' :
+        type === 'error' ? 'bg-red-600 text-white border-l-4 border-red-800' :
+        'bg-green-600 text-white border-l-4 border-green-800'
+    } animate-toast-enter hover:scale-[1.02] transition-transform`
 
     const icon = document.createElement('div');
     icon.className = 'flex-shrink-0 mt-0.5';
     icon.innerHTML = 
-        `<svg class="w-5 h-5 ${
-            type === 'warning' ? 'text-amber-600' :
-            type === 'error' ? 'text-red-600' :
-            'text-emerald-600'
-        }" fill="currentColor" viewBox="0 0 20 20">
+        `<svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
         </svg>`;
 
@@ -34,15 +33,11 @@ function createToast(message, type = 'warning') {
     contentWrapper.className = 'ml-3 flex-1';
 
     const content = document.createElement('div');
-    content.className = `text-sm font-medium ${type === 'warning' ? 'text-amber-800' : type === 'error' ? 'text-red-800' : 'text-emerald-800'}`;
+    content.className = 'text-sm font-medium text-white';
     content.textContent = message;
 
     const closeButton = document.createElement('button');
-    closeButton.className = `ml-4 -mt-0.5 -mr-1.5 p-1 rounded-md inline-flex ${        
-        type === 'warning' ? 'text-amber-500 hover:text-amber-700 hover:bg-amber-100 focus:ring-amber-500' :
-        type === 'error' ? 'text-red-500 hover:text-red-700 hover:bg-red-100 focus:ring-red-500' :
-        'text-emerald-500 hover:text-emerald-700 hover:bg-emerald-100 focus:ring-emerald-500'
-    } focus:outline-none focus:ring-2`;
+    closeButton.className = `ml-4 -mt-0.5 -mr-1.5 p-1 rounded-md inline-flex text-white hover:text-gray-100 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors duration-200`;
     closeButton.innerHTML = 
         `<span class="sr-only">Close</span>
         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -87,11 +82,22 @@ style.textContent = `
     @keyframes toast-exit {
         to { transform: translateX(100%); opacity: 0; }
     }
+    @keyframes toast-pulse {
+        0% { box-shadow: 0 0 0 0 rgba(255,255,255,0.4); }
+        70% { box-shadow: 0 0 0 10px rgba(255,255,255,0); }
+        100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); }
+    }
     .animate-toast-enter {
-        animation: toast-enter 0.3s ease-out forwards;
+        animation: toast-enter 0.3s ease-out forwards, toast-pulse 2s infinite;
     }
     .animate-toast-exit {
         animation: toast-exit 0.3s ease-in forwards;
+    }
+    .toast-notification {
+        transition: all 0.3s ease;
+    }
+    .toast-notification:hover {
+        transform: translateY(-3px);
     }
 `;
 document.head.appendChild(style);
