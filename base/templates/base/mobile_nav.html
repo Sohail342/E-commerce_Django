@@ -1,0 +1,42 @@
+<!-- Mobile Bottom Navigation Bar - Only visible on small screens -->
+<div class="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 shadow-lg backdrop-blur-md bg-opacity-95">
+  <div class="flex justify-around items-center h-16">
+    <a href="{% url 'home' %}" class="flex flex-col items-center justify-center w-full h-full {% if request.path == '/' %}text-primary-600{% else %}text-gray-600{% endif %} hover:text-primary-600 transition-all duration-200 relative group">
+      <div class="relative">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+        </svg>
+        {% if request.path == '/' %}
+        <span class="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1.5 h-1.5 bg-primary-600 rounded-full"></span>
+        {% endif %}
+      </div>
+      <span class="text-xs mt-1 font-medium">Home</span>
+    </a>
+    <a href="{% url 'shop:shop' %}" class="flex flex-col items-center justify-center w-full h-full {% if '/shop/' in request.path %}text-primary-600{% else %}text-gray-600{% endif %} hover:text-primary-600 transition-all duration-200 relative group">
+      <div class="relative">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+        </svg>
+        {% if '/shop/' in request.path %}
+        <span class="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1.5 h-1.5 bg-primary-600 rounded-full"></span>
+        {% endif %}
+      </div>
+      <span class="text-xs mt-1 font-medium">Shop</span>
+    </a>
+    <a href="{% url 'cart:cart' %}" class="flex flex-col items-center justify-center w-full h-full {% if '/cart/' in request.path %}text-primary-600{% else %}text-gray-600{% endif %} hover:text-primary-600 transition-all duration-200 relative group">
+      <div class="relative">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+        </svg>
+        {% if '/cart/' in request.path %}
+        <span class="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1.5 h-1.5 bg-primary-600 rounded-full"></span>
+        {% endif %}
+        {% if cart_item_count > 0 %}
+        <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center transform transition-all duration-300 hover:scale-110 hover:bg-red-600 shadow-lg hover:shadow-red-400/50 border-2 border-white animate-pulse">{{cart_item_count}}</span>
+          <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-primary-600 group-hover:w-full transition-all duration-300"></span>
+        {% endif %}
+      </div>
+      <span class="text-xs mt-1 font-medium">Cart</span>
+    </a>
+  </div>
+</div>
