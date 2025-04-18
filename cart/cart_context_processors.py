@@ -7,4 +7,4 @@ def cart_item_count(request):
         return {'cart_item_count': cart.items.count()}
     else:
         cart = SessionCart(request)
-        return {'cart_item_count': sum(item['quantity'] for item in cart.cart.values())}
+        return {'cart_item_count': len(cart.cart)}

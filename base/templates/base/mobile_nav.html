@@ -32,8 +32,10 @@
         <span class="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1.5 h-1.5 bg-primary-600 rounded-full"></span>
         {% endif %}
         {% if cart_item_count > 0 %}
-        <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center transform transition-all duration-300 hover:scale-110 hover:bg-red-600 shadow-lg hover:shadow-red-400/50 border-2 border-white animate-pulse">{{cart_item_count}}</span>
-          <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-primary-600 group-hover:w-full transition-all duration-300"></span>
+        <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center transform transition-all duration-300 hover:scale-110 hover:bg-red-600 shadow-lg hover:shadow-red-400/50 border-2 border-white">
+          {{ cart_item_count }}
+        </span>
+        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-primary-600 group-hover:w-full transition-all duration-300"></span>        
         {% endif %}
       </div>
       <span class="text-xs mt-1 font-medium">Cart</span>
