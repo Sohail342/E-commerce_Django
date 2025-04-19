@@ -76,11 +76,7 @@ def checkout(request):
             cart_is_empty = len(cart_items) == 0
 
     if request.method == 'POST':
-        # Check if cart is empty before processing the order
-        if cart_is_empty:
-            messages.error(request, 'Your cart is empty. Please add items to your cart before placing an order.')
-            return redirect('shop:shop')
-            
+
         # Collect data from form
         firstname = request.POST.get('firstname')
         lastname = request.POST.get('lastname')
@@ -178,7 +174,7 @@ def checkout(request):
                 # )
         
         messages.success(request, 'Your order has been placed successfully!')
-        return redirect('order:order_summary', order_id=order.id) 
+        return redirect('order:order_summary', order_id=order.order_number) 
     else:
         if buy_now_product:
             # Calculate totals for buy now product
@@ -203,22 +199,18 @@ def checkout(request):
 
 
 def order_summary(request, order_id):
-    # Check if user is authenticated
-    if not request.user.is_authenticated:
-        from django.contrib import messages
-        messages.error(request, "You need to login to view order details.")
-        from django.shortcuts import redirect
-        return redirect('account:signin')
+
     
     # Get the order or return 404
-    order = get_object_or_404(Order, id=order_id)
+    order = get_object_or_404(Order, order_number=order_id)
     
     # Check if the logged-in user is the creator of this order
-    if order.user != request.user:
-        from django.contrib import messages
-        messages.error(request, "You are not authorized to view this order.")
-        from django.shortcuts import redirect
-        return redirect('shop:shop')  # Redirect to shop page
+    if request.user.is_authenticated:    
+        if order.user != request.user:
+            from django.contrib import messages
+            messages.error(request, "You are not authorized to view this order.")
+            from django.shortcuts import redirect
+            return redirect('shop:shop')  # Redirect to shop page
     
     # Calculate total quantity and subtotal for the order
     total_quantity = sum(item.quantity for item in order.items.all())
