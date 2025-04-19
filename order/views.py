@@ -14,12 +14,33 @@ from typing import Union, List, Dict, Any
 
 def calculate_order_totals(items: List[Union[CartItem, Dict[str, Any]]], is_authenticated: bool) -> tuple:
     """Calculate subtotal, total savings and total for order items."""
+    # Initialize values as Decimal for both authenticated and guest users
+    subtotal = Decimal('0')
+    total_savings = Decimal('0')
+    
     if is_authenticated:
-        subtotal = sum((item.product.sale_price if item.product.on_sale else item.product.price) * item.quantity for item in items)
-        total_savings = sum((item.product.price - item.product.sale_price) * item.quantity for item in items if item.product.on_sale)
+        # For authenticated users
+        for item in items:
+            price = item.product.sale_price if item.product.on_sale else item.product.price
+            subtotal += price * item.quantity
+            
+            # Calculate savings if product is on sale
+            if item.product.on_sale:
+                total_savings += (item.product.price - item.product.sale_price) * item.quantity
     else:
-        subtotal = sum((item['price'] if isinstance(item['price'], Decimal) else Decimal(str(item['price']))) * Decimal(str(item['quantity'])) for item in items)
-        total_savings = sum(((Decimal(str(item['product'].price)) - (item['price'] if isinstance(item['price'], Decimal) else Decimal(str(item['price'])))) * Decimal(str(item['quantity']))) for item in items if item['product'].on_sale)
+        # For guest users or buy now feature
+        for item in items:
+            # Convert price to Decimal if it's not already
+            price = item['price'] if isinstance(item['price'], Decimal) else Decimal(str(item['price']))
+            # Ensure quantity is properly converted to integer
+            quantity = item['quantity'] if isinstance(item['quantity'], int) else int(str(item['quantity']))
+            # Calculate subtotal
+            subtotal += price * quantity
+            
+            # Calculate savings if product is on sale
+            if item['product'].on_sale:
+                original_price = Decimal(str(item['product'].price))
+                total_savings += (original_price - price) * quantity
     
     total = Decimal('250.00') + subtotal  # Add delivery charges
     return subtotal, total_savings, total
@@ -59,14 +80,19 @@ def checkout(request):
     total_savings = 0
     buy_now_product = request.session.get('buy_now_product')
     
-    if 'buy_now_product' in request.session:
-        del request.session['buy_now_product']
+    # Don't delete the buy_now_product from session yet, we'll do it after processing
+    # This ensures we can access it throughout the checkout process
 
+    # Handle Buy Now separately from cart checkout
     if buy_now_product:
         product = get_object_or_404(Product, id=buy_now_product['product_id'])
-        cart_items = [{'product': product, 'quantity': buy_now_product['quantity'], 'price': buy_now_product['price']}]
+        # Create a separate list for buy now product, completely isolated from cart
+        buy_now_items = [{'product': product, 'quantity': buy_now_product['quantity'], 'price': buy_now_product['price']}]
         cart_is_empty = False
+        # Set cart_items to buy_now_items to ensure we only process the buy now product
+        cart_items = buy_now_items
     else:
+        # Only process cart items if not a buy now purchase
         if request.user.is_authenticated:
             cart_items = cart.items.filter(selected=True)
             cart_is_empty = cart_items.count() == 0
@@ -91,8 +117,12 @@ def checkout(request):
 
         if buy_now_product:
             # Handle buy now product checkout
-            cart_items = [{'product': product, 'quantity': buy_now_product['quantity'], 'price': product.sale_price if product.on_sale else product.price}]
-            subtotal, total_savings, total = calculate_order_totals(cart_items, False)
+            # Ensure price is properly converted to Decimal from the session data
+            price = Decimal(str(buy_now_product['price']))
+            # Create a separate list for buy now product, completely isolated from cart
+            buy_now_items = [{'product': product, 'quantity': int(buy_now_product['quantity']), 'price': price}]
+            # Calculate totals ONLY for the buy now product
+            subtotal, total_savings, total = calculate_order_totals(buy_now_items, False)
             
             with transaction.atomic():
                 # Create order for buy now product
@@ -107,7 +137,7 @@ def checkout(request):
                 )
                 
                 # Create order items and update inventory
-                create_order_items(order, cart_items, False)
+                create_order_items(order, buy_now_items, False)
                 
                 # Clear buy now session
                 del request.session['buy_now_product']
@@ -179,8 +209,15 @@ def checkout(request):
         if buy_now_product:
             # Calculate totals for buy now product
             product = get_object_or_404(Product, id=buy_now_product['product_id'])
-            cart_items = [{'product': product, 'quantity': buy_now_product['quantity'], 'price': product.sale_price if product.on_sale else product.price}]
-            subtotal, total_savings, total = calculate_order_totals(cart_items, False)
+            # Ensure price is properly converted to Decimal
+            price = Decimal(str(buy_now_product['price']))
+            # Ensure quantity is properly converted to integer
+            quantity = int(buy_now_product['quantity'])
+            # Create a separate list for buy now product, completely isolated from cart
+            buy_now_items = [{'product': product, 'quantity': quantity, 'price': price}]
+            # Use calculate_order_totals with is_authenticated=False for buy now products
+            # This ensures we only calculate based on the buy now product, ignoring cart
+            subtotal, total_savings, total = calculate_order_totals(buy_now_items, False)
         elif not cart_is_empty:
             subtotal, total_savings, total = calculate_order_totals(cart_items, request.user.is_authenticated)
         else:
@@ -188,12 +225,16 @@ def checkout(request):
             total_savings = Decimal('0')
             total = Decimal('250.00')
 
+    # Determine which items to display in the checkout template
+    display_items = buy_now_items if buy_now_product else cart_items
+    
     return render(request, 'cart/checkout.html', {
         'subtotal': subtotal,
         'total': total,
         'total_savings': total_savings if not cart_is_empty else 0,
         'cart_is_empty': cart_is_empty,
-        'cart_items': cart_items
+        'cart_items': display_items,
+        'is_buy_now': bool(buy_now_product)  # Flag to indicate if this is a buy now purchase
     })
 
 
