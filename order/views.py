@@ -76,6 +76,11 @@ def checkout(request):
             cart_is_empty = len(cart_items) == 0
 
     if request.method == 'POST':
+        # Check if cart is empty before processing the order
+        if cart_is_empty:
+            messages.error(request, 'Your cart is empty. Please add items to your cart before placing an order.')
+            return redirect('shop:shop')
+            
         # Collect data from form
         firstname = request.POST.get('firstname')
         lastname = request.POST.get('lastname')
