@@ -6,7 +6,15 @@
   <!-- header files -->
   
   {% block extra_css %}{% endblock %}
+  <link rel="stylesheet" href="{% static 'css/side-cart.css' %}">
   
+  <!-- Ensure side cart is hidden by default with inline styles -->
+  <style>
+    #side-cart {
+      display: none;
+      transform: translateX(100%);
+    }
+  </style>
   <script src="{% static 'js/toast.js' %}"></script>
   <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
   {% block extra_js %}{% endblock %}
@@ -63,8 +71,14 @@
     <!-- footer -->
 
     <!-- Mobile Bottom Navigation -->
+    {% block mobile_nav %}
     {% include 'base/mobile_nav.html' %}
+    {% endblock %}
     <!-- End Mobile Bottom Navigation -->
+    
+    <!-- Side Cart -->
+    {% include 'cart/side_cart.html' %}
+    <!-- End Side Cart -->
 
     <!-- loader -->
     <div id="ftco-loader" x-data="{}" x-show="$store.loader.loading" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 transition-opacity" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">

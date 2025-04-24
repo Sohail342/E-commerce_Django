@@ -1,0 +1,96 @@
+<!-- Product Detail Mobile Navigation - Only visible on small screens and only on product detail pages -->
+<div class="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 shadow-lg backdrop-blur-md bg-opacity-95">
+  <div class="flex items-center justify-between px-4 py-3">
+    <!-- Quantity Selector -->
+    <div class="flex items-center border border-gray-300 rounded-lg shadow-sm hover:shadow transition-shadow duration-300 bg-white">
+      <button type="button" class="quantity-left-minus p-2 text-gray-600 hover:text-primary-600 transition-colors" data-type="minus">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/>
+        </svg>
+      </button>
+      <input type="text" id="mobile-quantity" name="mobile-quantity" class="w-12 text-center border-x border-gray-300 py-2 text-gray-900 focus:outline-none" value="1" min="1" max="{{inventory}}" readonly>
+      <button type="button" class="quantity-right-plus p-2 text-gray-600 hover:text-primary-600 transition-colors" data-type="plus">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+        </svg>
+      </button>
+    </div>
+    
+    <!-- Add to Cart Button -->
+    <button id="mobile-add-to-cart" class="flex-1 ml-3 inline-flex justify-center items-center px-4 py-3 text-base font-semibold text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 group relative overflow-hidden" data-product-id="{{ product.id }}">
+      <span class="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent group-hover:scale-x-100 scale-x-0 origin-left transition-transform duration-500"></span>
+      <svg class="-ml-1 mr-2 h-5 w-5 transition-transform duration-300 group-hover:rotate-12 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7A4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+      </svg>
+      <span class="relative">Add to Cart</span>
+      <span class="absolute inset-0 flex items-center justify-center bg-blue-700 opacity-0 transition-opacity duration-300" id="mobile-loading-state">
+        <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+      </span>
+    </button>
+  </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Get the mobile quantity input and buttons
+      const mobileQuantityInput = document.getElementById('mobile-quantity');
+      const mobileAddToCartButton = document.getElementById('mobile-add-to-cart');
+      const desktopQuantityInput = document.getElementById('quantity');
+      
+      // Get the mobile quantity buttons
+      const mobilePlusBtn = document.querySelector('.quantity-right-plus');
+      const mobileMinusBtn = document.querySelector('.quantity-left-minus');
+      
+      // Sync the mobile quantity with the desktop quantity
+      function syncQuantities() {
+        if (desktopQuantityInput && mobileQuantityInput) {
+          mobileQuantityInput.value = desktopQuantityInput.value;
+        }
+      }
+      
+      // Initial sync
+      syncQuantities();
+      
+      // Add event listener to the mobile add to cart button
+      if (mobileAddToCartButton) {
+        mobileAddToCartButton.addEventListener('click', function() {
+          // Show loading state
+          const mobileLoadingState = document.getElementById('mobile-loading-state');
+          if (mobileLoadingState) {
+            mobileLoadingState.classList.remove('opacity-0');
+          }
+          
+          // Trigger the desktop add to cart button click
+          const desktopAddToCartButton = document.getElementById('add-to-cart');
+          if (desktopAddToCartButton) {
+            desktopAddToCartButton.click();
+          }
+        });
+      }
+      
+      // Update the mobile quantity when the desktop quantity changes
+      if (desktopQuantityInput) {
+        desktopQuantityInput.addEventListener('change', syncQuantities);
+      }
+      
+      // Make mobile quantity selector display-only (non-functional)
+      // We're removing the event listeners for the mobile buttons to prevent double-counting
+      // The mobile quantity will only reflect the desktop quantity (one-way sync)
+      
+      // Add visual indication that mobile controls are disabled
+      if (mobilePlusBtn && mobileMinusBtn) {
+        // Add disabled styling to buttons
+        mobilePlusBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        mobileMinusBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        
+        // Add a subtle visual cue to the quantity input
+        if (mobileQuantityInput) {
+          mobileQuantityInput.classList.add('bg-gray-50');
+        }
+      }
+    });
+    </script>
+    

@@ -47,7 +47,6 @@ INSTALLED_APPS = [
     'order',
     'account',
     'SendEmail',
-    'wishlist',
     'dashboard'
 ]
 
@@ -94,7 +93,6 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'cart.cart_context_processors.cart_item_count',
-                'wishlist.wishlist_context_processors.wishlist_count',
             ],
         },
     },

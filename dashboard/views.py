@@ -10,7 +10,7 @@ from django.db.models.functions import Cast, Substr, Length
 from django.utils import timezone
 from datetime import timedelta
 import json
-from analytics.models import WishlistItem, PageView, DailyMetrics, MonthlyMetrics
+from analytics.models import PageView, DailyMetrics, MonthlyMetrics
 from cart.models import Cart, CartItem
 
 

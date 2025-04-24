@@ -1,0 +1,88 @@
+/**
+ * Cart Animation Styles
+ * Custom animations for the side cart functionality
+ */
+
+/* Define the cart slide-in animation */
+@keyframes cartSlideIn {
+    0% {
+        transform: translateX(100%);
+    }
+    70% {
+        transform: translateX(-5%);
+    }
+    100% {
+        transform: translateX(0);
+    }
+}
+
+/* Define the cart slide-out animation */
+@keyframes cartSlideOut {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* Mobile-specific animations */
+@media (max-width: 640px) {
+    @keyframes cartSlideInMobile {
+        0% {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        100% {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes cartSlideOutMobile {
+        0% {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        100% {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+    }
+}
+
+/* Apply the animation to the cart */
+.animate-cart-slide-in,
+.animate-cart-slide-in-enhanced {
+    animation: cartSlideIn 0.5s ease-out forwards;
+}
+
+/* Apply the exit animation to the cart */
+.side-cart-exit {
+    animation: cartSlideOut 0.3s ease-in forwards;
+}
+
+/* Ensure smooth transitions for all cart elements */
+.side-cart-item {
+    transition: all 0.3s ease;
+}
+
+/* Fade-in animation for new cart items */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeIn {
+    animation: fadeIn 0.3s ease-out forwards;
+}
+
+/* Highlight animation for newly added items */
+@keyframes highlightItem {
+    0% { background-color: rgba(16, 185, 129, 0.2); }
+    100% { background-color: transparent; }
+}
+
+.highlight-item {
+    animation: highlightItem 1.5s ease-out forwards;
+}

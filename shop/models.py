@@ -26,7 +26,7 @@ class Product(models.Model):
     sale_percentage = models.DecimalField(max_digits=5, decimal_places=2, default=0)
     sale_start_date = models.DateTimeField(null=True, blank=True)
     sale_end_date = models.DateTimeField(null=True, blank=True)
-    rating = models.DecimalField(max_digits=3, decimal_places=2, default=0.0)
+    rating = models.IntegerField(default=0)
 
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)

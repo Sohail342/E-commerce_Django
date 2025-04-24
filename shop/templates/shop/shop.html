@@ -269,6 +269,14 @@
                                     <span class="ml-1 text-xs text-gray-600">({{ product.rating|floatformat:1 }})</span>
                                 </div>
                             </div>
+                            
+                            <!-- Add to Cart button with modern design -->
+                            <button class="trending-add-to-cart w-full mt-1 flex items-center justify-center px-3 py-2 rounded-lg text-white bg-gradient-to-r from-blue-600 to-blue-700 text-xs font-medium shadow-sm hover:shadow-md transform transition-all duration-300 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-opacity-50 group" data-product-id="{{ product.id }}">
+                                <svg class="w-4 h-4 mr-1.5 group-hover:animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                </svg>
+                                <span class="group-hover:translate-x-0.5 transition-transform duration-300">Add to Cart</span>
+                            </button>
                         </div>
                     </div>
                     {% endfor %}

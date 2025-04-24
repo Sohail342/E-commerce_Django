@@ -6,6 +6,11 @@
 <script src="{% static 'js/countdown-timer.js' %}"></script>
 {% endblock %}
 
+{% block mobile_nav %}
+<!-- Override the default mobile navigation with our custom one for product detail pages -->
+{% include 'base/product_detail_mobile_nav.html' %}
+{% endblock %}
+
 
 {% block content %}
 <section class="py-6 sm:py-12 md:py-16 bg-gray-50">
@@ -132,7 +137,7 @@
         <div class="flex flex-col space-y-3 sm:flex-row sm:space-y-0 sm:space-x-4 w-full">
           {% if inventory > 0 %}
           <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 w-full">
-            <button id="add-to-cart" class="flex-1 inline-flex justify-center items-center px-4 sm:px-6 py-4 sm:py-3 text-base sm:text-lg font-semibold text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transform hover:scale-102 active:scale-98 transition-all duration-300 group relative overflow-hidden">
+            <button id="add-to-cart" class="flex-1 inline-flex justify-center items-center px-4 sm:px-6 py-4 sm:py-3 text-base sm:text-lg font-semibold text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transform hover:scale-102 active:scale-98 transition-all duration-300 group relative overflow-hidden" data-product-id="{{ product.id }}">
               <span class="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent group-hover:scale-x-100 scale-x-0 origin-left transition-transform duration-500"></span>
               <svg class="-ml-1 mr-3 h-6 w-6 transition-transform duration-300 group-hover:rotate-12 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7A4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
@@ -145,6 +150,7 @@
                 </svg>
               </span>
             </button>
+            {% csrf_token %}
             <a href="{% url 'cart:buy_now' product.id 1 %}" id="buy-now-btn" class="flex-1 inline-flex justify-center items-center px-4 sm:px-6 py-4 sm:py-3 text-base sm:text-lg font-semibold text-white bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transform hover:scale-102 active:scale-98 transition-all duration-300 group relative overflow-hidden">
               <span class="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent group-hover:scale-x-100 scale-x-0 origin-left transition-transform duration-500"></span>
               <svg class="-ml-1 mr-3 h-6 w-6 transition-transform duration-300 group-hover:rotate-12 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -153,21 +159,8 @@
               <span class="relative">Buy Now</span>
             </a>
           </div>
-          {% else %}
-          <button class="toggle-wishlist w-full sm:flex-1 sm:max-w-xs inline-flex justify-center items-center px-4 sm:px-6 py-4 sm:py-3 text-base sm:text-lg font-semibold text-white bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 rounded-lg sm:rounded-xl shadow-lg hover:shadow-xl transform hover:scale-102 active:scale-98 transition-all duration-300 group relative overflow-hidden" data-product-id="{{ product.id }}">
-            <span class="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent group-hover:scale-x-100 scale-x-0 origin-left transition-transform duration-500"></span>
-            <svg class="-ml-1 mr-3 h-6 w-6 transition-transform duration-300 group-hover:rotate-12 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-            </svg>
-            <span class="relative">Add to Wishlist</span>
-          </button>
           {% endif %}
           <div class="flex space-x-2 w-full sm:w-auto justify-end">
-            <button class="toggle-wishlist inline-flex justify-center items-center p-3 sm:p-4 border-2 border-gray-300 rounded-xl text-gray-700 hover:border-red-400 hover:text-red-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-400 transition-all duration-300 transform hover:scale-110 active:scale-95 bg-white {% if product.id in wishlist_products or product.id in request.session.wishlist %}active border-red-400 text-red-500{% endif %}" data-product-id="{{ product.id }}">
-              <svg class="h-7 w-7 transition-transform duration-300 hover:scale-110" fill="{% if product.id in wishlist_products or product.id in request.session.wishlist %}currentColor{% else %}none{% endif %}" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-              </svg>
-            </button>
             <div class="relative" x-data="{ isOpen: false }">
               <button @click="isOpen = !isOpen" class="inline-flex justify-center items-center p-3 sm:p-4 border-2 border-gray-300 rounded-xl text-gray-700 hover:border-blue-400 hover:text-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400 transition-all duration-300 transform hover:scale-110 active:scale-95 bg-white">
                 <svg class="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -331,31 +324,41 @@ document.addEventListener('DOMContentLoaded', function() {
     const quantityInput = document.getElementById('quantity');
     const addToCartButton = document.getElementById('add-to-cart');
 
-    document.querySelector('.quantity-left-minus').addEventListener('click', function() {
-        let currentValue = parseInt(quantityInput.value);
-        let minValue = parseInt(quantityInput.getAttribute('min'));
-        if (currentValue > minValue) {
-            quantityInput.value = currentValue - 1;
-        }
-    });
-
-    document.querySelector('.quantity-right-plus').addEventListener('click', function() {
-        let currentValue = parseInt(quantityInput.value);
-        let maxValue = parseInt(quantityInput.getAttribute('max'));
-        if (currentValue < maxValue) {
-            quantityInput.value = parseInt(currentValue) + 1;
-            updateBuyNowUrl();
-        }
-    });
-
-    document.querySelector('.quantity-left-minus').addEventListener('click', function() {
-        let currentValue = parseInt(quantityInput.value);
-        let minValue = parseInt(quantityInput.getAttribute('min'));
-        if (currentValue > minValue) {
-            quantityInput.value = currentValue - 1;
-            updateBuyNowUrl();
-        }
-    });
+    // Get the quantity buttons
+    const minusBtn = document.querySelector('.quantity-left-minus');
+    const plusBtn = document.querySelector('.quantity-right-plus');
+    
+    if (minusBtn) {
+        // Directly add event listener without cloning
+        minusBtn.addEventListener('click', function() {
+            let currentValue = parseInt(quantityInput.value);
+            let minValue = parseInt(quantityInput.getAttribute('min')) || 1;
+            if (currentValue > minValue) {
+                // Set the new value
+                quantityInput.value = currentValue - 1;
+                // Force a change event to ensure the value is updated
+                quantityInput.dispatchEvent(new Event('change'));
+                // Update the Buy Now URL
+                updateBuyNowUrl();
+            }
+        });
+    }
+    
+    if (plusBtn) {
+        // Directly add event listener without cloning
+        plusBtn.addEventListener('click', function() {
+            let currentValue = parseInt(quantityInput.value);
+            let maxValue = parseInt(quantityInput.getAttribute('max')) || 99;
+            if (currentValue < maxValue) {
+                // Set the new value
+                quantityInput.value = parseInt(currentValue) + 1;
+                // Force a change event to ensure the value is updated
+                quantityInput.dispatchEvent(new Event('change'));
+                // Update the Buy Now URL
+                updateBuyNowUrl();
+            }
+        });
+    }
 
     function updateBuyNowUrl() {
         const buyNowBtn = document.getElementById('buy-now-btn');
@@ -364,85 +367,14 @@ document.addEventListener('DOMContentLoaded', function() {
         buyNowBtn.href = `${baseUrl}/quantity/${quantity}/`;
     }
 
-    // Enhanced Add to Cart functionality
+    // We're not using this event listener as it's handled by ajax-cart.js
+    // The AJAX cart functionality is implemented in the ajax-cart.js file
+    // This prevents duplicate event listeners
+    /*
     addToCartButton.addEventListener('click', function(e) {
-        e.preventDefault();
-        const quantity = quantityInput.value;
-        const loadingState = document.getElementById('loading-state');
-        
-        // Show loading state
-        loadingState.classList.remove('opacity-0');
-        addToCartButton.classList.add('pointer-events-none');
-        
-        {% if request.session.pending_cart_item %}
-            {% if request.session.pending_cart_item.cleared_cart %}
-            // Cart was already cleared, proceed with adding the new item
-            showToast('Adding product to cart...', 'info');
-            setTimeout(() => {
-                window.location.href = "{% url 'cart:add_to_cart' product.id %}?quantity=" + quantity;
-            }, 500);
-            {% else %}
-            // For guest users with different product in cart - automatically clear and add new product
-            // Show toast notification that previous item was removed
-            showToast('Previous item removed, adding new product...', 'warning');
-            
-            // Proceed with clearing cart and adding new item immediately
-            setTimeout(() => {
-                window.location.href = "{% url 'cart:add_to_cart' product.id %}?quantity=" + quantity + "&confirm=true";
-            }, 1000);
-            {% endif %}
-        {% else %}
-        // Normal flow - no confirmation needed
-        showToast('Adding product to cart...', 'success');
-        setTimeout(() => {
-            window.location.href = "{% url 'cart:add_to_cart' product.id %}?quantity=" + quantity;
-        }, 500);
-        {% endif %}
+        // This functionality is now handled by ajax-cart.js
     });
-
-    // Wishlist functionality
-    const wishlistBtns = document.querySelectorAll('.toggle-wishlist');
-    if (wishlistBtns.length > 0) {
-        wishlistBtns.forEach(function(btn) {
-            btn.addEventListener('click', function() {
-                const productId = this.dataset.productId;
-                fetch(`/wishlist/toggle/${productId}/`, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
-                        'Content-Type': 'application/json'
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === 'added') {
-                        this.classList.add('active');
-                        this.querySelector('svg').setAttribute('fill', 'currentColor');
-                        showToast('Product added to wishlist', 'success');
-                    } else if (data.status === 'removed') {
-                        this.classList.remove('active');
-                        this.querySelector('svg').setAttribute('fill', 'none');
-                        showToast('Product removed from wishlist', 'info');
-                    } else {
-                        showToast(data.message || 'An error occurred', 'error');
-                    }
-                    
-                    // Update wishlist count if available
-                    if (data.wishlist_count !== undefined) {
-                        const wishlistCount = document.querySelector('.wishlist-count');
-                        if (wishlistCount) {
-                            wishlistCount.textContent = data.wishlist_count;
-                            wishlistCount.classList.toggle('hidden', data.wishlist_count === 0);
-                        }
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showToast('Failed to update wishlist', 'error');
-                });
-            });
-        });
-    }
+    */
 });
 </script>
 {% endblock %}

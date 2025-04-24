@@ -3,19 +3,6 @@ from django.contrib.auth.models import User
 from shop.models import Product
 from django.utils import timezone
 
-class WishlistItem(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='wishlist_items')
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='wishlist_items_analytics')
-    added_at = models.DateTimeField(auto_now_add=True)
-    converted_to_cart = models.BooleanField(default=False)
-    converted_at = models.DateTimeField(null=True, blank=True)
-
-    def __str__(self):
-        return f"{self.user.username}'s wishlist item: {self.product.name}"
-
-    class Meta:
-        unique_together = ('user', 'product')
-
 class CartAnalytics(models.Model):
     cart = models.OneToOneField('cart.Cart', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)

@@ -80,6 +80,8 @@ def checkout(request):
     total_savings = 0
     buy_now_product = request.session.get('buy_now_product')
     
+    if 'buy_now_product' in request.session:
+        del request.session['buy_now_product']
     # Don't delete the buy_now_product from session yet, we'll do it after processing
     # This ensures we can access it throughout the checkout process
 

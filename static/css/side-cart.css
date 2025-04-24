@@ -1,0 +1,95 @@
+/* Side Cart Animations */
+
+/* Fade in animation for cart items */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+/* Slide in animation for side cart */
+.side-cart-enter {
+  transform: translateX(0) !important;
+  transition: transform 0.3s ease-out;
+}
+
+.side-cart-exit {
+  transform: translateX(100%) !important;
+  transition: transform 0.3s ease-in;
+}
+
+/* Overlay animations */
+.overlay-enter {
+  opacity: 1 !important;
+  transition: opacity 0.3s ease-out;
+}
+
+.overlay-exit {
+  opacity: 0 !important;
+  transition: opacity 0.3s ease-in;
+}
+
+/* Cart item hover effects */
+.side-cart-item {
+  transition: background-color 0.2s ease;
+}
+
+.side-cart-item:hover {
+  background-color: rgba(243, 244, 246, 0.5);
+}
+
+/* Add to cart button animation */
+.add-to-cart-success {
+  animation: pulse 1.5s ease-in-out;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+  }
+}
+
+/* Product added notification animation */
+@keyframes slideInDown {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.product-added-notification {
+  animation: slideInDown 0.3s ease-out forwards;
+}
+
+/* Cart count badge animation */
+@keyframes bounce {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+}
+
+.cart-count-update {
+  animation: bounce 0.5s ease-in-out;
+}
