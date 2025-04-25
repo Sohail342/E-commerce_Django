@@ -1,0 +1,71 @@
+/* Mobile-specific enhancements for side cart */
+
+/* Base mobile styles */
+@media (max-width: 640px) {
+  #side-cart {
+    /* Improved mobile dimensions and positioning */
+    width: 90% !important;
+    max-width: 90% !important;
+    height: 90vh !important;
+    max-height: 90vh !important;
+    top: 5vh !important;
+    bottom: 5vh !important;
+    border-radius: 16px 0 0 16px !important;
+    box-shadow: -5px 0 25px rgba(0, 0, 0, 0.2) !important;
+  }
+
+  /* Improved touch targets for mobile */
+  .side-cart-item {
+    padding: 0.75rem !important;
+  }
+
+  /* Better touch feedback */
+  .mobile-touch-feedback:active {
+    transform: scale(0.98) !important;
+  }
+
+  /* Improved scrolling */
+  #side-cart-items {
+    -webkit-overflow-scrolling: touch;
+    scroll-padding: 1rem;
+  }
+
+  /* Safe area insets for modern mobile browsers */
+  #side-cart {
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+
+  /* Improved animations */
+  .animate-cart-slide-in-enhanced {
+    animation-duration: 0.35s !important;
+  }
+
+  .side-cart-exit {
+    animation-duration: 0.25s !important;
+  }
+
+  /* Prevent body scroll when cart is open */
+  body.cart-open {
+    overflow: hidden !important;
+    position: fixed;
+    width: 100%;
+  }
+
+  /* Improved overlay for mobile */
+  #side-cart-overlay {
+    backdrop-filter: blur(3px);
+  }
+}
+
+/* Small mobile devices */
+@media (max-width: 375px) {
+  #side-cart {
+    width: 95% !important;
+    max-width: 95% !important;
+  }
+
+  /* Smaller text on very small screens */
+  #side-cart .text-base {
+    font-size: 0.9rem !important;
+  }
+}

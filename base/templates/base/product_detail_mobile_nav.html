@@ -1,20 +1,14 @@
 <!-- Product Detail Mobile Navigation - Only visible on small screens and only on product detail pages -->
 <div class="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 shadow-lg backdrop-blur-md bg-opacity-95">
   <div class="flex items-center justify-between px-4 py-3">
-    <!-- Quantity Selector -->
-    <div class="flex items-center border border-gray-300 rounded-lg shadow-sm hover:shadow transition-shadow duration-300 bg-white">
-      <button type="button" class="quantity-left-minus p-2 text-gray-600 hover:text-primary-600 transition-colors" data-type="minus">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/>
-        </svg>
-      </button>
-      <input type="text" id="mobile-quantity" name="mobile-quantity" class="w-12 text-center border-x border-gray-300 py-2 text-gray-900 focus:outline-none" value="1" min="1" max="{{inventory}}" readonly>
-      <button type="button" class="quantity-right-plus p-2 text-gray-600 hover:text-primary-600 transition-colors" data-type="plus">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-        </svg>
-      </button>
-    </div>
+    <!-- Buy Now Button -->
+    <a href="{% url 'cart:buy_now' product.id 1 %}" id="mobile-buy-now" class="flex items-center justify-center px-4 py-3 text-base font-semibold text-white bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 group relative overflow-hidden">
+      <span class="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent group-hover:scale-x-100 scale-x-0 origin-left transition-transform duration-500"></span>
+      <svg class="-ml-1 mr-2 h-5 w-5 transition-transform duration-300 group-hover:rotate-12 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+      </svg>
+      <span class="relative">Buy Now</span>
+    </a>
     
     <!-- Add to Cart Button -->
     <button id="mobile-add-to-cart" class="flex-1 ml-3 inline-flex justify-center items-center px-4 py-3 text-base font-semibold text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 group relative overflow-hidden" data-product-id="{{ product.id }}">
@@ -35,62 +29,99 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-      // Get the mobile quantity input and buttons
-      const mobileQuantityInput = document.getElementById('mobile-quantity');
+      // Get the mobile buttons
       const mobileAddToCartButton = document.getElementById('mobile-add-to-cart');
+      const mobileBuyNowButton = document.getElementById('mobile-buy-now');
       const desktopQuantityInput = document.getElementById('quantity');
       
-      // Get the mobile quantity buttons
-      const mobilePlusBtn = document.querySelector('.quantity-right-plus');
-      const mobileMinusBtn = document.querySelector('.quantity-left-minus');
-      
-      // Sync the mobile quantity with the desktop quantity
-      function syncQuantities() {
-        if (desktopQuantityInput && mobileQuantityInput) {
-          mobileQuantityInput.value = desktopQuantityInput.value;
-        }
+      // Update Buy Now button href with current quantity when quantity changes
+      if (mobileBuyNowButton && desktopQuantityInput) {
+        // Initial setup of the href with the current quantity
+        const updateBuyNowHref = () => {
+          const productId = mobileAddToCartButton.dataset.productId;
+          const quantity = parseInt(desktopQuantityInput.value) || 1;
+          mobileBuyNowButton.href = `/cart/buy-now/product/${productId}/quantity/${quantity}/`;
+        };
+        
+        // Update href when quantity changes
+        desktopQuantityInput.addEventListener('change', updateBuyNowHref);
+        
+        // Also listen for custom events that might be triggered when quantity changes via buttons
+        document.addEventListener('quantityChanged', updateBuyNowHref);
+        
+        // Initial setup
+        updateBuyNowHref();
       }
-      
-      // Initial sync
-      syncQuantities();
       
       // Add event listener to the mobile add to cart button
       if (mobileAddToCartButton) {
         mobileAddToCartButton.addEventListener('click', function() {
-          // Show loading state
-          const mobileLoadingState = document.getElementById('mobile-loading-state');
-          if (mobileLoadingState) {
-            mobileLoadingState.classList.remove('opacity-0');
-          }
+          // Get the product ID from the data attribute
+          const productId = mobileAddToCartButton.dataset.productId;
+          // Get the quantity from the desktop input (default to 1 if not available)
+          const quantity = desktopQuantityInput ? parseInt(desktopQuantityInput.value) : 1;
           
-          // Trigger the desktop add to cart button click
-          const desktopAddToCartButton = document.getElementById('add-to-cart');
-          if (desktopAddToCartButton) {
-            desktopAddToCartButton.click();
+          // Show loading state
+          const originalContent = mobileAddToCartButton.innerHTML;
+          document.getElementById('mobile-loading-state').classList.remove('opacity-0');
+          document.getElementById('mobile-loading-state').classList.add('opacity-100');
+          mobileAddToCartButton.disabled = true;
+          
+          // Add product to cart
+          if (productId && !isNaN(parseInt(productId)) && typeof addProductToCart === 'function') {
+            addProductToCart(productId, quantity)
+              .then(response => {
+                if (response.success) {
+                  // Update cart count
+                  if (typeof updateCartCount === 'function') {
+                    updateCartCount();
+                  }
+                  
+                  // User is explicitly adding to cart, so clear the explicit close flag
+                  sessionStorage.removeItem('cartExplicitlyClosed');
+                  
+                  // Fetch and update side cart contents
+                  if (typeof fetchCartContents === 'function') {
+                    fetchCartContents().then(() => {
+                      // Open side cart
+                      if (typeof openSideCart === 'function') {
+                        openSideCart();
+                      }
+                      
+                      // Reset button state with success indicator
+                      document.getElementById('mobile-loading-state').classList.add('opacity-0');
+                      document.getElementById('mobile-loading-state').classList.remove('opacity-100');
+                      mobileAddToCartButton.disabled = false;
+                    });
+                  }
+                } else {
+                  // Show error
+                  if (window.showToast) {
+                    window.showToast(`<div class="flex items-center"><svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg><span>Failed to add product to cart</span></div>`, 'error');
+                  }
+                  
+                  // Reset button
+                  document.getElementById('mobile-loading-state').classList.add('opacity-0');
+                  document.getElementById('mobile-loading-state').classList.remove('opacity-100');
+                  mobileAddToCartButton.disabled = false;
+                }
+              })
+              .catch(error => {
+                // Show error message
+                if (window.showToast) {
+                  window.showToast(`<div class="flex items-center"><svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg><span>Error adding product to cart</span></div>`, 'error');
+                }
+                
+                // Reset button
+                document.getElementById('mobile-loading-state').classList.add('opacity-0');
+                document.getElementById('mobile-loading-state').classList.remove('opacity-100');
+                mobileAddToCartButton.disabled = false;
+              });
           }
         });
       }
       
-      // Update the mobile quantity when the desktop quantity changes
-      if (desktopQuantityInput) {
-        desktopQuantityInput.addEventListener('change', syncQuantities);
-      }
-      
-      // Make mobile quantity selector display-only (non-functional)
-      // We're removing the event listeners for the mobile buttons to prevent double-counting
-      // The mobile quantity will only reflect the desktop quantity (one-way sync)
-      
-      // Add visual indication that mobile controls are disabled
-      if (mobilePlusBtn && mobileMinusBtn) {
-        // Add disabled styling to buttons
-        mobilePlusBtn.classList.add('opacity-50', 'cursor-not-allowed');
-        mobileMinusBtn.classList.add('opacity-50', 'cursor-not-allowed');
-        
-        // Add a subtle visual cue to the quantity input
-        if (mobileQuantityInput) {
-          mobileQuantityInput.classList.add('bg-gray-50');
-        }
-      }
+      // No quantity buttons in mobile view anymore, just Buy Now and Add to Cart buttons
     });
     </script>
     

@@ -161,8 +161,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             btn.classList.remove('opacity-75');
                         }
                     })
-                    .catch(error => {
-                        console.error('Error adding product to cart:', error);
+                    .catch(error => {                        
                         // Show error message
                         if (window.showToast) {
                             window.showToast(`<div class="flex items-center">
@@ -244,7 +243,6 @@ document.addEventListener('DOMContentLoaded', function() {
                             }
                         })
                         .catch(error => {
-                            console.error('Error adding product to cart:', error);
                             // Show error message
                             if (window.showToast) {
                                 window.showToast(`<div class="flex items-center">
@@ -401,8 +399,6 @@ function initSideCart() {
     // Initialize cart count on page load
     updateCartCount();
     
-    // For debugging
-    console.log('Side cart initialized and hidden by default');
 }
 
 /**
@@ -444,7 +440,7 @@ function handleAddToCart(e) {
     
     // Validate product ID is a number
     if (!productId || isNaN(parseInt(productId))) {
-        console.error('Invalid product ID:', productId);
+        
         if (window.showToast) {
             window.showToast(`<div class="flex items-center">
                 <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -477,7 +473,6 @@ function handleAddToCart(e) {
                     // First set the flag to keep cart open before opening it
                     // Make sure to set this flag BEFORE opening the cart
                     sessionStorage.setItem('keepCartOpen', 'true');
-                    console.log('keepCartOpen flag set to true after adding product');
                     
                     // Remove any existing auto-close timers
                     if (window.sideCartCloseTimer) {
@@ -485,19 +480,20 @@ function handleAddToCart(e) {
                         window.sideCartCloseTimer = null;
                     }
                     
-                    // Ensure the flag persists by setting a debug message
-                    console.debug('keepCartOpen flag status:', sessionStorage.getItem('keepCartOpen'));
-                    
                     // Open side cart with animation - only when product is successfully added
                     openSideCart();
                     
-                    // Add a small delay before resetting loading state for better UX
-                    setTimeout(() => {
-                        // Reset loading state
-                        addToCartBtn.classList.remove('loading');
-                        document.getElementById('loading-state')?.classList.add('opacity-0');
-                    }, 300);
+                    // Reset loading state is now handled in openSideCart function
+                    // to ensure it's always reset properly on all devices
                 });
+                
+                // Always reset loading state here as a fallback, regardless of cart opening
+                // This ensures the loading state is reset even if there's an issue with the cart
+                setTimeout(() => {
+                    // Reset loading state
+                    addToCartBtn.classList.remove('loading');
+                    document.getElementById('loading-state')?.classList.add('opacity-0');
+                }, 500);
             } else {
                 // Show error message
                 if (window.showToast) {
@@ -515,7 +511,6 @@ function handleAddToCart(e) {
             }
         })
         .catch(error => {
-            console.error('Error adding product to cart:', error);
             // Show error message
             if (window.showToast) {
                 window.showToast(`<div class="flex items-center">
@@ -795,12 +790,10 @@ function toggleSideCart() {
         
         if (isOpen) {
             closeSideCart();
-            console.log('Closing side cart via toggle');
         } else {
             // User is explicitly toggling the cart open, so clear the explicit close flag
             sessionStorage.removeItem('cartExplicitlyClosed');
             openSideCart();
-            console.log('Opening side cart via toggle');
         }
         
         // Add haptic feedback for mobile devices if supported
@@ -819,6 +812,11 @@ function openSideCart() {
     const checkoutButton = document.querySelector('a[href*="checkout"]');
     const isMobile = window.innerWidth < 640;
     
+    // Save current scroll position for mobile view
+    if (isMobile) {
+        sessionStorage.setItem('scrollPosition', window.pageYOffset);
+    }
+    
     // Clear any existing auto-close timer that might be set elsewhere
     if (window.sideCartCloseTimer) {
         clearTimeout(window.sideCartCloseTimer);
@@ -829,7 +827,6 @@ function openSideCart() {
     // This ensures the cart can be reopened when needed
     sessionStorage.removeItem('cartExplicitlyClosed');
     sessionStorage.setItem('keepCartOpen', 'true');
-    console.log('keepCartOpen flag set to true in openSideCart');
     
     if (sideCart && overlay) {
         // Make sure the cart is visible and not hidden with display:none
@@ -891,8 +888,21 @@ function openSideCart() {
             checkoutButton.classList.add('text-white');
         }
         
-        // Add body class to prevent scrolling
-        document.body.classList.add('overflow-hidden', 'sm:overflow-auto');
+        // Add body class to prevent scrolling only for the cart area, not the whole page on mobile
+        if (isMobile) {
+            // For mobile, we don't want to prevent scrolling of the whole page
+            document.body.classList.add('cart-open');
+            // Only add overflow-hidden to desktop view
+            document.body.classList.add('sm:overflow-auto');
+        } else {
+            // For desktop, we can prevent scrolling as the cart is a sidebar
+            document.body.classList.add('overflow-hidden', 'sm:overflow-auto', 'cart-open');
+        }
+        
+        // Add safe area padding for mobile devices with notches
+        if (isMobile) {
+            sideCart.style.paddingBottom = 'env(safe-area-inset-bottom, 0px)';
+        }
         
         // Animate the cart count badge
         const sideCartCount = document.getElementById('side-cart-count');
@@ -902,8 +912,47 @@ function openSideCart() {
                 sideCartCount.classList.remove('cart-count-update');
             }, 500);
         }
+        
+        // Reset loading states after cart is opened - with improved mobile handling
+        setTimeout(() => {
+            // Reset any loading states with more comprehensive selectors
+            const loadingStates = document.querySelectorAll('.loading-state, #loading-state, [id*="loading"], [class*="loading-"]');
+            loadingStates.forEach(el => {
+                if (el) {
+                    el.classList.add('opacity-0');
+                    // For mobile devices, ensure the loading state is fully hidden
+                    if (isMobile) {
+                        el.style.display = 'none';
+                        // Reset display after animation completes
+                        setTimeout(() => {
+                            el.style.display = '';
+                        }, 500);
+                    }
+                }
+            });
+            
+            // Reset any loading buttons with more comprehensive selectors
+            const loadingButtons = document.querySelectorAll('.loading, [class*="loading"], button.opacity-75');
+            loadingButtons.forEach(btn => {
+                if (btn) {
+                    btn.classList.remove('loading', 'opacity-75');
+                }
+            });
+            
+            // Specifically target the loading overlay on product detail page
+            const addToCartBtn = document.getElementById('add-to-cart');
+            if (addToCartBtn) {
+                addToCartBtn.classList.remove('loading');
+            }
+            
+            // Ensure the loading state is reset on mobile navbar button
+            if (isMobile) {
+                document.querySelectorAll('button[class*="add-to-cart"], a[class*="add-to-cart"]').forEach(btn => {
+                    btn.classList.remove('loading', 'opacity-75');
+                });
+            }
+        }, 500); // Increased delay to ensure cart is fully opened before resetting loading states
     }
-    console.log('Enhanced side cart opened');
 }
 
 /**
@@ -923,7 +972,6 @@ function closeSideCart() {
     
     // If this is a user action, remove the keepCartOpen flag and set a flag indicating explicit close
     if (isUserAction) {
-        console.log('User action detected, removing keepCartOpen flag');
         sessionStorage.removeItem('keepCartOpen');
         // Set a flag to indicate the cart was explicitly closed by the user
         // This will prevent automatic reopening
@@ -933,7 +981,6 @@ function closeSideCart() {
     // Only check keepCartOpen flag if this is NOT a user action
     // This ensures user-initiated close actions always work
     if (!isUserAction && sessionStorage.getItem('keepCartOpen') === 'true') {
-        console.log('Side cart kept open due to keepCartOpen flag');
         return; // Don't close the cart if keepCartOpen is true and not a user action
     }
     
@@ -948,12 +995,12 @@ function closeSideCart() {
         // Hide overlay with enhanced animation
         overlay.classList.remove('opacity-100');
         overlay.classList.add('opacity-0', 'overlay-exit');
+        overlay.classList.add('hidden'); // Ensure overlay is hidden
         
         // Add haptic feedback for mobile devices if supported
         if (isMobile && 'vibrate' in navigator) {
             navigator.vibrate(30); // Subtle vibration
         }
-        
         
         // Reset checkout button styling with animation
         if (checkoutButton) {
@@ -962,8 +1009,19 @@ function closeSideCart() {
             checkoutButton.classList.remove('text-white');
         }
         
-        // Remove body class to allow scrolling
-        document.body.classList.remove('overflow-hidden', 'sm:overflow-auto');
+        // Remove body class to allow scrolling - fix for mobile scrolling issue
+        document.body.classList.remove('overflow-hidden');
+        document.body.classList.remove('cart-open');
+        
+        // Restore scroll position for mobile view
+        if (isMobile) {
+            const savedScrollPosition = sessionStorage.getItem('scrollPosition');
+            if (savedScrollPosition) {
+                setTimeout(() => {
+                    window.scrollTo(0, parseInt(savedScrollPosition));
+                }, 50); // Small delay to ensure DOM updates complete
+            }
+        }
         
         // Reset any active animations
         const cartItems = document.querySelectorAll('.side-cart-item');
@@ -973,6 +1031,54 @@ function closeSideCart() {
         
         // Clear the lastCartOpen timestamp to allow side-cart-init.js to work normally next time
         sessionStorage.removeItem('lastCartOpen');
+        
+        // Reset any loading states that might be active - with improved mobile handling
+        const loadingStates = document.querySelectorAll('.loading-state, #loading-state, [id*="loading"], [class*="loading-"]');
+        loadingStates.forEach(el => {
+            if (el) {
+                el.classList.add('opacity-0');
+                // For mobile devices, ensure the loading state is fully hidden
+                if (isMobile) {
+                    el.style.display = 'none';
+                    // Reset display after animation completes
+                    setTimeout(() => {
+                        el.style.display = '';
+                    }, 300);
+                }
+            }
+        });
+        
+        // Reset any loading buttons with more comprehensive selectors
+        const loadingButtons = document.querySelectorAll('.loading, [class*="loading"], button.opacity-75');
+        loadingButtons.forEach(btn => {
+            if (btn) {
+                btn.classList.remove('loading', 'opacity-75');
+            }
+        });
+        
+        // Specifically target the loading overlay on product detail page
+        const addToCartBtn = document.getElementById('add-to-cart');
+        if (addToCartBtn) {
+            addToCartBtn.classList.remove('loading');
+        }
+        
+        // Ensure the loading state is reset on mobile navbar button
+        if (isMobile) {
+            document.querySelectorAll('button[class*="add-to-cart"], a[class*="add-to-cart"]').forEach(btn => {
+                btn.classList.remove('loading', 'opacity-75');
+            });
+        }
+        loadingButtons.forEach(btn => {
+            if (btn) btn.classList.remove('loading');
+        });
+        
+        // Add a small delay to ensure animations complete before removing event listeners
+        setTimeout(() => {
+            // Remove any lingering event listeners by cloning and replacing the overlay
+            if (overlay.parentNode) {
+                const newOverlay = overlay.cloneNode(true);
+                overlay.parentNode.replaceChild(newOverlay, overlay);
+            }
+        }, 300); // Match the duration of the side-cart-exit animation
     }
-    console.log('Enhanced side cart closed');
 }

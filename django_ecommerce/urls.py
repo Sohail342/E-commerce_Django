@@ -4,7 +4,13 @@ from django.urls import path, include
 from . import views
 from . import settings
 from django.contrib.staticfiles.urls import static, staticfiles_urlpatterns
+from django.conf.urls import handler400, handler403, handler404, handler500
 
+# Define custom error handlers
+handler400 = 'django_ecommerce.views.bad_request'
+handler403 = 'django_ecommerce.views.permission_denied'
+handler404 = 'django_ecommerce.views.page_not_found'
+handler500 = 'django_ecommerce.views.server_error'
 
 urlpatterns = [
     path('zevaristan/admin/', admin.site.urls),
