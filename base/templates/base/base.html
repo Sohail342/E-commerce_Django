@@ -8,6 +8,7 @@
   {% block extra_css %}{% endblock %}
   <link rel="stylesheet" href="{% static 'css/side-cart.css' %}">
   <link rel="stylesheet" href="{% static 'css/side-cart-mobile.css' %}">
+  <link rel="stylesheet" href="{% static 'css/cart-checkbox.css' %}">
   
   <!-- Ensure side cart is hidden by default with inline styles -->
   <style>
@@ -20,7 +21,7 @@
   <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
   {% block extra_js %}{% endblock %}
   
-  <body class="h-full">
+  <body class="h-full{% if user.is_authenticated %} user-authenticated{% endif %}" data-user-authenticated="{% if user.is_authenticated %}true{% else %}false{% endif %}">
 
     <!-- header and nav start-->
     {% include 'base/navbar.html' %}

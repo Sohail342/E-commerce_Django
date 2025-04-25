@@ -653,12 +653,31 @@ function createCartItemElement(item) {
     itemElement.dataset.productId = item.id;
     itemElement.classList.add('cart-item');
     
+    // Check if user is authenticated
+    const isAuthenticated = document.body.classList.contains('user-authenticated') || 
+                           document.querySelector('body[data-user-authenticated="true"]') !== null;
+    
     // Format price with commas
     const formattedPrice = new Intl.NumberFormat('en-US').format(item.price);
     const totalPrice = new Intl.NumberFormat('en-US').format(item.price * item.quantity);
     
     itemElement.innerHTML = `
         <div class="flex items-center space-x-3">
+            ${isAuthenticated ? `
+            <div class="flex-shrink-0 rounded mt-1 flex items-center justify-center">
+                <label class="custom-checkbox">
+                    <input type="checkbox" class="cart-item-select rounded border-2 border-gray-300 transition-colors duration-200"
+                           data-selected="true"
+                           checked
+                           @change="updateSelectedItems()">
+                    <div class="checkbox-indicator">
+                        <svg class="checkbox-checkmark" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"></path>
+                        </svg>
+                    </div>
+                </label>
+            </div>
+            ` : ''}
             <div class="h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg border border-gray-200 bg-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300 group">
                 <img src="${item.image}" alt="${item.name}" class="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-110">
             </div>
@@ -693,7 +712,7 @@ function createCartItemElement(item) {
                     </svg>
                 </button>
             </div>
-            <a href="/shop/product/${item.id}/" class="text-xs text-primary-600 hover:text-primary-800 hover:underline transition-colors duration-200">
+            <a href="/shop/product/${item.id}" class="text-xs text-primary-600 hover:text-primary-800 hover:underline transition-colors duration-200">
                 View Details
             </a>
         </div>

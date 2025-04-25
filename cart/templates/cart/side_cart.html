@@ -43,6 +43,58 @@
                 Continue Shopping
             </a>
         </div>
+        
+        <!-- Template for cart items -->
+        <template id="cart-item-template">
+            <div class="cart-item flex items-start gap-3 p-3 bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300" data-product-id="">
+                {% if user.is_authenticated %}
+                <div class="flex-shrink-0 rounded mt-4 flex items-center justify-center">
+                    <label class="custom-checkbox">
+                        <input type="checkbox" class="cart-item-select rounded border-2 border-gray-300 transition-colors duration-200"
+                               data-selected="true"
+                               checked
+                               @change="updateSelectedItems()">
+                        <div class="checkbox-indicator">
+                            <svg class="checkbox-checkmark" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"></path>
+                            </svg>
+                        </div>
+                    </label>
+                </div>
+                {% endif %}
+                <div class="flex-shrink-0 w-16 h-16 bg-gray-100 rounded-lg overflow-hidden">
+                    <img src="" alt="" class="w-full h-full object-cover">
+                </div>
+                <div class="flex-grow min-w-0">
+                    <h3 class="text-sm font-medium text-gray-900 truncate product-name"></h3>
+                    <div class="mt-1 flex items-center gap-2">
+                        <span class="text-sm font-bold text-primary-600 product-price"></span>
+                        <span class="text-xs text-gray-500 line-through original-price hidden"></span>
+                        <span class="text-xs font-medium text-green-600 bg-green-50 px-1.5 py-0.5 rounded-full sale-badge hidden"></span>
+                    </div>
+                    <div class="mt-2 flex items-center gap-2">
+                        <div class="flex items-center border-2 border-gray-200 rounded-lg max-w-[120px]">
+                            <button class="p-1.5 text-gray-600 hover:text-primary-600 quantity-decrease">
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20 12H4"/>
+                                </svg>
+                            </button>
+                            <input type="number" class="w-12 border-0 text-center focus:ring-0 text-sm quantity-input" min="1">
+                            <button class="p-1.5 text-gray-600 hover:text-primary-600 quantity-increase">
+                                <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <button class="text-sm text-red-600 hover:text-red-700 remove-item">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </template>
     </div>
     
     <div class="border-t border-gray-200 p-3 sm:p-5 space-y-2.5 sm:space-y-4 bg-gradient-to-b from-white to-gray-50 shadow-inner sticky bottom-0 z-10 max-sm:pb-[calc(env(safe-area-inset-bottom)+0.75rem)]">
@@ -79,3 +131,4 @@
 
 <!-- Include mobile-specific JavaScript -->
 <script src="{% static 'js/side-cart-mobile.js' %}"></script>
+<script src="{% static 'js/side-cart-interactions.js' %}"></script>
