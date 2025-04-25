@@ -16,16 +16,27 @@ function createToast(message, type = 'warning') {
     const isCartQuantityWarning = message.includes('Maximum available quantity');
     const isWishlistRemoval = message.includes('Product removed from wishlist');
     const isSelected = message.includes('Please select at least one product before proceeding to checkout');
-    toast.className = `toast-notification fixed right-4 text-center w-full max-w-xs sm:max-w-sm flex items-start p-4 rounded-lg shadow-2xl transform transition-all duration-300 z-[100] ${
+    
+    // If the message contains HTML for quantity warning, extract the text content
+    if (isCartQuantityWarning && message.includes('<div class="flex items-center">')) {
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = message;
+        message = tempDiv.textContent.trim();
+    }
+
+    toast.className = `toast-notification fixed right-4 text-center w-full max-w-xs sm:max-w-sm flex items-start p-4 rounded-lg shadow-2xl transform transition-all duration-300 z-[9999] ${
         isCartQuantityWarning || isSelected || isWishlistRemoval ? 'bg-red-600 text-white border-l-4 border-red-800' :
         type === 'warning' ? 'bg-amber-500 text-white border-l-4 border-amber-700' :
         type === 'error' ? 'bg-red-600 text-white border-l-4 border-red-800' :
         'bg-green-600 text-white border-l-4 border-green-800'
-    } animate-toast-enter hover:scale-[1.02] transition-transform`
+    } animate-toast-enter hover:scale-[1.02] transition-transform`;
 
     const icon = document.createElement('div');
     icon.className = 'flex-shrink-0 mt-0.5';
-    icon.innerHTML = 
+    icon.innerHTML = isCartQuantityWarning ?
+        `<svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>` :
         `<svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
         </svg>`;
@@ -35,7 +46,8 @@ function createToast(message, type = 'warning') {
 
     const content = document.createElement('div');
     content.className = 'text-sm font-medium text-white';
-    content.textContent = message;
+    // Use innerHTML instead of textContent to properly render HTML content
+    content.innerHTML = message;
 
     const closeButton = document.createElement('button');
     closeButton.className = `ml-4 -mt-0.5 -mr-1.5 p-1 rounded-md inline-flex text-white hover:text-gray-100 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/50 transition-colors duration-200`;

@@ -651,6 +651,7 @@ function createCartItemElement(item) {
     const itemElement = document.createElement('div');
     itemElement.className = 'side-cart-item flex flex-col py-4 border-b border-gray-200 animate-fadeIn highlight-item cart-item-hover transition-all duration-300';
     itemElement.dataset.productId = item.id;
+    itemElement.classList.add('cart-item');
     
     // Format price with commas
     const formattedPrice = new Intl.NumberFormat('en-US').format(item.price);
@@ -666,7 +667,7 @@ function createCartItemElement(item) {
                 <p class="mt-1 text-sm text-gray-500">
                     <span class="font-medium">PKR ${formattedPrice}</span>
                 </p>
-                <p class="mt-1 text-sm font-bold text-primary-700">
+                <p class="mt-1 text-sm font-bold text-primary-700 total-price">
                     PKR ${totalPrice}
                 </p>
             </div>
@@ -685,7 +686,7 @@ function createCartItemElement(item) {
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
                     </svg>
                 </button>
-                <span class="quantity-display px-3 py-1 text-center text-sm font-medium min-w-[2rem]">${item.quantity}</span>
+                <input type="number" class="quantity-display px-3 py-1 text-center text-sm font-medium min-w-[2rem] border-0 focus:ring-0" value="${item.quantity}" min="1" max="${item.inventory}" readonly>
                 <button class="quantity-btn px-2 py-1 bg-gray-100 text-gray-600 hover:bg-primary-100 hover:text-primary-700 transition-colors duration-200 focus:outline-none" data-action="increase" data-product-id="${item.id}">
                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
@@ -718,7 +719,7 @@ function createCartItemElement(item) {
     
     if (decreaseBtn && quantityDisplay) {
         decreaseBtn.addEventListener('click', function() {
-            const currentQty = parseInt(quantityDisplay.textContent);
+            const currentQty = parseInt(quantityDisplay.value);
             if (currentQty > 1) {
                 // Add animation class
                 quantityDisplay.classList.add('quantity-changed');
@@ -734,7 +735,23 @@ function createCartItemElement(item) {
     
     if (increaseBtn && quantityDisplay) {
         increaseBtn.addEventListener('click', function() {
-            const currentQty = parseInt(quantityDisplay.textContent);
+            const currentQty = parseInt(quantityDisplay.value);
+            const maxInventory = parseInt(quantityDisplay.getAttribute('max')) || item.inventory;
+            
+            // Check if current quantity is already at max inventory
+            if (currentQty >= maxInventory) {
+                // Show toast message if available
+                if (window.showToast) {
+                    window.showToast(`<div class="flex items-center">
+                        <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span>Maximum available quantity is ${maxInventory}</span>
+                    </div>`, 'warning');
+                }
+                return;
+            }
+            
             // Add animation class
             quantityDisplay.classList.add('quantity-changed');
             setTimeout(() => {
@@ -1081,4 +1098,164 @@ function closeSideCart() {
             }
         }, 300); // Match the duration of the side-cart-exit animation
     }
+}
+
+/**
+ * Update cart item quantity
+ * @param {string} productId - Product ID
+ * @param {number} quantity - New quantity
+ */
+function updateCartItemQuantity(productId, quantity) {
+    const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]')?.value;
+    
+    // Show loading state in main cart
+    const quantityContainer = document.querySelector(`.cart-item[data-product-id="${productId}"] .quantity-controls`);
+    const quantityDisplay = document.querySelector(`.cart-item[data-product-id="${productId}"] .quantity-display`);
+    
+    // Show loading state in side cart
+    const sideCartQuantityControls = document.querySelector(`.side-cart-item[data-product-id="${productId}"] .flex.items-center.border`);
+    const sideCartQuantityDisplay = document.querySelector(`.side-cart-item[data-product-id="${productId}"] .quantity-display`);
+    
+    // Add loading UI to main cart
+    if (quantityContainer) {
+        // Add loading indicator and disable controls
+        quantityContainer.classList.add('opacity-50');
+        const loadingSpinner = document.createElement('span');
+        loadingSpinner.className = 'absolute inset-0 flex items-center justify-center';
+        loadingSpinner.innerHTML = '<svg class="animate-spin h-4 w-4 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
+        quantityContainer.appendChild(loadingSpinner);
+        
+        // Disable quantity controls during update
+        const controls = quantityContainer.querySelectorAll('button');
+        controls.forEach(control => control.disabled = true);
+    }
+    
+    // Add loading UI to side cart
+    if (sideCartQuantityControls) {
+        // Add loading indicator and disable controls
+        sideCartQuantityControls.classList.add('opacity-50', 'relative');
+        const sideCartLoadingSpinner = document.createElement('span');
+        sideCartLoadingSpinner.className = 'absolute inset-0 flex items-center justify-center bg-white/50';
+        sideCartLoadingSpinner.innerHTML = '<svg class="animate-spin h-4 w-4 text-primary-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
+        sideCartQuantityControls.appendChild(sideCartLoadingSpinner);
+        
+        // Disable quantity controls during update
+        const sideCartControls = sideCartQuantityControls.querySelectorAll('button');
+        sideCartControls.forEach(control => control.disabled = true);
+    }
+    
+    fetch(`/cart/update_selection/${productId}/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
+        },
+        body: JSON.stringify({ quantity: quantity })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Update cart count
+            updateCartCount();
+            
+            // Remove loading state from main cart
+            if (quantityContainer) {
+                quantityContainer.classList.remove('opacity-50');
+                const loadingSpinner = quantityContainer.querySelector('.absolute');
+                if (loadingSpinner) {
+                    loadingSpinner.remove();
+                }
+                
+                // Re-enable quantity controls
+                const controls = quantityContainer.querySelectorAll('button');
+                controls.forEach(control => control.disabled = false);
+            }
+            
+            // Remove loading state from side cart
+            const sideCartQuantityControls = document.querySelector(`.side-cart-item[data-product-id="${productId}"] .flex.items-center.border`);
+            if (sideCartQuantityControls) {
+                sideCartQuantityControls.classList.remove('opacity-50', 'relative');
+                const sideCartLoadingSpinner = sideCartQuantityControls.querySelector('.absolute');
+                if (sideCartLoadingSpinner) {
+                    sideCartLoadingSpinner.remove();
+                }
+                
+                // Re-enable quantity controls
+                const sideCartControls = sideCartQuantityControls.querySelectorAll('button');
+                sideCartControls.forEach(control => control.disabled = false);
+            }
+            
+            // Update item quantity display
+            const quantityDisplay = document.querySelector(`.cart-item[data-product-id="${productId}"] .quantity-display`);
+            if (quantityDisplay) {
+                if (quantityDisplay.tagName === 'INPUT') {
+                    quantityDisplay.value = quantity;
+                } else {
+                    quantityDisplay.textContent = quantity;
+                }
+            }
+            
+            // Update total price
+            const totalPriceElement = document.querySelector(`.cart-item[data-product-id="${productId}"] .total-price`);
+            if (totalPriceElement && data.total_price) {
+                totalPriceElement.textContent = `PKR ${new Intl.NumberFormat('en-US').format(data.total_price)}`;
+            }
+            
+            // Update cart subtotal if available
+            if (data.cart_total) {
+                const subtotalElement = document.getElementById('cart-subtotal');
+                if (subtotalElement) {
+                    subtotalElement.textContent = `PKR ${new Intl.NumberFormat('en-US').format(data.cart_total)}`;
+                }
+            }
+        } else {
+            // Show error message
+            if (window.showToast) {
+                window.showToast(`<div class="flex items-center">
+                    <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                    <span>Failed to update quantity</span>
+                </div>`, 'error');
+            }
+        }
+    })
+    .catch(error => {
+        // Remove loading state from main cart
+        if (quantityContainer) {
+            quantityContainer.classList.remove('opacity-50');
+            const loadingSpinner = quantityContainer.querySelector('.absolute');
+            if (loadingSpinner) {
+                loadingSpinner.remove();
+            }
+            
+            // Re-enable quantity controls
+            const controls = quantityContainer.querySelectorAll('button');
+            controls.forEach(control => control.disabled = false);
+        }
+        
+        // Remove loading state from side cart
+        const sideCartQuantityControls = document.querySelector(`.side-cart-item[data-product-id="${productId}"] .flex.items-center.border`);
+        if (sideCartQuantityControls) {
+            sideCartQuantityControls.classList.remove('opacity-50', 'relative');
+            const sideCartLoadingSpinner = sideCartQuantityControls.querySelector('.absolute');
+            if (sideCartLoadingSpinner) {
+                sideCartLoadingSpinner.remove();
+            }
+            
+            // Re-enable quantity controls
+            const sideCartControls = sideCartQuantityControls.querySelectorAll('button');
+            sideCartControls.forEach(control => control.disabled = false);
+        }
+        
+        // Show error message
+        if (window.showToast) {
+            window.showToast(`<div class="flex items-center">
+                <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+                <span>Error updating quantity</span>
+            </div>`, 'error');
+        }
+    });
 }

@@ -65,7 +65,8 @@ def ajax_get_cart(request):
             'price': float(item.product.sale_price if item.product.on_sale else item.product.price),
             'quantity': item.quantity,
             'image': request.build_absolute_uri(item.product.photo.url),
-            'total': float(item.total_price())
+            'total': float(item.total_price()),
+            'inventory': item.product.inventory
         } for item in cart_items]
         
         return JsonResponse({
@@ -88,7 +89,8 @@ def ajax_get_cart(request):
                 'price': float(price),
                 'quantity': quantity,
                 'image': request.build_absolute_uri(product.photo.url),
-                'total': float(price * quantity)
+                'total': float(price * quantity),
+                'inventory': product.inventory
             })
         
         return JsonResponse({
