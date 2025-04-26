@@ -175,14 +175,43 @@ def update_selection(request, product_id):
             cart = get_object_or_404(Cart, user=request.user)
             cart_item = get_object_or_404(CartItem, cart=cart, product=product)
             cart_item.selected = selected
-            cart_item.quantity = quantity
+            if quantity is not None:
+                cart_item.quantity = quantity
             cart_item.save()
+            
+            # Calculate the total price for this item
+            item_price = product.sale_price if product.on_sale else product.price
+            total_price = item_price * quantity
+            
+            # Calculate the updated cart total
+            cart_total = cart.total_price()
+            
+            return JsonResponse({
+                'success': True,
+                'total_price': float(total_price),
+                'cart_total': float(cart_total),
+                'subtotal': float(cart_total)
+            })
         else:
             cart = SessionCart(request)
-            cart.update_selection(product_id, selected)
-            cart.update(product, quantity)
-        
-        return JsonResponse({'success': True})
+            if selected is not None:
+                cart.update_selection(product_id, selected)
+            if quantity is not None:
+                cart.update(product, quantity)
+            
+            # Calculate the total price for this item
+            item_price = product.sale_price if product.on_sale else product.price
+            total_price = item_price * quantity
+            
+            # Calculate the updated cart total
+            cart_total = cart.get_total_price()
+            
+            return JsonResponse({
+                'success': True,
+                'total_price': float(total_price),
+                'cart_total': float(cart_total),
+                'subtotal': float(cart_total)
+            })
     except json.JSONDecodeError:
         return JsonResponse({'success': False, 'error': 'Invalid JSON data'})
     except Exception as e:

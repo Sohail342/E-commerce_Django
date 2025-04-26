@@ -46,14 +46,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 padding: 0.75rem !important;
             }
             
-            /* Keep the side slide animation on mobile instead of bottom slide */
+            /* Smooth side slide animation without vibration effect */
             .animate-cart-slide-in,
             .animate-cart-slide-in-enhanced {
                 animation: cartSlideInMobile 0.4s ease-out forwards !important;
+                transform: translateX(0) !important; /* Prevent vibration */
             }
             
             .side-cart-exit {
                 animation: cartSlideOutMobile 0.3s ease-in forwards !important;
+                transform: translateX(100%) !important; /* Prevent vibration */
             }
             
             @keyframes cartSlideInMobile {
@@ -64,6 +66,15 @@ document.addEventListener('DOMContentLoaded', function() {
             @keyframes cartSlideOutMobile {
                 0% { transform: translateX(0); }
                 100% { transform: translateX(100%); }
+            }
+            
+            /* Remove any vibration effects */
+            #side-cart, .side-cart-item, .cart-item {
+                backface-visibility: hidden; /* Prevent flickering */
+                -webkit-backface-visibility: hidden;
+                -webkit-transform-style: preserve-3d; /* Improve mobile rendering */
+                transform-style: preserve-3d;
+                will-change: transform; /* Optimize animations */
             }
         }
     `;
@@ -639,6 +650,16 @@ function updateSideCart(data) {
     // Update subtotal
     if (sideCartSubtotal) {
         sideCartSubtotal.textContent = `PKR ${data.subtotal}`;
+        
+        // Call the global updateSelectedItems function to ensure UI is updated
+        if (typeof window.updateSelectedItems === 'function') {
+            window.updateSelectedItems();
+        }
+        
+        // Call the global updateSideCartSubtotal function if it exists
+        if (typeof window.updateSideCartSubtotal === 'function') {
+            window.updateSideCartSubtotal();
+        }
     }
 }
 
@@ -651,6 +672,10 @@ function createCartItemElement(item) {
     const itemElement = document.createElement('div');
     itemElement.className = 'side-cart-item flex flex-col py-4 border-b border-gray-200 animate-fadeIn highlight-item cart-item-hover transition-all duration-300';
     itemElement.dataset.productId = item.id;
+    itemElement.dataset.unitPrice = item.price;
+    if (item.sale_price) {
+        itemElement.dataset.salePrice = item.sale_price;
+    }
     itemElement.classList.add('cart-item');
     
     // Check if user is authenticated
@@ -1226,7 +1251,38 @@ function updateCartItemQuantity(productId, quantity) {
                 if (subtotalElement) {
                     subtotalElement.textContent = `PKR ${new Intl.NumberFormat('en-US').format(data.cart_total)}`;
                 }
+                
+                // Update side cart subtotal
+                const sideCartSubtotal = document.getElementById('side-cart-subtotal');
+                if (sideCartSubtotal) {
+                    sideCartSubtotal.textContent = `PKR ${new Intl.NumberFormat('en-US').format(data.cart_total)}`;
+                }
+                
+                // Call the global updateSideCartSubtotal function if it exists
+                if (typeof window.updateSideCartSubtotal === 'function') {
+                    window.updateSideCartSubtotal();
+                }
             }
+            
+            // Fetch updated cart data to update the side cart subtotal
+            fetchCartContents()
+                .then(cartData => {
+                    // Update side cart subtotal
+                    const sideCartSubtotal = document.getElementById('side-cart-subtotal');
+                    if (sideCartSubtotal && cartData && cartData.subtotal !== undefined) {
+                        sideCartSubtotal.textContent = `PKR ${new Intl.NumberFormat('en-US').format(cartData.subtotal)}`;
+                    }
+                    
+                    // Call the global updateSideCartSubtotal function if it exists
+                    if (typeof window.updateSideCartSubtotal === 'function') {
+                        window.updateSideCartSubtotal();
+                    }
+                    
+                    // If side-cart-interactions.js has an updateSubtotal function in the global scope, call it
+                    if (typeof window.updateSelectedItems === 'function') {
+                        window.updateSelectedItems();
+                    }
+                });
         } else {
             // Show error message
             if (window.showToast) {

@@ -35,7 +35,12 @@
 
 /* Hover effect for checkmark - only show on unchecked state */
 .custom-checkbox input[type="checkbox"]:not(:checked) + .checkbox-indicator:hover .checkbox-checkmark {
-    @apply opacity-0 scale-0; /* Changed from scale-90 opacity-30 to completely hide it */
+    @apply opacity-0 scale-0 !important; /* Added !important to ensure this rule takes precedence */
+}
+
+/* Also ensure the checkmark is completely hidden in unchecked state */
+.custom-checkbox input[type="checkbox"]:not(:checked) + .checkbox-indicator .checkbox-checkmark {
+    @apply opacity-0 scale-0 !important;
 }
 
 /* Focus styles for accessibility */
