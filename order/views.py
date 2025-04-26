@@ -96,7 +96,7 @@ def checkout(request):
     else:
         # Only process cart items if not a buy now purchase
         if request.user.is_authenticated:
-            cart_items = cart.items.filter(selected=True)
+            cart_items = cart.items.all()
             cart_is_empty = cart_items.count() == 0
         else:
             # For guest users, include all items in the cart without requiring selection

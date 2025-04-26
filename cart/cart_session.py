@@ -19,7 +19,6 @@ class SessionCart:
             self.cart[product_id] = {
                 'quantity': 0,
                 'price': str(price),
-                'selected': False  # Set selected to False by default so user must explicitly select items
             }
         
         # Calculate total quantity (existing + new)
@@ -80,16 +79,6 @@ class SessionCart:
             if not isinstance(item['price'], Decimal):
                 item['price'] = Decimal(str(item['price']))
             item['total_price'] = item['price'] * item['quantity']
-            
-            # Ensure selected status is always a boolean value
-            # Convert to boolean if it's a string representation
-            if 'selected' in item:
-                if isinstance(item['selected'], str):
-                    item['selected'] = item['selected'].lower() == 'true'
-                # Ensure it's a proper boolean even if it's another type
-                item['selected'] = bool(item['selected'])
-            else:
-                item['selected'] = False
                 
             yield item
 

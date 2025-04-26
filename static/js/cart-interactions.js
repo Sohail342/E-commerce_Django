@@ -43,23 +43,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Check if this is a guest user
-    const isGuestUser = document.getElementById('checkout-guest-btn') !== null;
-    
-    // Initialize cart total and checkout button state
+    // Initialize cart total
     formatInitialPrices();
     updateCartTotal();
-    
-    // For guest users, we need to initialize the cart total and enable the checkout button if there are items
-    if (isGuestUser) {
-        const guestCheckoutBtn = document.getElementById('checkout-guest-btn');
-        if (guestCheckoutBtn) {
-            // Set the initial state of the Alpine.js binding
-            if (guestCheckoutBtn._x_dataStack && guestCheckoutBtn._x_dataStack[0]) {
-                guestCheckoutBtn._x_dataStack[0].disabled = false;
-            }
-        }
-    }
 
     // Create loading overlay for cart items with minimum display time
 function createLoadingOverlay(element) {
@@ -219,76 +205,56 @@ function updateItemPrice(quantityInput) {
             });
     }
 
+    // Function to update cart total based on all items
     function updateCartTotal() {
         const cartItems = document.querySelectorAll('.cart-item');
         let total = 0;
-        let anySelected = false;
-    
-        // Check if this is a guest user by looking for the guest checkout button
-        const isGuestUser = document.getElementById('checkout-guest-btn') !== null;
         
         cartItems.forEach(item => {
-            // For guest users, include all items in the total calculation regardless of selection
-            // For authenticated users, only include selected items
-            const checkbox = item.querySelector('input[type="checkbox"]');
+            // Include all items in the total calculation
+            const quantity = parseInt(item.querySelector('input[type="number"]').value) || 1;
+            let unitPrice = 0;
             
-            if ((isGuestUser || (checkbox && checkbox.checked))) {
-                if (checkbox && checkbox.checked) {
-                    anySelected = true;
-                }
-                
-                // For guest users, we count all items as "selected" for total calculation purposes
-                if (isGuestUser) {
-                    anySelected = true;
-                }
-                
-                const quantity = parseInt(item.querySelector('input[type="number"]').value) || 1;
-                let unitPrice = 0;
-                
-                // Get unit price from data attributes first
-                // Check if product is on sale first
-                const isOnSale = item.querySelector('.text-green-600') !== null;
-                if (isOnSale && item.dataset.salePrice) {
-                    unitPrice = parseFloat(item.dataset.salePrice);
-                } else if (item.dataset.unitPrice) {
-                    unitPrice = parseFloat(item.dataset.unitPrice);
-                }
-                
-                // Fallback to DOM elements if data attributes are not available
-                if (unitPrice === 0) {
-                    if (isOnSale) {
-                        const salePriceElement = item.querySelector('.text-primary-600');
-                        if (salePriceElement) {
-                            unitPrice = parsePrice(salePriceElement.textContent);
-                        }
-                    } else {
-                        const regularPriceElement = item.querySelector('.item-price');
-                        if (regularPriceElement) {
-                            unitPrice = parsePrice(regularPriceElement.textContent);
-                        }
+            // Get unit price from data attributes first
+            // Check if product is on sale first
+            const isOnSale = item.querySelector('.text-green-600') !== null;
+            if (isOnSale && item.dataset.salePrice) {
+                unitPrice = parseFloat(item.dataset.salePrice);
+            } else if (item.dataset.unitPrice) {
+                unitPrice = parseFloat(item.dataset.unitPrice);
+            }
+            
+            // Fallback to DOM elements if data attributes are not available
+            if (unitPrice === 0) {
+                if (isOnSale) {
+                    const salePriceElement = item.querySelector('.text-primary-600');
+                    if (salePriceElement) {
+                        unitPrice = parsePrice(salePriceElement.textContent);
+                    }
+                } else {
+                    const regularPriceElement = item.querySelector('.item-price');
+                    if (regularPriceElement) {
+                        unitPrice = parsePrice(regularPriceElement.textContent);
                     }
                 }
-                
-                if (!isNaN(unitPrice) && unitPrice > 0) {
-                    total += unitPrice * quantity;
-                }
+            }
+            
+            if (!isNaN(unitPrice) && unitPrice > 0) {
+                total += unitPrice * quantity;
             }
         });
         
-
-    
         const totalElement = document.querySelector('.cart-total');
         if (totalElement) {
             totalElement.textContent = formatPrice(total);
         }
         
-        // Enable/disable checkout button based on selection for authenticated users
-        // For guest users, enable the button if there are items in the cart
+        // Enable checkout button if there are items in the cart
         const checkoutBtn = document.getElementById('checkout-btn');
         const guestCheckoutBtn = document.getElementById('checkout-guest-btn');
         
         if (checkoutBtn) {
-            if (anySelected && total > 0) {
+            if (total > 0) {
                 checkoutBtn.classList.remove('opacity-50', 'cursor-not-allowed');
                 checkoutBtn.disabled = false;
                 // Update Alpine.js binding if it exists
@@ -443,23 +409,8 @@ function updateItemPrice(quantityInput) {
         });
     });
 
-    // Initialize checkboxes based on cart item's selected status
-    document.querySelectorAll('.cart-item').forEach(item => {
-        const checkbox = item.querySelector('input[type="checkbox"]');
-        if (checkbox) {
-            // Add change event listener
-            checkbox.addEventListener('change', () => updateCartTotal());
-            
-            // Check if this item has a 'selected' class or data attribute
-            const isSelected = item.classList.contains('selected') || 
-                              (item.dataset.selected === 'true');
-            
-            // Set the checkbox state based on the item's selection status
-            checkbox.checked = isSelected;
-        }
-    });
-    
-    // Update cart total after initializing checkboxes
+    // No need to initialize checkboxes as they've been removed
+    // Update cart total directly
     updateCartTotal();
     
     // Initialize Alpine.js binding for checkout button
@@ -481,23 +432,22 @@ function updateItemPrice(quantityInput) {
             
             // If button is disabled or no-click state, prevent any action
             if (this.disabled || this.classList.contains('cursor-not-allowed')) {
-                createToast('Please select at least one product before proceeding to checkout', 'warning');
+                createToast('Your cart is empty. Please add products before proceeding to checkout', 'warning');
                 return false;
             }
             
-            // Get all selected items
-            const selectedItems = document.querySelectorAll('.cart-item input[type="checkbox"]:checked');
+            // Get all cart items
+            const cartItems = document.querySelectorAll('.cart-item');
             
-            // If no items selected, prevent action
-            if (selectedItems.length === 0) {
-                createToast('Please select at least one product before proceeding to checkout', 'warning');
+            // If no items in cart, prevent action
+            if (cartItems.length === 0) {
+                createToast('Your cart is empty. Please add products before proceeding to checkout', 'warning');
                 return false;
             }
             
-            // Verify at least one selected item has a valid price > 0
+            // Verify at least one item has a valid price > 0
             let hasValidItem = false;
-            selectedItems.forEach(item => {
-                const cartItem = item.closest('.cart-item');
+            cartItems.forEach(cartItem => {
                 const priceText = cartItem.querySelector('.item-price')?.textContent;
                 if (priceText && parsePrice(priceText) > 0) {
                     hasValidItem = true;
@@ -505,7 +455,7 @@ function updateItemPrice(quantityInput) {
             });
             
             if (!hasValidItem) {
-                createToast('Selected items must have valid prices to proceed to checkout', 'warning');
+                createToast('Items must have valid prices to proceed to checkout', 'warning');
                 return false;
             }
             

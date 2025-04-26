@@ -39,16 +39,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
             
-            // For authenticated users, only include selected items
-            if (isAuthenticated) {
-                const checkbox = item.querySelector('input[type="checkbox"]');
-                if (checkbox && checkbox.checked) {
-                    subtotal += price * quantity;
-                }
-            } else {
-                // For guest users, include all items
-                subtotal += price * quantity;
-            }
+            // Include all items in subtotal calculation regardless of user type
+            subtotal += price * quantity;
         });
         
         // Format the subtotal with commas
@@ -70,12 +62,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // Listen for checkbox changes (for authenticated users)
-        sideCartItems.addEventListener('change', function(e) {
-            if (e.target.classList.contains('cart-item-select')) {
-                window.updateSideCartSubtotal();
-            }
-        });
+        // No need to listen for checkbox changes as they've been removed
     }
     
     // Update subtotal when side cart is opened
