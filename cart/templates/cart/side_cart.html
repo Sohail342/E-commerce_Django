@@ -1,7 +1,7 @@
 {% load static %}
 {% load custom_filters %}
 
-<div id="side-cart" class="fixed inset-y-0 right-0 w-full max-w-full sm:max-w-xs md:w-96 bg-white shadow-xl transform translate-x-full transition-transform duration-300 ease-in-out z-50 flex flex-col h-screen max-h-screen backdrop-blur-sm bg-white/95 sm:border-l sm:border-gray-200 sm:rounded-l-xl overflow-hidden">
+<div id="side-cart" class="fixed inset-y-0 right-0 w-full max-w-full sm:max-w-xs md:w-96 bg-white shadow-xl transform translate-x-full transition-transform duration-300 ease-in-out z-50 flex flex-col h-screen max-h-screen backdrop-blur-sm bg-white/95 sm:border-l sm:border-gray-200 sm:rounded-l-xl overflow-hidden max-sm:fixed max-sm:inset-0 max-sm:top-0 max-sm:bottom-0 max-sm:h-[100dvh] max-sm:max-h-[100dvh] max-sm:z-[100]">
     <div class="flex items-center justify-between px-4 py-3 sm:py-4 bg-gradient-to-r from-primary-50 to-primary-100 border-b border-gray-200 shadow-sm sticky top-0 z-10 max-sm:px-3 max-sm:py-2.5">
         <h2 class="text-lg font-bold text-gray-900 flex items-center">
             <div class="relative mr-3">
@@ -23,7 +23,7 @@
         </button>
     </div>
     
-    <div id="side-cart-items" class="flex-1 overflow-y-auto px-3 py-2 sm:p-4 space-y-2.5 sm:space-y-4 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 overscroll-contain touch-pan-y -webkit-overflow-scrolling-touch scroll-p-4 max-sm:px-2 max-sm:py-1 pb-[calc(env(safe-area-inset-bottom)+1rem)]">
+    <div id="side-cart-items" class="flex-1 overflow-y-auto px-3 py-2 sm:p-4 space-y-2.5 sm:space-y-4 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 overscroll-contain touch-pan-y -webkit-overflow-scrolling-touch scroll-p-4 max-sm:px-2 max-sm:py-1 pb-[calc(env(safe-area-inset-bottom)+1rem)] max-sm:pt-[calc(env(safe-area-inset-top)+0.5rem)]">
         <!-- Cart items will be dynamically inserted here -->
         <div class="text-center py-12 px-4 text-gray-500 flex flex-col items-center justify-center h-full" id="empty-cart-message">
             <div class="relative mb-4 group">
@@ -113,9 +113,8 @@
     </div>
 </div>
 
-<div id="side-cart-overlay" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-40 hidden transition-all duration-300 ease-in-out opacity-0 sm:backdrop-blur-[2px] md:backdrop-blur-[3px] max-sm:backdrop-blur-[4px] max-sm:bg-opacity-40 max-sm:transition-opacity max-sm:duration-200"></div>
+<div id="side-cart-overlay" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-40 hidden transition-all duration-300 ease-in-out opacity-0 sm:backdrop-blur-[2px] md:backdrop-blur-[3px] max-sm:backdrop-blur-[4px] max-sm:bg-opacity-40 max-sm:transition-opacity max-sm:duration-200 max-sm:z-[99]"></div>
 
 <!-- Include mobile-specific JavaScript -->
-<script src="{% static 'js/side-cart-mobile.js' %}"></script>
 <script src="{% static 'js/side-cart-interactions.js' %}"></script>
 <script src="{% static 'js/side-cart-subtotal.js' %}"></script>
