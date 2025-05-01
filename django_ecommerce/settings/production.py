@@ -23,12 +23,6 @@ DATABASES = {
     }
 }
 
-FORCE_SCRIPT_NAME = '/zevaristan'
-
-STATIC_URL = '/zevaristan/static/'
-MEDIA_URL = '/zevaristan/media/'
-
-
 
 
 ALLOWED_HOSTS = ['.vercel.app', os.getenv("ALLOWED_HOSTS")]

@@ -2,8 +2,7 @@
 from django.contrib import admin
 from django.urls import path, include
 from . import views
-from django.conf import settings
-from django.conf.urls.static import static
+from . import settings
 from django.contrib.staticfiles.urls import static, staticfiles_urlpatterns
 from django.conf.urls import handler400, handler403, handler404, handler500
 
@@ -24,8 +23,4 @@ urlpatterns = [
     path('accounts/', include('account.urls')),
     path('order/', include('order.urls')),
     path('dashboard/', include('dashboard.urls', namespace='dashboard')),
-]
-
-if settings.DEBUG:
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]+static(settings.base.MEDIA_URL, document_root=settings.base.MEDIA_ROOT)
