@@ -9,7 +9,7 @@ load_dotenv()
 
 # Now read the environment variable
 environement = os.getenv('MODULE_ENVIRONMENT', 'development')
-print("Environment:", environement)
+
 
 def main():
     """Run administrative tasks."""
