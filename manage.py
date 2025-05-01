@@ -10,7 +10,7 @@ load_dotenv()
 # Now read the environment variable
 environement = os.getenv('MODULE_ENVIRONMENT', 'development')
 
-
+print(f"Environment: {environement}")
 def main():
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', f'django_ecommerce.settings.{environement}')
