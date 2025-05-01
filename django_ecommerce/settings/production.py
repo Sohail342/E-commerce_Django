@@ -5,8 +5,6 @@ from urllib.parse import urlparse
 load_dotenv()
 
 
-SECRET_KEY = os.getenv('SECRET_KEY')
-
 DEBUG = False
 
 # Replace the DATABASES section of your settings.py with this
