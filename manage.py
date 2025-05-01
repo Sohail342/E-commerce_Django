@@ -2,16 +2,18 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
+from dotenv import load_dotenv
 
-environment = os.getenv('MODULE_ENVIRONMENT', 'development')
-print("Environment:", environment)
+# Load environment variables from .env
+load_dotenv()
 
-# Always override the setting
-os.environ['DJANGO_SETTINGS_MODULE'] = f'django_ecommerce.settings.{environment}'
-print("DJANGO_SETTINGS_MODULE set to:", os.environ['DJANGO_SETTINGS_MODULE'])
+# Now read the environment variable
+environement = os.getenv('MODULE_ENVIRONMENT', 'development')
+print("Environment:", environement)
 
 def main():
     """Run administrative tasks."""
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', f'django_ecommerce.settings.{environement}')
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
