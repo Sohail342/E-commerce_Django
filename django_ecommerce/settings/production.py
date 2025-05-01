@@ -9,7 +9,7 @@ DEBUG = False
 
 # Replace the DATABASES section of your settings.py with this
 tmpPostgres = urlparse(os.getenv("DATABASE_URL"))
-if tmpPostgres:
+if os.getenv("DATABASE_URL"):
     DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
