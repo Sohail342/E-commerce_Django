@@ -3,10 +3,15 @@
 import os
 import sys
 
+environment = os.getenv('MODULE_ENVIRONMENT', 'development')
+print("Environment:", environment)
+
+# Always override the setting
+os.environ['DJANGO_SETTINGS_MODULE'] = f'django_ecommerce.settings.{environment}'
+print("DJANGO_SETTINGS_MODULE set to:", os.environ['DJANGO_SETTINGS_MODULE'])
 
 def main():
     """Run administrative tasks."""
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django_ecommerce.settings.development')
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
@@ -16,7 +21,6 @@ def main():
             "forget to activate a virtual environment?"
         ) from exc
     execute_from_command_line(sys.argv)
-
 
 if __name__ == '__main__':
     main()

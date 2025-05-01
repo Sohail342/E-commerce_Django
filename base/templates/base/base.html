@@ -17,6 +17,7 @@
   </style>
   <script src="{% static 'js/toast.js' %}"></script>
   <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script defer src="{% static 'js/navbar-search.js' %}"></script>
   {% block extra_js %}{% endblock %}
   
   <body class="h-full{% if user.is_authenticated %} user-authenticated{% endif %}" data-user-authenticated="{% if user.is_authenticated %}true{% else %}false{% endif %}">
@@ -24,7 +25,7 @@
     <!-- header and nav start-->
     {% include 'base/navbar.html' %}
     <!-- END nav -->
-    {% if messages %}
+    {% if messages %}   
     <div class="fixed top-4 right-4 z-50 w-full max-w-lg">
         {% for message in messages %}
         <div x-data="{ show: true }" x-show="show" x-transition:enter="transform ease-out duration-500 transition" x-transition:enter-start="translate-y-2 opacity-0 sm:translate-y-0 sm:translate-x-2" x-transition:enter-end="translate-y-0 opacity-100 sm:translate-x-0" x-transition:leave="transform ease-in duration-300 transition" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="rounded-lg p-6 mb-4 shadow-lg border {% if message.tags == 'success' %}bg-green-100 border-green-500 text-green-900{% elif message.tags == 'error' %}bg-red-100 border-red-500 text-red-900{% elif message.tags == 'warning' %}bg-yellow-100 border-yellow-500 text-yellow-900{% else %}bg-blue-100 border-blue-500 text-blue-900{% endif %}">
@@ -75,6 +76,10 @@
     {% include 'base/mobile_nav.html' %}
     {% endblock %}
     <!-- End Mobile Bottom Navigation -->
+    
+    <!-- Mobile Search Overlay -->
+    {% include 'base/mobile_search.html' %}
+    <!-- End Mobile Search Overlay -->
     
     <!-- Side Cart -->
     {% include 'cart/side_cart.html' %}

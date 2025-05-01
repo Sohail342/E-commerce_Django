@@ -1,7 +1,6 @@
 {% load static %}
 
-<!-- Alpine.js Core and Plugins -->
-<script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<!-- Alpine.js Plugins (Core is loaded in base.html) -->
 <script defer src="https://unpkg.com/@alpinejs/intersect@3.x.x/dist/cdn.min.js"></script>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
@@ -12,6 +11,8 @@
 
 <!-- AJAX Cart Script -->
 <script src="{% static 'js/ajax-cart.js' %}"></script>
+
+<!-- Note: navbar-search.js is already loaded in base.html -->
 
 <script>
   // Initialize animations for products using Intersection Observer
