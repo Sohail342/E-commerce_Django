@@ -1,6 +1,7 @@
 from .base import *
 from dotenv import load_dotenv
 from urllib.parse import urlparse
+import os
 
 load_dotenv()
 
@@ -33,8 +34,11 @@ else:
     }
 
 FORCE_SCRIPT_NAME = '/zevaristan'
-STATIC_URL = '/zevaristan/staticfiles/'
+STATIC_URL = '/zevaristan/static/'
 MEDIA_URL = '/zevaristan/media/'
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
