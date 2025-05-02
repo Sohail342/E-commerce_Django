@@ -46,24 +46,61 @@ class Product(models.Model):
                 self.on_sale = False
                 self.sale_percentage = 0
                 self.save(update_fields=['on_sale', 'sale_percentage'])
-
-from django.db.models.signals import post_init
-from django.dispatch import receiver
-
-@receiver(post_init, sender=Product)
-def check_product_sale_status(sender, instance, **kwargs):
-    instance.check_sale_status()
-
-    @receiver(models.signals.pre_save, sender=Product)
-    def update_draft_status(sender, instance, **kwargs):
-        if instance.inventory == 0:
-            instance.is_draft = True
+                
     def save(self, *args, **kwargs):
         self.check_sale_status()
         super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name
+
+
+class ProductImage(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='products')
+    is_primary = models.BooleanField(default=False)
+    alt_text = models.CharField(max_length=100, blank=True)
+    order = models.PositiveIntegerField(default=1)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['order']
+
+    def __str__(self):
+        return f"Image for {self.product.name}"
+
+    def save(self, *args, **kwargs):
+        # If this is marked as primary, unmark all other images for this product
+        if self.is_primary:
+            ProductImage.objects.filter(product=self.product, is_primary=True).update(is_primary=False)
+        # If this is the first image for the product, mark it as primary
+        elif not ProductImage.objects.filter(product=self.product).exists():
+            self.is_primary = True
+        super().save(*args, **kwargs)
+
+
+from django.db.models.signals import post_init, post_save
+from django.dispatch import receiver
+
+@receiver(post_init, sender=Product)
+def check_product_sale_status(sender, instance, **kwargs):
+    instance.check_sale_status()
+
+@receiver(models.signals.pre_save, sender=Product)
+def update_draft_status(sender, instance, **kwargs):
+    if instance.inventory == 0:
+        instance.is_draft = True
+        
+@receiver(post_save, sender=Product)
+def create_product_image_from_photo(sender, instance, created, **kwargs):
+    # When a product is created, create a ProductImage from the main photo
+    if created and instance.photo:
+        ProductImage.objects.create(
+            product=instance,
+            image=instance.photo,
+            is_primary=True,
+            alt_text=instance.name
+        )
 
 
 

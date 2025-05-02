@@ -6,10 +6,17 @@
 // Immediately hide the side cart before DOM is fully loaded to prevent flash
 (function() {
     const sideCart = document.getElementById('side-cart');
+    // Detect Safari browser
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    
     if (sideCart) {
         // Hide the side cart immediately with inline styles
         sideCart.style.display = 'none';
+        // Use both standard and webkit prefixed transform for Safari
         sideCart.style.transform = 'translateX(100%)';
+        if (isSafari) {
+            sideCart.style.webkitTransform = 'translateX(100%)';
+        }
         sideCart.classList.add('translate-x-full');
     }
 })();
@@ -51,21 +58,33 @@ document.addEventListener('DOMContentLoaded', function() {
             .animate-cart-slide-in-enhanced {
                 animation: cartSlideInMobile 0.4s ease-out forwards !important;
                 transform: translateX(0) !important; /* Prevent vibration */
+                -webkit-transform: translateX(0) !important; /* Safari support */
             }
             
             .side-cart-exit {
                 animation: cartSlideOutMobile 0.3s ease-in forwards !important;
                 transform: translateX(100%) !important; /* Prevent vibration */
+                -webkit-transform: translateX(100%) !important; /* Safari support */
             }
             
             @keyframes cartSlideInMobile {
-                0% { transform: translateX(100%); }
-                100% { transform: translateX(0); }
+                0% { transform: translateX(100%); -webkit-transform: translateX(100%); }
+                100% { transform: translateX(0); -webkit-transform: translateX(0); }
+            }
+            
+            @-webkit-keyframes cartSlideInMobile {
+                0% { -webkit-transform: translateX(100%); }
+                100% { -webkit-transform: translateX(0); }
             }
             
             @keyframes cartSlideOutMobile {
-                0% { transform: translateX(0); }
-                100% { transform: translateX(100%); }
+                0% { transform: translateX(0); -webkit-transform: translateX(0); }
+                100% { transform: translateX(100%); -webkit-transform: translateX(100%); }
+            }
+            
+            @-webkit-keyframes cartSlideOutMobile {
+                0% { -webkit-transform: translateX(0); }
+                100% { -webkit-transform: translateX(100%); }
             }
             
             /* Remove any vibration effects */
@@ -82,6 +101,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Ensure the side cart is properly hidden after DOM is loaded
     const sideCart = document.getElementById('side-cart');
+    // Detect Safari browser
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    
     if (sideCart) {
         // Make sure the side cart is properly hidden
         if (sideCart.style.display === 'none') {
@@ -89,6 +111,15 @@ document.addEventListener('DOMContentLoaded', function() {
             sideCart.style.display = '';
             sideCart.classList.add('translate-x-full');
             sideCart.style.transform = 'translateX(100%)';
+            
+            // Add Safari-specific prefixes
+            if (isSafari) {
+                sideCart.style.webkitTransform = 'translateX(100%)';
+                // Add Safari-specific CSS
+                sideCart.style.webkitTransitionProperty = 'transform';
+                sideCart.style.webkitTransitionDuration = '0.3s';
+                sideCart.style.webkitTransitionTimingFunction = 'ease-out';
+            }
         }
     }
     
@@ -318,11 +349,19 @@ function initSideCart() {
     const sideCartOverlay = document.getElementById('side-cart-overlay');
     const sideCart = document.getElementById('side-cart');
     
+    // Detect Safari browser
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    
     // Ensure side cart is initially hidden until a product is added
     if (sideCart) {
         // Make sure the side cart is fully hidden at the start
         sideCart.classList.add('translate-x-full');
         sideCart.style.transform = 'translateX(100%)';
+        
+        // Add Safari-specific prefixes
+        if (isSafari) {
+            sideCart.style.webkitTransform = 'translateX(100%)';
+        }
         
         // If the cart was hidden with display:none, restore it but keep it translated out
         if (sideCart.style.display === 'none') {
@@ -332,14 +371,30 @@ function initSideCart() {
         // Add transition classes for smooth animation
         sideCart.classList.add('transition-transform', 'duration-300', 'ease-in-out');
         
+        // Add Safari-specific transition classes
+        if (isSafari) {
+            sideCart.style.webkitTransitionProperty = 'transform';
+            sideCart.style.webkitTransitionDuration = '0.3s';
+            sideCart.style.webkitTransitionTimingFunction = 'ease-in-out';
+        }
+        
         // Disable transitions temporarily to prevent flash
         sideCart.style.transition = 'none';
+        if (isSafari) {
+            sideCart.style.webkitTransition = 'none';
+        }
+        
         // Force the browser to recognize the change
         void sideCart.offsetWidth;
+        
         // Re-enable transitions after a short delay
         setTimeout(() => {
             sideCart.style.transition = '';
+            if (isSafari) {
+                sideCart.style.webkitTransition = '';
+            }
         }, 50);
+        
         // Add a class to indicate the cart has been properly initialized
         sideCart.classList.add('cart-initialized');
     }
@@ -859,6 +914,9 @@ function openSideCart() {
     const checkoutButton = document.querySelector('a[href*="checkout"]');
     const isMobile = window.innerWidth < 640;
     
+    // Detect Safari browser
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    
     // Save current scroll position for mobile view
     if (isMobile) {
         sessionStorage.setItem('scrollPosition', window.pageYOffset);
@@ -906,14 +964,31 @@ function openSideCart() {
         // Ensure the cart is visible with display flex (matches the HTML structure)
         sideCart.style.display = 'flex';
         
+        // Safari-specific handling - Safari needs explicit transform setting
+        if (isSafari) {
+            // For Safari, we need to explicitly set the transform to none first
+            sideCart.style.webkitTransform = 'none';
+            sideCart.style.transform = 'none';
+            
+            // Force a reflow to ensure Safari recognizes the style change
+            void sideCart.offsetWidth;
+        }
+        
         // Slide in cart with enhanced animation
         sideCart.classList.remove('translate-x-full');
         
         // Add class to prevent auto-hiding and ensure it stays open
         sideCart.classList.add('prevent-auto-hide');
         
-        // Let the CSS animation handle the transform
-        // Don't set inline transform style as it can override the animation
+        // Safari-specific handling for animations
+        if (isSafari) {
+            // For Safari, we'll use a direct style application instead of relying solely on CSS classes
+            setTimeout(() => {
+                // Apply the transform directly for Safari
+                sideCart.style.webkitTransform = 'translateX(0)';
+                sideCart.style.transform = 'translateX(0)';
+            }, 10);
+        }
         
         // Add different animations based on device type
         if (isMobile) {
@@ -1011,6 +1086,9 @@ function closeSideCart() {
     const checkoutButton = document.querySelector('a[href*="checkout"]');
     const isMobile = window.innerWidth < 640;
     
+    // Detect Safari browser
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    
     // Check if this was triggered by a user action
     const isUserAction = document.activeElement && 
         (document.activeElement.id === 'close-side-cart' || 
@@ -1032,6 +1110,16 @@ function closeSideCart() {
     }
     
     if (sideCart && overlay) {
+        // Safari-specific handling before adding animation classes
+        if (isSafari) {
+            // Force a reflow to ensure Safari recognizes the style change
+            void sideCart.offsetWidth;
+            
+            // For Safari, we need to explicitly set the transform
+            sideCart.style.webkitTransform = 'translateX(100%)';
+            sideCart.style.transform = 'translateX(100%)';
+        }
+        
         // Add closing animation class
         if (isMobile) {
             sideCart.classList.add('side-cart-exit', 'mobile-slide-down');

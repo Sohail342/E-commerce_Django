@@ -4,6 +4,8 @@
 
 {% block extra_js %}
 <script src="{% static 'js/countdown-timer.js' %}"></script>
+<script src="{% static 'js/product-image-gallery.js' %}"></script>
+<script src="{% static 'js/product-image-uploader.js' %}"></script>
 {% endblock %}
 
 {% block mobile_nav %}
@@ -17,13 +19,54 @@
   <div class="container mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-12">
       <!-- Product Image Section -->
-      <div class="relative group w-full max-w-md mx-auto lg:mx-0" data-aos="fade-right" data-aos-duration="800">
-        <div class="aspect-square w-full max-w-md rounded-xl sm:rounded-2xl overflow-hidden bg-white shadow-md sm:shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100">
-          <div class="relative h-full w-full overflow-hidden">
-            <img src="{{ product.photo.url }}" alt="{{ product.name }}" class="w-full h-full object-contain transform transition-transform duration-500 group-hover:scale-110 p-4">
-            <div class="absolute inset-0 bg-gradient-to-t from-gray-50/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+      <div class="relative w-full max-w-md mx-auto lg:mx-0" data-aos="fade-right" data-aos-duration="800">
+        <!-- Main Product Image Gallery -->
+        <div class="aspect-square w-full max-w-md rounded-xl sm:rounded-2xl overflow-hidden bg-white shadow-md sm:shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 mb-4">
+          <div class="swiper product-main-gallery h-full w-full">
+            <div class="swiper-wrapper">
+              {% if product_images.exists %}
+                {% for image in product_images %}
+                <div class="swiper-slide">
+                  <div class="relative h-full w-full overflow-hidden group">
+                    <img src="{{ image.image.url }}" alt="{{ image.alt_text|default:product.name }}" class="w-full h-full object-contain transform transition-transform duration-500 group-hover:scale-110 p-4">
+                    <div class="absolute inset-0 bg-gradient-to-t from-gray-50/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  </div>
+                </div>
+                {% endfor %}
+              {% else %}
+                <div class="swiper-slide">
+                  <div class="relative h-full w-full overflow-hidden group">
+                    <img src="{{ product.photo.url }}" alt="{{ product.name }}" class="w-full h-full object-contain transform transition-transform duration-500 group-hover:scale-110 p-4">
+                    <div class="absolute inset-0 bg-gradient-to-t from-gray-50/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  </div>
+                </div>
+              {% endif %}
+            </div>
+            <!-- Add Navigation Arrows -->
+            <div class="swiper-button-next text-primary-600 opacity-75 hover:opacity-100 transition-opacity duration-300"></div>
+            <div class="swiper-button-prev text-primary-600 opacity-75 hover:opacity-100 transition-opacity duration-300"></div>
+            <!-- Add Pagination -->
+            <div class="swiper-pagination"></div>
           </div>
         </div>
+        
+        <!-- Thumbnail Gallery -->
+        {% if product_images.exists and product_images.count > 1 %}
+        <div class="w-full max-w-md">
+          <div class="swiper product-thumbs-gallery">
+            <div class="swiper-wrapper">
+              {% for image in product_images %}
+              <div class="swiper-slide cursor-pointer">
+                <div class="aspect-square rounded-lg overflow-hidden border-2 {% if image.is_primary %}border-primary-500{% else %}border-gray-200{% endif %} hover:border-primary-400 transition-all duration-300">
+                  <img src="{{ image.image.url }}" alt="{{ image.alt_text|default:product.name }} thumbnail" class="w-full h-full object-cover object-center">
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+        {% endif %}
+        
         {% if product.trending or product.on_sale %}
         <div class="absolute top-4 left-4 flex flex-col space-y-2 z-10">
           {% if product.trending %}
@@ -198,6 +241,88 @@
         </div>
       </div>
     </div>
+
+    {% if user.is_authenticated %}
+    <!-- Product Image Management Section -->
+    <div class="mt-16 sm:mt-20" data-aos="fade-up" data-aos-duration="800">
+      <div class="text-center mb-8">
+        <h2 class="text-2xl sm:text-3xl font-bold text-gray-900 relative inline-block">
+          Manage Product Images
+          <span class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1/2 h-1 bg-primary-500 rounded-full"></span>
+        </h2>
+        <p class="mt-4 text-gray-600 max-w-2xl mx-auto">Upload and manage images for this product</p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Quick Upload Section -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden" id="product-image-uploader" data-product-id="{{ product.id }}">
+          <div class="p-6">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Quick Upload</h3>
+            <form id="image-upload-form" class="space-y-4">
+              {% csrf_token %}
+              <div class="hidden" id="image-upload-preview"></div>
+              
+              <div class="mt-1">
+                <label for="image-alt-text" class="block text-sm font-medium text-gray-700 mb-1">Image Description (Alt Text)</label>
+                <input type="text" id="image-alt-text" name="alt_text" class="form-input block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" placeholder="Describe this image (optional)">
+              </div>
+              
+              <div class="mt-1">
+                <input type="file" id="image-upload-input" name="image" accept="image/*" class="hidden">
+                <button type="button" id="image-upload-button" class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-gray-200 cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500" disabled>
+                  Select Image
+                </button>
+                
+                <div id="upload-progress" class="mt-2 hidden">
+                  <div class="w-full bg-gray-200 rounded-full h-2.5">
+                    <div id="upload-progress-bar" class="bg-primary-600 h-2.5 rounded-full" style="width: 0%"></div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="flex justify-between items-center pt-4">
+                <a href="{% url 'shop:upload_multiple_images' product_id=product.id %}" class="text-sm text-primary-600 hover:text-primary-700">
+                  Upload Multiple Images
+                </a>
+                <a href="{% url 'shop:manage_product_images' product_id=product.id %}" class="text-sm text-primary-600 hover:text-primary-700">
+                  Manage All Images
+                </a>
+              </div>
+            </form>
+          </div>
+        </div>
+        
+        <!-- Current Images Preview -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden">
+          <div class="p-6">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Current Images</h3>
+            {% if product_images.exists %}
+            <div id="upload-image-gallery" class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+              {% for image in product_images %}
+              <div class="relative group aspect-square rounded-lg overflow-hidden bg-gray-100 border border-gray-200 {% if image.is_primary %}ring-2 ring-primary-500{% endif %}">
+                <img src="{{ image.image.url }}" alt="{{ image.alt_text|default:product.name }}" class="w-full h-full object-contain">
+                {% if image.is_primary %}
+                <div class="absolute top-2 right-2 bg-primary-500 text-white text-xs px-2 py-1 rounded-full">
+                  Primary
+                </div>
+                {% endif %}
+              </div>
+              {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-8 px-4 border-2 border-dashed border-gray-300 rounded-lg">
+              <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <p class="mt-2 text-sm text-gray-500">No images uploaded yet</p>
+              <p class="mt-1 text-xs text-gray-400">Upload images to enhance your product listing</p>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
 
     <!-- Related Products Section -->
     <div class="mt-16 sm:mt-24 px-2 sm:px-0">

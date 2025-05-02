@@ -7,12 +7,28 @@
 @keyframes cartSlideIn {
     0% {
         transform: translateX(100%);
+        -webkit-transform: translateX(100%);
     }
     70% {
         transform: translateX(-5%);
+        -webkit-transform: translateX(-5%);
     }
     100% {
         transform: translateX(0);
+        -webkit-transform: translateX(0);
+    }
+}
+
+/* Safari-specific animation */
+@-webkit-keyframes cartSlideIn {
+    0% {
+        -webkit-transform: translateX(100%);
+    }
+    70% {
+        -webkit-transform: translateX(-5%);
+    }
+    100% {
+        -webkit-transform: translateX(0);
     }
 }
 
@@ -20,9 +36,21 @@
 @keyframes cartSlideOut {
     0% {
         transform: translateX(0);
+        -webkit-transform: translateX(0);
     }
     100% {
         transform: translateX(100%);
+        -webkit-transform: translateX(100%);
+    }
+}
+
+/* Safari-specific slide-out animation */
+@-webkit-keyframes cartSlideOut {
+    0% {
+        -webkit-transform: translateX(0);
+    }
+    100% {
+        -webkit-transform: translateX(100%);
     }
 }
 
@@ -31,10 +59,23 @@
     @keyframes cartSlideInMobile {
         0% {
             transform: translateX(100%);
+            -webkit-transform: translateX(100%);
             opacity: 0;
         }
         100% {
             transform: translateX(0);
+            -webkit-transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    @-webkit-keyframes cartSlideInMobile {
+        0% {
+            -webkit-transform: translateX(100%);
+            opacity: 0;
+        }
+        100% {
+            -webkit-transform: translateX(0);
             opacity: 1;
         }
     }
@@ -42,10 +83,23 @@
     @keyframes cartSlideOutMobile {
         0% {
             transform: translateX(0);
+            -webkit-transform: translateX(0);
             opacity: 1;
         }
         100% {
             transform: translateX(100%);
+            -webkit-transform: translateX(100%);
+            opacity: 0;
+        }
+    }
+    
+    @-webkit-keyframes cartSlideOutMobile {
+        0% {
+            -webkit-transform: translateX(0);
+            opacity: 1;
+        }
+        100% {
+            -webkit-transform: translateX(100%);
             opacity: 0;
         }
     }
@@ -55,16 +109,28 @@
 .animate-cart-slide-in,
 .animate-cart-slide-in-enhanced {
     animation: cartSlideIn 0.5s ease-out forwards;
+    -webkit-animation: cartSlideIn 0.5s ease-out forwards;
 }
 
 /* Apply the exit animation to the cart */
 .side-cart-exit {
     animation: cartSlideOut 0.3s ease-in forwards;
+    -webkit-animation: cartSlideOut 0.3s ease-in forwards;
 }
 
 /* Ensure smooth transitions for all cart elements */
 .side-cart-item {
     transition: all 0.3s ease;
+    -webkit-transition: all 0.3s ease;
+}
+
+/* Safari-specific cart styles */
+#side-cart {
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+    will-change: transform;
 }
 
 /* Fade-in animation for new cart items */

@@ -3,7 +3,7 @@ from django.utils.html import format_html
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 from import_export.fields import Field
-from .models import Category, Product
+from .models import Category, Product, ProductImage
 
 # Create a resource class for Product model
 class ProductResource(resources.ModelResource):
@@ -17,9 +17,15 @@ class ProductResource(resources.ModelResource):
     def dehydrate_category(self, product):
         return product.category.name if product.category else ''
 
+class ProductImageInline(admin.TabularInline):
+    model = ProductImage
+    extra = 1
+    fields = ['image', 'is_primary', 'alt_text', 'order']
+
 @admin.register(Product)
 class ProductAdmin(ImportExportModelAdmin):
     resource_class = ProductResource
+    inlines = [ProductImageInline]
     list_display = ['id', 'name', 'price', 'sale_price_display', 'category', 'inventory', 'status_display', 'sale_status']
     list_filter = ['category', 'is_draft', 'on_sale', 'trending']
     search_fields = ['name', 'details']

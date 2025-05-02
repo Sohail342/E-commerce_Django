@@ -84,6 +84,19 @@ def product_detail(request, product_id):
     ctg = Category.objects.get(name=product_details.category)
     invertory = product_details.inventory
     
+    # Get all product images, ordered by the 'order' field
+    product_images = product_details.images.all().order_by('order')
+    
+    # If no images exist in the ProductImage model, use the main photo
+    if not product_images.exists() and product_details.photo:
+        primary_image = product_details.photo.url
+    else:
+        # Get the primary image URL or the first image if no primary is set
+        primary_image = next(
+            (img.image.url for img in product_images if img.is_primary),
+            product_images.first().image.url if product_images.exists() else None
+        )
+    
     # Get related products from the same category, excluding current product
     related_products = Product.objects.filter(
         category=ctg,
@@ -95,6 +108,8 @@ def product_detail(request, product_id):
         'category': ctg,
         'inventory': invertory,
         'related_products': related_products,
+        'product_images': product_images,
+        'primary_image': primary_image,
     }
     return render(request, 'shop/product-detail.html', context)
 

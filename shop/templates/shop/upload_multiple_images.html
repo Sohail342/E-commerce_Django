@@ -1,0 +1,142 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Upload Images for {{ product.name }}{% endblock %}
+
+{% block content %}
+<section class="py-8 sm:py-12 bg-gray-50">
+  <div class="container mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+    <div class="mb-8 text-center">
+      <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Upload Product Images</h1>
+      <p class="text-gray-600">{{ product.name }}</p>
+      <div class="mt-4">
+        <a href="{% url 'shop:product_detail' product_id=product.id %}" class="inline-flex items-center text-primary-600 hover:text-primary-700">
+          <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+          </svg>
+          Back to Product
+        </a>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-md overflow-hidden">
+      <div class="p-6">
+        <form method="post" enctype="multipart/form-data" class="space-y-6">
+          {% csrf_token %}
+          
+          <div class="space-y-4">
+            <div>
+              <label for="{{ form.images.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-2">Select Multiple Images</label>
+              <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-primary-400 transition-colors duration-300">
+                <div class="space-y-1 text-center">
+                  <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                    <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                  <div class="flex text-sm text-gray-600">
+                    <label for="{{ form.images.id_for_label }}" class="relative cursor-pointer bg-white rounded-md font-medium text-primary-600 hover:text-primary-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500">
+                      <span>Upload images</span>
+                      {{ form.images }}
+                    </label>
+                    <p class="pl-1">or drag and drop</p>
+                  </div>
+                  <p class="text-xs text-gray-500">
+                    PNG, JPG, GIF up to 5MB
+                  </p>
+                </div>
+              </div>
+              {% if form.images.errors %}
+                <p class="text-red-500 text-xs mt-1">{{ form.images.errors.0 }}</p>
+              {% endif %}
+              {% if form.images.help_text %}
+                <p class="text-gray-500 text-xs mt-1">{{ form.images.help_text }}</p>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="flex justify-between items-center pt-4 border-t border-gray-200">
+            <a href="{% url 'shop:product_detail' product_id=product.id %}" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+              Cancel
+            </a>
+            <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+              Upload Images
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Preview of existing images -->
+    {% if product.images.exists %}
+    <div class="mt-8">
+      <h2 class="text-lg font-medium text-gray-900 mb-4">Current Product Images</h2>
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+        {% for image in product.images.all %}
+        <div class="relative group aspect-square rounded-lg overflow-hidden bg-gray-100 border border-gray-200 {% if image.is_primary %}ring-2 ring-primary-500{% endif %}">
+          <img src="{{ image.image.url }}" alt="{{ image.alt_text }}" class="w-full h-full object-contain">
+          {% if image.is_primary %}
+          <div class="absolute top-2 right-2 bg-primary-500 text-white text-xs px-2 py-1 rounded-full">
+            Primary
+          </div>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<script>
+  // Simple drag and drop functionality
+  document.addEventListener('DOMContentLoaded', function() {
+    const dropArea = document.querySelector('.border-dashed');
+    const fileInput = document.querySelector('input[type="file"]');
+    
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      dropArea.addEventListener(eventName, preventDefaults, false);
+    });
+    
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropArea.addEventListener(eventName, highlight, false);
+    });
+    
+    ['dragleave', 'drop'].forEach(eventName => {
+      dropArea.addEventListener(eventName, unhighlight, false);
+    });
+    
+    function highlight() {
+      dropArea.classList.add('border-primary-400', 'bg-primary-50');
+    }
+    
+    function unhighlight() {
+      dropArea.classList.remove('border-primary-400', 'bg-primary-50');
+    }
+    
+    dropArea.addEventListener('drop', handleDrop, false);
+    
+    function handleDrop(e) {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      fileInput.files = files;
+      
+      // Update the file count display
+      const fileCountDisplay = document.createElement('p');
+      fileCountDisplay.className = 'text-sm text-primary-600 mt-2';
+      fileCountDisplay.textContent = `${files.length} file${files.length !== 1 ? 's' : ''} selected`;
+      
+      // Remove any existing file count display
+      const existingDisplay = dropArea.querySelector('.text-primary-600');
+      if (existingDisplay) {
+        existingDisplay.remove();
+      }
+      
+      dropArea.appendChild(fileCountDisplay);
+    }
+  });
+</script>
+{% endblock %}
