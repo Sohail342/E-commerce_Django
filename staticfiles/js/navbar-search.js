@@ -28,9 +28,38 @@ document.addEventListener('DOMContentLoaded', function() {
                     this.showResults = true;
                     
                     try {
-                        const response = await fetch(`/shop/api/search/?q=${this.query}&limit=5`);
+                        const response = await fetch(`/shop/api/search/?q=${encodeURIComponent(this.query)}&limit=5`);
+                        if (!response.ok) {
+                            throw new Error(`Search API error: ${response.status}`);
+                        }
                         const data = await response.json();
                         this.results = data.products;
+                        console.log('Search results:', this.results);
+                        
+                        // Ensure Alpine.js reactivity by properly setting state
+                        if (this.results && this.results.length > 0) {
+                            // Make sure showResults is true
+                            this.showResults = true;
+                            
+                            // Use Alpine's nextTick to ensure DOM is updated
+                            if (typeof Alpine !== 'undefined') {
+                                Alpine.nextTick(() => {
+                                    // For desktop view
+                                    const dropdown = document.getElementById('searchResultsDropdown');
+                                    if (dropdown) {
+                                        dropdown.removeAttribute('style');
+                                    }
+                                    
+                                    // For mobile view
+                                    if (this.mobileSearchOpen) {
+                                        const mobileResultsContainer = document.querySelector('.grid.grid-cols-1.gap-3');
+                                        if (mobileResultsContainer) {
+                                            mobileResultsContainer.removeAttribute('style');
+                                        }
+                                    }
+                                });
+                            }
+                        }
                     } catch (error) {
                         console.error('Search error:', error);
                         this.results = [];

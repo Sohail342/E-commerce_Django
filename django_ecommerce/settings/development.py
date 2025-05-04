@@ -1,13 +1,12 @@
 from .base import *
 from dotenv import load_dotenv
-from urllib.parse import urlparse
 
 load_dotenv()
 
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 
-DEBUG = True
+DEBUG = os.getenv('DEBUG')
 
 DATABASES = {
     'default': {

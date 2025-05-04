@@ -16,7 +16,7 @@ def search_products(request):
         is_draft=False,
         name__icontains=query
     ).order_by('-created_at')[:limit]
-    
+    print(products, "Products")
     # Format the results
     results = [{
         'id': product.id,

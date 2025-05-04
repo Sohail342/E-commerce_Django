@@ -6,7 +6,7 @@ import os
 load_dotenv()
 
 
-DEBUG = False
+DEBUG = os.getenv('DEBUG')
 
 # Replace the DATABASES section of your settings.py with this
 tmpPostgres = urlparse(os.getenv("DATABASE_URL"))
@@ -33,6 +33,7 @@ else:
         }
     }
 
+# For subdirectory deployment (e.g., on Linux Server):
 FORCE_SCRIPT_NAME = '/zevaristan'
 STATIC_URL = '/zevaristan/static/'
 MEDIA_URL = '/zevaristan/media/'
