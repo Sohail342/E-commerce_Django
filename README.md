@@ -27,7 +27,7 @@ This is an e-commerce platform tailored for small businesses and startups. This 
 - **Frontend:** HTML, CSS, Tailwind
 - **Database:** SQLite (for development)
 
-## Installation
+## Installation Using uv
 
 1. **Clone the repository:**
    ```bash
@@ -35,24 +35,23 @@ This is an e-commerce platform tailored for small businesses and startups. This 
    cd django_ecommerce
    ```
 
-2. **Create a virtual environment and activate it:**
+2. **Setup Environment:**
     ```bash
-    python -m venv venv
-    Source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+   uv sync
     ```
-
-3. **Install the required dependencies:**
+3. **Setup Environment Varibales:**
     ```bash
-    pip install -r requirements.txt
+   set environment variables in .env file
     ```
 
 4. **Apply the migrations:**
     ```bash
-    python manage.py migrate
+    uv run manage.py migrate
     ```
-5. **Run the development server:**
+5. **Run the Project:**
     ```bash
-    python manage.py runserver
+    uv run manage.py runserver
+    ```
 
     ```
 6. **Access the website:**
