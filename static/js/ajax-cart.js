@@ -645,7 +645,7 @@ function fetchCartContents() {
  * Update cart count in navbar
  */
 function updateCartCount() {
-    fetch('cart/ajax_cart_count/', {
+    fetch('/zevaristan/cart/ajax_cart_count/', {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'
