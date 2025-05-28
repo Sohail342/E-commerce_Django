@@ -2,6 +2,11 @@
 {% load static %}
 {% load custom_filters %}
 
+{% block extra_css %}
+<!-- Swiper CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
+{% endblock %}
+
 {% block extra_js %}
 <script src="{% static 'js/countdown-timer.js' %}"></script>
 <script src="{% static 'js/product-image-gallery.js' %}"></script>
