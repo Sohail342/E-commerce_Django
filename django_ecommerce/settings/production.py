@@ -32,16 +32,8 @@ else:
             'PORT': '5432',
         }
     }
-
-# For subdirectory deployment (e.g., on Linux Server):
-FORCE_SCRIPT_NAME = '/zevaristan'
-STATIC_URL = '/zevaristan/static/'
-MEDIA_URL = '/zevaristan/media/'
-
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-MIDDLEWARE = [
+    
+    MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -49,7 +41,15 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-]
+    ]
+
+    # For subdirectory deployment (e.g., on Linux Server):
+    FORCE_SCRIPT_NAME = '/zevaristan'
+    STATIC_URL = '/zevaristan/static/'
+    MEDIA_URL = '/zevaristan/media/'
+
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 ALLOWED_HOSTS = ['.vercel.app', os.getenv("ALLOWED_HOSTS")]

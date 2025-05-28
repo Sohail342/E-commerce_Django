@@ -46,4 +46,5 @@ dependencies = [
     "tzdata==2025.2",
     "urllib3==2.4.0",
     "whitenoise==6.9.0",
+    "cloudinary>=1.44.0",
 ]

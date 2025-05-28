@@ -1,5 +1,5 @@
-from urllib.parse import urlparse
 import os
+import cloudinary
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -222,3 +222,12 @@ JAZZMIN_SETTINGS = {
     "order_with_respect_to": ["shop", "shop.Product", "order", "order.Order", "contact", "auth"],
  
 }
+
+
+# Cloudinary configuration
+cloudinary.config(
+    cloud_name=os.getenv("cloud_name"),
+    api_key=os.getenv("api_key"),
+    api_secret=os.getenv("api_secret"),
+    secure=True  
+)
