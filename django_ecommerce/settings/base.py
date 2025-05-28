@@ -126,6 +126,24 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+
+from urllib.parse import urlparse
+
+# Replace the DATABASES section of your settings.py with this
+tmpPostgres = urlparse(os.getenv("DATABASE_URL"))
+if os.getenv("DATABASE_URL"):
+    DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': tmpPostgres.path.replace('/', ''),
+        'USER': tmpPostgres.username,
+        'PASSWORD': tmpPostgres.password,
+        'HOST': tmpPostgres.hostname,
+        'PORT': 5432,
+    }
+    }
+
+
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
