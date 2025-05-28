@@ -1,46 +1,31 @@
 {% load static %}
-
-<!-- Alpine.js Plugins (Core is loaded in base.html) -->
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script defer src="https://unpkg.com/@alpinejs/intersect@3.x.x/dist/cdn.min.js"></script>
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-
-<!-- Intersection Observer Polyfill -->
-<script src="https://polyfill.io/v3/polyfill.min.js?features=IntersectionObserver"></script>
-
-<!-- AJAX Cart Script -->
+<!-- Custom JS -->
+<script src="{% static 'js/main.js' %}"></script>
 <script src="{% static 'js/ajax-cart.js' %}"></script>
+<script src="{% static 'js/side-cart-interactions.js' %}"></script>
 
-<!-- Note: navbar-search.js is already loaded in base.html -->
+<!-- Alpine.js loader initialization is now in base.html -->
 
 <script>
-  // Initialize animations for products using Intersection Observer
-  document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', function() {
+    // Intersection Observer for animations
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          entry.target.classList.add('animate-fade-in');
+          entry.target.classList.add('show');
           observer.unobserve(entry.target);
         }
       });
     }, {
       threshold: 0.1,
-      rootMargin: '50px'
+      rootMargin: '0px 0px -100px 0px'
     });
 
     document.querySelectorAll('[x-intersect]').forEach((el) => observer.observe(el));
   });
-
-  // Initialize loader
-  document.addEventListener('DOMContentLoaded', () => {
-    Alpine.store('loader', {
-      loading: true
-    });
-
-    window.addEventListener('load', () => {
-      // Ensure loader is hidden immediately after all content is loaded
-      Alpine.store('loader').loading = false;
-    });
-  });
 </script>
+

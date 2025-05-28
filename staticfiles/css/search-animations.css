@@ -21,6 +21,15 @@
     animation: searchPulse 2s infinite;
 }
 
+/* Hover effect for search results */
+.search-result-item:hover img {
+    transform: scale(1.05);
+}
+
+.search-result-item img {
+    transition: transform 0.3s ease-in-out;
+}
+
 /* Staggered fade in for search results */
 @keyframes staggerFadeIn {
     from { 
@@ -33,6 +42,29 @@
     }
 }
 
+/* Apply staggered animation to search results */
+#searchResultsDropdown .search-result-item:nth-child(1) { animation: staggerFadeIn 0.3s ease-out 0s forwards; }
+#searchResultsDropdown .search-result-item:nth-child(2) { animation: staggerFadeIn 0.3s ease-out 0.05s forwards; }
+#searchResultsDropdown .search-result-item:nth-child(3) { animation: staggerFadeIn 0.3s ease-out 0.1s forwards; }
+#searchResultsDropdown .search-result-item:nth-child(4) { animation: staggerFadeIn 0.3s ease-out 0.15s forwards; }
+#searchResultsDropdown .search-result-item:nth-child(5) { animation: staggerFadeIn 0.3s ease-out 0.2s forwards; }
+
+/* Initial state for staggered items */
+#searchResultsDropdown .search-result-item {
+    opacity: 0; /* Items start invisible but will be animated to visible */
+    display: flex !important;
+    visibility: visible !important;
+    animation-fill-mode: forwards !important; /* Ensures items remain visible after animation */
+}
+
+/* Ensure search result images are visible */
+#searchResultsDropdown .search-result-item img {
+    display: block !important;
+    max-width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
 /* Mobile optimizations */
 @media (max-width: 640px) {
     #searchResultsDropdown {
@@ -42,8 +74,8 @@
         right: 0;
         bottom: 0;
         max-height: 70vh;
-        border-radius: 1rem 1rem 0 0;
-        box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1), 0 -2px 4px -1px rgba(0, 0, 0, 0.06);
+        border-radius: 1.5rem 1.5rem 0 0;
+        box-shadow: 0 -4px 10px -1px rgba(0, 0, 0, 0.1), 0 -2px 4px -1px rgba(0, 0, 0, 0.06);
         z-index: 50;
         transform-origin: bottom center;
     }
@@ -56,6 +88,13 @@
     #searchResultsDropdown:not(.active) {
         transform: translateY(100%) scale(0.95);
         opacity: 0;
+    }
+    
+    /* Enhanced mobile search results */
+    .mobile-search-results .search-result-item {
+        margin-bottom: 0.75rem;
+        border-radius: 0.75rem;
+        overflow: hidden;
     }
 }
 
@@ -77,6 +116,24 @@
 /* Smooth transitions for all search elements */
 .search-transition {
     transition: all 0.3s ease-in-out;
+}
+
+/* Enhanced search popup styling */
+.search-popup {
+    animation: searchPopupIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(229, 231, 235, 0.8);
+}
+
+@keyframes searchPopupIn {
+    from { 
+        opacity: 0;
+        transform: translateY(10px) scale(0.98);
+    }
+    to { 
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
 }
 
 /* Loading animation */
