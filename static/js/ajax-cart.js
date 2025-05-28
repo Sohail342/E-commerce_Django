@@ -602,7 +602,7 @@ function handleAddToCart(e) {
 function addProductToCart(productId, quantity) {
     const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]')?.value;
     
-    return fetch(`/cart/ajax_add_to_cart/${productId}/`, {
+    return fetch(`zevaristan/cart/ajax_add_to_cart/${productId}/`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -623,7 +623,7 @@ function addProductToCart(productId, quantity) {
  * @returns {Promise} - Promise resolving when side cart is updated
  */
 function fetchCartContents() {
-    return fetch('/cart/ajax_get_cart/', {
+    return fetch('zevaristan/cart/ajax_get_cart/', {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'
@@ -645,7 +645,7 @@ function fetchCartContents() {
  * Update cart count in navbar
  */
 function updateCartCount() {
-    fetch('/cart/ajax_cart_count/', {
+    fetch('zevaristan/cart/ajax_cart_count/', {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json'
@@ -858,7 +858,7 @@ function createCartItemElement(item) {
 function removeCartItem(productId) {
     const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]')?.value;
     
-    fetch(`/cart/ajax_remove_from_cart/${productId}/`, {
+    fetch(`zevaristan/cart/ajax_remove_from_cart/${productId}/`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -1262,7 +1262,7 @@ function updateCartItemQuantity(productId, quantity) {
         sideCartControls.forEach(control => control.disabled = true);
     }
     
-    fetch(`/cart/update_selection/${productId}/`, {
+    fetch(`zevaristan/cart/update_selection/${productId}/`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
