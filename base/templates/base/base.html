@@ -16,6 +16,8 @@
     }
   </style>
   <script src="{% static 'js/toast.js' %}"></script>
+  <!-- Initialize Alpine.js loader store before loading Alpine.js -->
+  <script defer src="{% static 'js/alpine-loader.js' %}"></script>
   <!-- Initialize Alpine.js store before loading Alpine.js -->
   <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <!-- Replace Alpine.js search with vanilla JS implementation -->
