@@ -13,6 +13,6 @@
     "env": {
       "MODULE_ENVIRONMENT": "production",
       "DJANGO_SETTINGS_MODULE": "django_ecommerce.settings.production",
-      "DATABASE_URL": "postgres://username:password@host:port/database_name"
+      "DATABASE_URL": "postgresql://neondb_owner:npg_2RXtoQdUuh6l@ep-delicate-wave-a1wr41f1-pooler.ap-southeast-1.aws.neon.tech/neondb?sslmode=require"
     }
 }
