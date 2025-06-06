@@ -9,5 +9,10 @@
         "src": "/(.*)",
         "dest": "django_ecommerce/wsgi.py"
       }
-    ]
+    ],
+    "env": {
+      "MODULE_ENVIRONMENT": "production",
+      "DJANGO_SETTINGS_MODULE": "django_ecommerce.settings.production",
+      "DATABASE_URL": "postgres://username:password@host:port/database_name"
+    }
 }
