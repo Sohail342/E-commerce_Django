@@ -1,49 +1,41 @@
-# Base Python image
-FROM python:3.11-slim as base
-
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1 \
-    PIP_NO_CACHE_DIR=1 \
-    PIP_DISABLE_PIP_VERSION_CHECK=1
-
+# =========================
+# Stage 1: Builder
+# =========================
+FROM python:3.12-slim AS builder
 WORKDIR /app
 
-# Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential libpq-dev \
+    build-essential gcc libpq-dev curl ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
+COPY pyproject.toml poetry.lock* requirements.txt* ./
 
-# Install Python dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --upgrade pip setuptools wheel \
+    && if [ -f requirements.txt ]; then pip install --no-cache-dir -r requirements.txt; fi
 
-# Copy entrypoint script
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+COPY src/ ./src/
 
-# Development stage
-FROM base as development
+# =========================
+# Stage 2: Runtime
+# =========================
+FROM python:3.12-slim AS runtime
+WORKDIR /app
 
-# Install development dependencies
-RUN pip install --no-cache-dir watchdog
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    DJANGO_SETTINGS_MODULE=settings.production \
+    PYTHONPATH=/app/src
 
-# Copy project files
-COPY . .
+RUN addgroup --system app && adduser --system --ingroup app app
 
-# Production stage
-FROM base as production
+# Copy installed Python packages from builder
+COPY --from=builder /usr/local /usr/local
 
-# Copy project files
-COPY . .
+COPY --chown=app:app src/ ./src
+COPY --chown=app:app entrypoint.sh ./
 
-# Set production environment
-ENV MODULE_ENVIRONMENT=PRODUCTION
+EXPOSE 8000
+RUN chmod +x entrypoint.sh
+USER app
 
-# Collect static files
-RUN python manage.py collectstatic --noinput || echo "Collectstatic failed (expected in some envs)"
-
-
-ENTRYPOINT ["/entrypoint.sh"]
-CMD ["gunicorn", "--bind", "0.0.0.0:8888", "django_ecommerce.wsgi:application"]
+CMD ["./entrypoint.sh"]
